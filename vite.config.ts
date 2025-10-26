@@ -7,13 +7,15 @@ import { resolve } from 'path';
 export default defineConfig({
   build: {
     rollupOptions: {
-      input: 'src/main.js',
+      input: {
+        main: 'index.html',
+      },
       preserveEntrySignatures: true,
       output: {
-        entryFileNames: 'home-mfe.js',
-        chunkFileNames: '[name]-[hash].js',
-        assetFileNames: '[name]-[hash].[ext]',
-        format: 'system',
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]',
+        format: 'es',
       },
     },
   },
@@ -26,6 +28,7 @@ export default defineConfig({
     },
   },
   preview: {
+    port: 4173,
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
