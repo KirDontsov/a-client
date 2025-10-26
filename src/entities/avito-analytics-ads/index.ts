@@ -1,0 +1,1 @@
+export { useAvitoAnalyticsAdsStore } from './model';

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="22">
+	<defs>
+		<linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="a">
+			<stop stop-color="#77DFF3" offset="0%"/>
+			<stop stop-color="#00ACFF" offset="100%"/>
+		</linearGradient>
+		<linearGradient x1="50%" y1="100%" x2="50%" y2="0%" id="c">
+			<stop stop-color="#FFF" stop-opacity="0" offset="0%"/>
+			<stop stop-color="#FFF" stop-opacity=".2" offset="100%"/>
+		</linearGradient>
+		<linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="d">
+			<stop stop-color="#77DFF3" offset="0%"/>
+			<stop stop-color="#00ACFF" offset="100%"/>
+		</linearGradient>
+		<path id="b" d="M14.5710678 14.3786797H.42893219l4.24264069 4.2426406h5.65685422z"/>
+	</defs>
+	<g fill="none" fill-rule="evenodd">
+		<path fill="url(#a)" fill-rule="nonzero" d="M0 20l6 2 2-2-4-4z"/>
+		<path d="M15.72149768 2.52976511c.27697142-.27697142.72120302-.28179923.99647587-.00652638.27336699.27336699.27686678.71308272-.00652638.99647588l-5.1252565 5.1252565c-.27697143.27697143-.72120303.28179924-.99647588.00652639-.27336699-.273367-.27686678-.71308272.00652639-.99647589l5.1252565-5.1252565z" fill="#FFF" style="mix-blend-mode:overlay" opacity=".5"/>
+		<g transform="rotate(45 7.5 16.5)">
+			<use fill="#484848" xlink:href="#b"/>
+			<use fill="url(#c)" xlink:href="#b"/>
+		</g>
+		<path d="M4 10L16.2063611.61049148c.4383146-.33716513 1.112604-.2915264 1.5033584.09922801l5.580561 5.58056102c.3919673.39196725.4422437 1.05743809.099228 1.50335842L14 20 4 10z" fill="url(#d)"/>
+	</g></svg>
