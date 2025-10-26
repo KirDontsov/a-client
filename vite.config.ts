@@ -28,7 +28,7 @@ export default defineConfig({
     },
   },
   preview: {
-    port: 3100,
+    port: 3003,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
