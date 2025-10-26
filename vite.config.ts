@@ -19,20 +19,20 @@ export default defineConfig({
       },
     },
   },
-  base: "/",
+  base: '/',
   server: {
     cors: {
-      origin: "*",
-      methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      allowedHeaders: ["X-Requested-With", "content-type", "Authorization"],
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['X-Requested-With', 'content-type', 'Authorization'],
     },
   },
   preview: {
-    port: 4173,
+    port: 3100,
     headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
     },
   },
   plugins: [
