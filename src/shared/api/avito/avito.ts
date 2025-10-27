@@ -12,7 +12,11 @@ export const getAvitoToken = async () => {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
       credentials: 'include',
-    });
+    })
+      .then((res) => res.json())
+      .catch(() => {
+        console.warn('error');
+      });
 
     return res;
   } catch (e) {
@@ -20,22 +24,19 @@ export const getAvitoToken = async () => {
   }
 };
 
-
-export const getAvitoBalance = async ({
-                                        avito_token,
-                                      }: AvitoTokenParams): Promise<AvitoGetBalanceResponse | null> => {
+export const getAvitoBalance = async ({ avito_token }: AvitoTokenParams): Promise<AvitoGetBalanceResponse | null> => {
   try {
     const res = await fetch(`${BACKEND_PORT}/api/avito/get_balance`, {
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      credentials: "include",
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      credentials: 'include',
       body: JSON.stringify({
         avito_token,
       }),
     })
       .then((res) => res.json())
       .catch(() => {
-        console.warn("error");
+        console.warn('error');
       });
 
     return res || null;
@@ -44,21 +45,19 @@ export const getAvitoBalance = async ({
   }
 };
 
-export const getAvitoProfile = async ({
-                                        avito_token,
-                                      }: AvitoTokenParams): Promise<AvitoGetProfileResponse | null> => {
+export const getAvitoProfile = async ({ avito_token }: AvitoTokenParams): Promise<AvitoGetProfileResponse | null> => {
   try {
     const res = await fetch(`${BACKEND_PORT}/api/avito/get_user_profile`, {
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      credentials: "include",
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      credentials: 'include',
       body: JSON.stringify({
         avito_token,
       }),
     })
       .then((res) => res.json())
       .catch(() => {
-        console.warn("error");
+        console.warn('error');
       });
 
     return res || null;
