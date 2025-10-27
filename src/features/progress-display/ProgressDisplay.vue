@@ -51,10 +51,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import { DOMAIN } from '@/shared';
 
 // WebSocket connection
 let ws: WebSocket | null = null;
-const wsUrl = 'ws://localhost:8080/api/ws';
+const wsUrl = `ws://${DOMAIN}/api/ws`;
 
 // Counter to track messages and update table every 5 messages
 let messageCounter = 0;
