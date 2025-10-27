@@ -57,10 +57,6 @@ const ITEMS_PER_PAGE = 10;
 onMounted(async () => {
   if (!avito_token.value) {
     const res = await getAvitoToken();
-
-    if (!!res?.data?.access_token && user_id.value) {
-      await loadItems(1);
-    }
   } else {
     if (avito_token.value && user_id.value) {
       await loadItems(1);
@@ -76,6 +72,8 @@ const loadItems = async (page) => {
   if (avitoItemsStore.items && avitoItemsStore.items.length > 0 && !avitoCategoryFieldsStore.categoryFields) {
     // For now, we'll use a placeholder category slug
     // In a real implementation, you would determine the actual category slug for each item
+
+    console.log('avitoItemsStore', avitoItemsStore);
     await avitoCategoryFieldsStore.getAvitoCategoryFields({
       avito_token: avito_token.value,
       avito_slug: avitoItemsStore.category, // This should be replaced with actual category slug
