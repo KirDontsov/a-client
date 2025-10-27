@@ -56,7 +56,7 @@ const ITEMS_PER_PAGE = 10;
 
 onMounted(async () => {
   if (!avito_token.value) {
-    const res = await getAvitoToken();
+    await getAvitoToken();
   } else {
     if (avito_token.value && user_id.value) {
       await loadItems(1);

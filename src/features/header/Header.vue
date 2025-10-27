@@ -43,7 +43,7 @@ import { onMounted, ref } from "vue";
 import { getAvitoBalance, getAvitoProfile, getAvitoToken } from "@/shared";
 import { useCookies } from "@/entities";
 
-const { value: avito_token } = useCookies("avito_token");
+const { value: avito_token, set: setAvitoToken } = useCookies("avito_token");
 
 const balance = ref();
 
@@ -51,24 +51,26 @@ const { value: userId, set: setUserId } = useCookies('user_id', null);
 
 onMounted(async () => {
   if (!avito_token.value) {
-    const res = getAvitoToken();
+	  const res = await getAvitoToken();
 
-		if (res?.data?.access_token) {
-			const profileRes = await getAvitoProfile({ avito_token: avito_token.value })
-			if (profileRes?.data) {
-				setUserId(profileRes?.data?.id || null)
-			}
-			const balanceRes = await getAvitoBalance({ avito_token: avito_token.value });
-			if (balanceRes?.data) {
-				balance.value = balanceRes?.data?.balance / 100;
-			}
-		}
+	  if (res?.data?.access_token) {
+		  setAvitoToken(res?.data?.access_token);
+
+		  const profileRes = await getAvitoProfile({avito_token: res?.data?.access_token})
+		  if (profileRes?.data) {
+			  setUserId(profileRes?.data?.id || null)
+		  }
+		  const balanceRes = await getAvitoBalance({avito_token: res?.data?.access_token});
+		  if (balanceRes?.data) {
+			  balance.value = balanceRes?.data?.balance / 100;
+		  }
+	  }
   } else {
-	  const profileRes = await getAvitoProfile({ avito_token: avito_token.value })
+	  const profileRes = await getAvitoProfile({avito_token: avito_token.value})
 	  if (profileRes?.data) {
 		  setUserId(profileRes?.data?.id || null)
 	  }
-	  const balanceRes = await getAvitoBalance({ avito_token: avito_token.value });
+	  const balanceRes = await getAvitoBalance({avito_token: avito_token.value});
 	  if (balanceRes?.data) {
 		  balance.value = balanceRes?.data?.balance / 100;
 	  }
