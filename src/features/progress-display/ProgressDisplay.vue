@@ -55,7 +55,13 @@ import { DOMAIN } from '@/shared';
 
 // WebSocket connection
 let ws: WebSocket | null = null;
-const wsUrl = `ws://${DOMAIN}/api/ws`;
+// Determine if we should use secure websocket protocol
+// For production domains (not localhost or local IPs), use wss://
+const isLocalhost = DOMAIN.startsWith('localhost') || DOMAIN.startsWith('127.');
+const isLocalIP = DOMAIN.startsWith('192.') || DOMAIN.startsWith('10.') || DOMAIN.startsWith('172.');
+
+const wsProtocol = (!isLocalhost && !isLocalIP) ? 'wss://' : 'ws://';
+const wsUrl = `${wsProtocol}${DOMAIN}/api/ws`;
 
 // Counter to track messages and update table every 5 messages
 let messageCounter = 0;
