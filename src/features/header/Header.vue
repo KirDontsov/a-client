@@ -51,16 +51,28 @@ const { value: userId, set: setUserId } = useCookies('user_id', null);
 
 onMounted(async () => {
   if (!avito_token.value) {
-    getAvitoToken();
+    const res = getAvitoToken();
+
+		if (res?.data?.access_token) {
+			const profileRes = await getAvitoProfile({ avito_token: avito_token.value })
+			if (profileRes?.data) {
+				setUserId(profileRes?.data?.id || null)
+			}
+			const balanceRes = await getAvitoBalance({ avito_token: avito_token.value });
+			if (balanceRes?.data) {
+				balance.value = balanceRes?.data?.balance / 100;
+			}
+		}
+  } else {
+	  const profileRes = await getAvitoProfile({ avito_token: avito_token.value })
+	  if (profileRes?.data) {
+		  setUserId(profileRes?.data?.id || null)
+	  }
+	  const balanceRes = await getAvitoBalance({ avito_token: avito_token.value });
+	  if (balanceRes?.data) {
+		  balance.value = balanceRes?.data?.balance / 100;
+	  }
   }
-	const profileRes = await getAvitoProfile({ avito_token: avito_token.value })
-	if (profileRes?.data) {
-		setUserId(profileRes?.data?.id || null)
-	}
-	const balanceRes = await getAvitoBalance({ avito_token: avito_token.value });
-	if (balanceRes?.data) {
-		balance.value = balanceRes?.data?.balance / 100;
-	}
 });
 </script>
 
