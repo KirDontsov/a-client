@@ -18,6 +18,7 @@ export const getAvitoToken = async () => {
         console.warn('error');
       });
 
+    console.log('res', res);
     return res;
   } catch (e) {
     console.log(e);
