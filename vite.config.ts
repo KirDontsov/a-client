@@ -34,6 +34,12 @@ export default defineConfig({
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
       'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
     },
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      '0.0.0.0',
+      'sunseven.ru'
+    ],
   },
   plugins: [
     vue({
