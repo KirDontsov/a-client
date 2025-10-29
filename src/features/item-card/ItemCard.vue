@@ -65,7 +65,7 @@
             <button
               v-if="imageUrls.length > 1"
               @click.stop="prevImage"
-              class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all"
+              class="absolute left-2 top-1/2 transform -translate-y-1/2 !bg-white dark:bg-black opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all"
               aria-label="Previous image"
             >
               <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -77,7 +77,7 @@
             <button
               v-if="imageUrls.length > 1"
               @click.stop="nextImage"
-              class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all"
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 !bg-white dark:bg-black opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all"
               aria-label="Next image"
             >
               <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@
                 @click.stop="goToImage(index)"
                 :class="[
               'w-3 h-3 rounded-full transition-all',
-              index === currentImageIndex ? 'bg-white' : 'bg-white bg-opacity-50'
+              index === currentImageIndex ? 'bg-white' : '!bg-white opacity-50'
             ]"
                 :aria-label="`Go to image ${index + 1}`"
               />

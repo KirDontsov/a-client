@@ -33,18 +33,16 @@
         d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"
       />
     </svg>
-    <span :class="{ hidden: !expanded }" class="flex-1 ms-3 whitespace-nowrap">
-      Log In
-    </span>
+    <span :class="{ hidden: !expanded }" class="flex-1 ms-3 whitespace-nowrap bg-negroni-400"> Log In </span>
   </a>
 </template>
 
 <script setup>
-import { onMounted, computed, onUnmounted } from "vue";
-import { useAuthStore } from "@/entities/index.js";
-import { useSidebarState } from "@/entities/sidebar/index.js";
-import Icon from "@/shared/icons/icon/index.ts";
-import { createSidebarLinks } from "@/shared/config/index.js";
+import { onMounted, computed, onUnmounted } from 'vue';
+import { useAuthStore } from '@/entities/index.js';
+import { useSidebarState } from '@/entities/sidebar/index.js';
+import Icon from '@/shared/icons/icon/index.ts';
+import { createSidebarLinks } from '@/shared/config/index.js';
 
 const links = createSidebarLinks();
 
@@ -55,7 +53,7 @@ const currentPath = computed(() => window.location.pathname);
 
 const isLinkActive = (url) => {
   // For the home route, we only want it active when the path is exactly "/"
-  if (url === "/") {
+  if (url === '/') {
     return currentPath.value === url;
   }
   // For other routes, check if the current path starts with the link url
@@ -68,7 +66,7 @@ onMounted(() => {
 
   // Store cleanup function to run on component unmount
   onUnmounted(() => {
-    if (typeof cleanup === "function") {
+    if (typeof cleanup === 'function') {
       cleanup();
     }
   });

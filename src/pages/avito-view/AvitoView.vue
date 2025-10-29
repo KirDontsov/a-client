@@ -1,10 +1,6 @@
 <template>
   <PageContainer :loading="avitoItemsStore.itemsLoading">
     <template #body>
-      <CsvExporter
-        v-if="avitoItemsStore.items?.length > 0 && !avitoItemsStore.itemsLoading"
-        :items="avitoItemsStore.items"
-      />
       <div
         v-if="avitoItemsStore.items?.length > 0 && !avitoItemsStore.itemsLoading"
         class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full"

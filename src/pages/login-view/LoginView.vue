@@ -18,7 +18,13 @@
       />
     </div>
     <div class="flex items-center px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-      <button @click="handleSubmit">Войти</button>
+      <button
+        @click="handleSubmit"
+        type="button"
+        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+      >
+        Войти
+      </button>
     </div>
   </div>
 </template>
