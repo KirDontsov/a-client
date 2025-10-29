@@ -15,6 +15,19 @@ export const login = async (email: string, password: string) => {
   }
 };
 
+export const logout = async () => {
+  try {
+    const res = await fetch(`${BACKEND_PORT}/api/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+
+    return res;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const checkAuth = async () => {
   try {
     const res = await fetch(`${BACKEND_PORT}/api/users/me`, {

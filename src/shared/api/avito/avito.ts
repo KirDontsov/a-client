@@ -5,6 +5,7 @@ import {
   AvitoTokenParams,
   BACKEND_PORT,
 } from '@/shared';
+import { useAuthStore } from '@/entities/auth/model';
 
 export const getAvitoToken = async () => {
   try {
@@ -212,7 +213,14 @@ export const getAvitoCategoryFields = async ({ avito_token, avito_slug }: AvitoC
 
 export async function createAvitoAnalyticsRequest(data) {
   try {
-    const res = await fetch(`${BACKEND_PORT}/api/avito_requests/6a9a4e3c-dbbe-44af-ba17-aeeff601226d`, {
+    const authStore = useAuthStore();
+    const userId = authStore.user?.id;
+
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
+    const res = await fetch(`${BACKEND_PORT}/api/avito_requests/${userId}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
       credentials: 'include',
@@ -247,9 +255,16 @@ export async function getAvitoAnalyticsAds(avitoRequestId: string) {
   }
 }
 
-export async function getAvitoRequests() {
+export async function getAvitoRequests(page: number = 1, limit: number = 10) {
+  const authStore = useAuthStore();
+  const userId = authStore.user?.id;
+
+  if (!userId) {
+    throw new Error('User not authenticated');
+  }
+
   try {
-    const res = await fetch(`${BACKEND_PORT}/api/avito_requests`, {
+    const res = await fetch(`${BACKEND_PORT}/api/avito_requests/user/${userId}?page=${page}&limit=${limit}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
       credentials: 'include',
