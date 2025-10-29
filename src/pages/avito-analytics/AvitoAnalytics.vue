@@ -148,6 +148,38 @@
         <div v-else-if="avitoAnalyticsAdsStore.loading" class="text-center py-4 text-gray-50 dark:text-gray-400">
           Загрузка данных...
         </div>
+
+        <!-- Pagination -->
+        <div
+          v-if="avitoAnalyticsAdsStore.requests && avitoAnalyticsAdsStore.requests.length > 0"
+          class="flex flex-col items-center mt-6"
+        >
+          <!-- Pagination info -->
+          <div class="flex items-center justify-end w-full mb-4">
+            <div class="flex items-center space-x-2">
+              <label for="itemsPerPage" class="text-sm text-gray-700 dark:text-gray-400">Записей на странице:</label>
+              <select
+                id="itemsPerPage"
+                v-model="itemsPerPage"
+                @change="onItemsPerPageChange"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Pagination component -->
+          <Pagination
+            :total-items="avitoAnalyticsAdsStore.totalItems"
+            :items-per-page="avitoAnalyticsAdsStore.itemsPerPage"
+            @page-changed="onPageChanged"
+            :loading="avitoAnalyticsAdsStore.loading"
+          />
+        </div>
       </div>
     </template>
   </PageContainer>
@@ -159,9 +191,13 @@ import { useRouter } from 'vue-router';
 import { useAvitoAnalyticsAdsStore } from '@/entities/avito-analytics-ads';
 import PageContainer from '@/features/page-container';
 import { CsvDownloadButton } from '@/features/csv-download-button';
+import Pagination from '@/features/pagination/Pagination.vue';
 
 const router = useRouter();
 const avitoAnalyticsAdsStore = useAvitoAnalyticsAdsStore();
+
+// Pagination state
+const itemsPerPage = ref<number>(avitoAnalyticsAdsStore.itemsPerPage);
 
 // Sorting state
 const sortColumn = ref<string | null>(null);
@@ -258,8 +294,18 @@ const sortedRequests = computed(() => {
   });
 });
 
+// Pagination methods
+const onPageChanged = async (page: number) => {
+  await avitoAnalyticsAdsStore.fetchRequests(page, itemsPerPage.value);
+};
+
+const onItemsPerPageChange = async () => {
+  // Reset to first page when changing items per page
+  await avitoAnalyticsAdsStore.fetchRequests(1, itemsPerPage.value);
+};
+
 onMounted(async () => {
-  await avitoAnalyticsAdsStore.fetchRequests();
+  await avitoAnalyticsAdsStore.fetchRequests(avitoAnalyticsAdsStore.currentPage, itemsPerPage.value);
 });
 </script>
 

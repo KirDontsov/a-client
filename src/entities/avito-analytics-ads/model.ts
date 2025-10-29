@@ -53,6 +53,10 @@ export interface AvitoAnalyticsAdsState {
   error: string | null;
   avitoRequestId: string | null;
   selectedRequestId: string | null;
+  currentPage: number;
+  itemsPerPage: number;
+  totalItems: number;
+  totalPages: number;
 }
 
 export const useAvitoAnalyticsAdsStore = defineStore('avito-analytics-ads', {
@@ -63,6 +67,10 @@ export const useAvitoAnalyticsAdsStore = defineStore('avito-analytics-ads', {
     error: null,
     avitoRequestId: null,
     selectedRequestId: null,
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+    totalPages: 0,
   }),
 
   actions: {
@@ -95,29 +103,39 @@ export const useAvitoAnalyticsAdsStore = defineStore('avito-analytics-ads', {
       }
     },
 
-    async fetchRequests(): Promise<void> {
+    async fetchRequests(page: number = 1, limit: number = 10): Promise<void> {
       try {
         this.loading = true;
         this.error = null;
+        this.currentPage = page;
+        this.itemsPerPage = limit;
 
-        const response = await getAvitoRequests();
+        const response = await getAvitoRequests(page, limit);
 
         if (response.ok) {
           const result = await response.json();
           // Handle the response format: { status: 'success', data: { avito_requests: [...], avito_requests_count: number } }
           if (result && result.data && Array.isArray(result.data.avito_requests)) {
             this.requests = result.data.avito_requests;
+            this.totalItems = result.data.avito_requests_count || result.data.avito_requests.length;
+            this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
           } else {
             this.requests = Array.isArray(result) ? result : [result];
+            this.totalItems = Array.isArray(result) ? result.length : 1;
+            this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
           }
         } else {
           this.error = 'Failed to fetch avito requests data';
           this.requests = [];
+          this.totalItems = 0;
+          this.totalPages = 0;
         }
       } catch (error) {
         console.error('Error fetching avito requests:', error);
         this.error = 'An error occurred while fetching avito requests data';
         this.requests = [];
+        this.totalItems = 0;
+        this.totalPages = 0;
       } finally {
         this.loading = false;
       }
@@ -137,6 +155,18 @@ export const useAvitoAnalyticsAdsStore = defineStore('avito-analytics-ads', {
 
     setLoading(loading: boolean): void {
       this.loading = loading;
+    },
+
+    setCurrentPage(page: number): void {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
+
+    setItemsPerPage(itemsPerPage: number): void {
+      this.itemsPerPage = itemsPerPage;
+      // Reset to first page when changing items per page
+      this.currentPage = 1;
     },
 
     setError(error: string | null): void {
