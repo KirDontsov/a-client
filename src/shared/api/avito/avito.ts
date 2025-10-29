@@ -250,6 +250,19 @@ export async function getAvitoAnalyticsAds(avitoRequestId: string) {
       credentials: 'include',
     });
     return res;
+ } catch (e) {
+    throw e;
+ }
+}
+
+export async function getAvitoAnalyticsAdsWithPagination(avitoRequestId: string, page: number = 1, limit: number = 10) {
+  try {
+    const res = await fetch(`${BACKEND_PORT}/api/avito_requests/${avitoRequestId}/ads?page=${page}&limit=${limit}`, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'GET',
+      credentials: 'include',
+    });
+    return res;
   } catch (e) {
     throw e;
   }

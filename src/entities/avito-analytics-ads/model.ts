@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getAvitoAnalyticsAds, getAvitoRequests } from '@/shared/api/avito';
+import { getAvitoAnalyticsAds, getAvitoAnalyticsAdsWithPagination, getAvitoRequests } from '@/shared/api/avito';
 
 export interface AvitoRequest {
   request_id: string;
@@ -57,6 +57,10 @@ export interface AvitoAnalyticsAdsState {
   itemsPerPage: number;
   totalItems: number;
   totalPages: number;
+  currentAdsPage: number;
+  adsItemsPerPage: number;
+  totalAdsItems: number;
+  totalAdsPages: number;
 }
 
 export const useAvitoAnalyticsAdsStore = defineStore('avito-analytics-ads', {
@@ -71,33 +75,47 @@ export const useAvitoAnalyticsAdsStore = defineStore('avito-analytics-ads', {
     itemsPerPage: 10,
     totalItems: 0,
     totalPages: 0,
+    currentAdsPage: 1,
+    adsItemsPerPage: 10,
+    totalAdsItems: 0,
+    totalAdsPages: 0,
   }),
 
   actions: {
-    async fetchAdsData(requestId: string): Promise<void> {
+    async fetchAdsData(requestId: string, page: number = 1, limit: number = 10): Promise<void> {
       try {
         this.loading = true;
         this.error = null;
         this.avitoRequestId = requestId;
+        this.currentAdsPage = page;
+        this.adsItemsPerPage = limit;
 
-        const response = await getAvitoAnalyticsAds(requestId);
+        const response = await getAvitoAnalyticsAdsWithPagination(requestId, page, limit);
 
         if (response.ok) {
           const result = await response.json();
-          // Handle the response format: { status: 'success', data: { ads: [...] } } or direct array
+          // Handle the response format: { status: 'success', data: { ads: [...], ads_count: number } }
           if (result && result.data && Array.isArray(result.data.ads)) {
             this.ads = result.data.ads;
+            this.totalAdsItems = result.data.ads_count || result.data.ads.length;
+            this.totalAdsPages = Math.ceil(this.totalAdsItems / this.adsItemsPerPage);
           } else {
             this.ads = Array.isArray(result) ? result : [result];
+            this.totalAdsItems = Array.isArray(result) ? result.length : 1;
+            this.totalAdsPages = Math.ceil(this.totalAdsItems / this.adsItemsPerPage);
           }
         } else {
           this.error = 'Failed to fetch analytics ads data';
           this.ads = [];
+          this.totalAdsItems = 0;
+          this.totalAdsPages = 0;
         }
       } catch (error) {
         console.error('Error fetching analytics ads:', error);
         this.error = 'An error occurred while fetching analytics ads data';
         this.ads = [];
+        this.totalAdsItems = 0;
+        this.totalAdsPages = 0;
       } finally {
         this.loading = false;
       }
@@ -182,5 +200,17 @@ export const useAvitoAnalyticsAdsStore = defineStore('avito-analytics-ads', {
       this.requests = [];
       this.error = null;
     },
+  },
+
+  setCurrentAdsPage(page: number): void {
+    if (page >= 1 && page <= this.totalAdsPages) {
+      this.currentAdsPage = page;
+    }
+  },
+
+  setAdsItemsPerPage(itemsPerPage: number): void {
+    this.adsItemsPerPage = itemsPerPage;
+    // Reset to first page when changing items per page
+    this.currentAdsPage = 1;
   },
 });

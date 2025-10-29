@@ -156,19 +156,34 @@
         >
           <!-- Pagination info -->
           <div class="flex items-center justify-end w-full mb-4">
-            <div class="flex items-center space-x-2">
-              <label for="itemsPerPage" class="text-sm text-gray-700 dark:text-gray-400">Записей на странице:</label>
-              <select
-                id="itemsPerPage"
-                v-model="itemsPerPage"
-                @change="onItemsPerPageChange"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-              </select>
+            <div class="flex items-center justify-between w-full mb-4">
+              <div class="text-sm text-gray-700 dark:text-gray-400">
+                Показано с
+                {{ (avitoAnalyticsAdsStore.currentPage - 1) * avitoAnalyticsAdsStore.itemsPerPage + 1 }} по
+                {{
+                  Math.min(
+                    avitoAnalyticsAdsStore.currentPage * avitoAnalyticsAdsStore.itemsPerPage,
+                    avitoAnalyticsAdsStore.totalItems,
+                  )
+                }}
+                из {{ avitoAnalyticsAdsStore.totalItems }} записей
+              </div>
+              <div class="flex items-center space-x-2">
+                <label for="adsItemsPerPage" class="text-sm text-gray-700 dark:text-gray-400"
+                  >Записей на странице:</label
+                >
+                <select
+                  id="adsItemsPerPage"
+                  v-model="itemsPerPage"
+                  @change="onItemsPerPageChange"
+                  class="bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-40 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
             </div>
           </div>
 
