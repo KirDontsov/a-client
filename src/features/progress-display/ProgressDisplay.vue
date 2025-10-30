@@ -53,6 +53,7 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { DOMAIN } from '@/shared';
 import { useAuthStore } from '@/entities/auth/model';
+import { useAvitoAnalyticsAdsStore } from '@/entities/avito-analytics-ads/model';
 
 // WebSocket connection
 let ws: WebSocket | null = null;
@@ -61,13 +62,14 @@ let ws: WebSocket | null = null;
 const isLocalhost = DOMAIN.startsWith('localhost') || DOMAIN.startsWith('127.');
 const isLocalIP = DOMAIN.startsWith('192.') || DOMAIN.startsWith('10.') || DOMAIN.startsWith('172.');
 
-const wsProtocol = (!isLocalhost && !isLocalIP) ? 'wss://' : 'ws://';
+const wsProtocol = !isLocalhost && !isLocalIP ? 'wss://' : 'ws://';
 
-// Get user_id from auth store
 const authStore = useAuthStore();
-const wsUrl = `${wsProtocol}${DOMAIN}/api/ws?user_id=${authStore.user?.id || ''}`;
+const avitoAnalyticsAdsStore = useAvitoAnalyticsAdsStore();
 
-// Counter to track messages and update table every 5 messages
+const wsUrl = `${wsProtocol}${DOMAIN}/api/ws?user_id=${authStore.user?.id || ''}&request_id=${avitoAnalyticsAdsStore.selectedRequestId || ''}`;
+
+// Counter to track messages and update table every 2 messages
 let messageCounter = 0;
 
 // Progress tracking
@@ -127,9 +129,10 @@ const connectWebSocket = (shouldShowProgress = true) => {
       ws.close();
     }
 
-    // Get current user_id when establishing connection
+    // Get current user_id and request_id when establishing connection
     const currentUserId = authStore.user?.id || '';
-    const currentWsUrl = `${wsProtocol}${DOMAIN}/api/ws?user_id=${currentUserId}`;
+    const currentRequestId = props.requestId || avitoAnalyticsAdsStore.selectedRequestId || '';
+    const currentWsUrl = `${wsProtocol}${DOMAIN}/api/ws?user_id=${currentUserId}&request_id=${currentRequestId}`;
     ws = new WebSocket(currentWsUrl);
 
     ws.onopen = () => {
@@ -149,7 +152,7 @@ const connectWebSocket = (shouldShowProgress = true) => {
       // Increment message counter
       messageCounter++;
 
-      // Update table data every 5 messages
+      // Update table data every 2 messages
       if (messageCounter % 2 === 0 && message.task_id) {
         emit('dataUpdate', message.task_id);
       }
