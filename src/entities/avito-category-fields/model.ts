@@ -50,6 +50,9 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
           // Set default values if available
           if (firstContent.default) {
             this.formData[field.tag] = firstContent.default.value;
+          } else if (firstContent.field_type === 'checkbox' && firstContent.values && firstContent.values.length > 0) {
+            // For checkbox fields, initialize as an empty array
+            this.formData[field.tag] = [];
           } else if (firstContent.values && firstContent.values.length > 0) {
             // Set first value as default for select fields
             this.formData[field.tag] = firstContent.values[0].value;
