@@ -1,7 +1,7 @@
 import {
   AVITO_ITEMS_PAGINATION_LIMIT,
   AvitoCategoryFieldsParams,
-  AvitoItemAnalyticsParams,
+ AvitoItemAnalyticsParams,
   AvitoTokenParams,
   BACKEND_PORT,
 } from '@/shared';
@@ -263,9 +263,9 @@ export async function getAvitoAnalyticsAdsWithPagination(avitoRequestId: string,
       credentials: 'include',
     });
     return res;
-  } catch (e) {
+ } catch (e) {
     throw e;
-  }
+ }
 }
 
 export async function getAvitoRequests(page: number = 1, limit: number = 10) {
@@ -296,7 +296,34 @@ export async function downloadAvitoRequestCsv(avitoRequestId: string) {
       credentials: 'include',
     });
     return res;
+ } catch (e) {
+    throw e;
+ }
+}
+
+export async function avitoCreateAd(formData: Record<string, any>, account_id?: string) {
+  try {
+    const requestBody: any = {
+      account_id: account_id || '', // Use provided account_id or empty string
+      fields: {
+        ...formData,
+      },
+    };
+
+    const res = await fetch(`${BACKEND_PORT}/api/avito/create-ad`, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    return await res.json();
   } catch (e) {
+    console.error('Error creating Avito ad:', e);
     throw e;
   }
 }

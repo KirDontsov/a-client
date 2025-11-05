@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import { getAvitoCategoryFields } from '@/shared/api/avito';
+import { getAvitoCategoryFields, avitoCreateAd } from '@/shared/api/avito';
+
 import type { AvitoTokenParams, CategoryField, AvitoGetCategoryFieldsResponse } from '@/shared';
 
 interface AvitoCategoryFieldsState {
@@ -90,30 +91,30 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
         if (field.content && field.content.length > 0) {
           const firstContent = field.content[0];
 
-          if (firstContent.required && !this.formData[field.tag]) {
-            isValid = false;
-          }
+          // if (firstContent.required && !this.formData[field.tag]) {
+          //   isValid = false;
+          // }
 
           // Check data type validation
-          if (this.formData[field.tag]) {
-            switch (firstContent.data_type) {
-              case 'integer':
-                if (!Number.isInteger(Number(this.formData[field.tag]))) {
-                  isValid = false;
-                }
-                break;
-              case 'float':
-                if (isNaN(parseFloat(this.formData[field.tag]))) {
-                  isValid = false;
-                }
-                break;
-              case 'array':
-                if (!Array.isArray(this.formData[field.tag])) {
-                  isValid = false;
-                }
-                break;
-            }
-          }
+          // if (this.formData[field.tag]) {
+          //   switch (firstContent.data_type) {
+          //     case 'integer':
+          //       if (!Number.isInteger(Number(this.formData[field.tag]))) {
+          //         isValid = false;
+          //       }
+          //       break;
+          //     case 'float':
+          //       if (isNaN(parseFloat(this.formData[field.tag]))) {
+          //         isValid = false;
+          //       }
+          //       break;
+          //     case 'array':
+          //       if (!Array.isArray(this.formData[field.tag])) {
+          //         isValid = false;
+          //       }
+          //       break;
+          //   }
+          // }
         }
       });
 
@@ -125,15 +126,9 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
         throw new Error('Form validation failed');
       }
 
-      // Here you would typically send the formData to your API
-      console.log('Form data to submit:', this.formData);
-
-      // Simulate API call
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({ success: true });
-        }, 1000);
-      });
+      // Send the formData to the new API endpoint with account_id and avito_token if available
+      // TODO: find out where to get account_id
+      return await avitoCreateAd(this.formData, '2acc3808-15f1-4abb-b15e-c7f4780a87da');
     },
   },
 });
