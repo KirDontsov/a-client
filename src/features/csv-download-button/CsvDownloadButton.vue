@@ -1,6 +1,34 @@
 <template>
-  <button @click.stop="downloadCsv" :class="buttonClass" :disabled="loading">
-    <span v-if="!loading">Скачать CSV</span>
+  <Button
+    @click.stop="downloadCsv"
+    :class="buttonClass.replace('bg-green-500', 'bg-green-600').replace('hover:bg-green-60', 'hover:bg-green-700')"
+    :disabled="loading"
+    color="default"
+    variant="dark"
+    title="Download CSV"
+  >
+    <span v-if="!loading">
+      <svg
+        class="w-6 h-6 text-white"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M13 11.15V4a1 1 0 1 0-2 0v7.15L8.78 8.374a1 1 0 1 0-1.56 1.25l4 5a1 1 0 0 0 1.56 0l4-5a1 1 0 1 0-1.56-1.25L13 11.15Z"
+          clip-rule="evenodd"
+        />
+        <path
+          fill-rule="evenodd"
+          d="M9.657 15.874 7.358 13H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.358l-2.3 2.874a3 3 0 0 1-4.685 0ZM17 16a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </span>
     <span v-else class="flex items-center">
       <svg
         class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -16,13 +44,14 @@
         ></path>
       </svg>
     </span>
-  </button>
+  </Button>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { BACKEND_PORT } from '@/shared/constants';
 import { useAvitoAnalyticsAdsStore } from '@/entities/avito-analytics-ads';
+import { Button } from '@/shared/components';
 
 interface Props {
   requestId: string;

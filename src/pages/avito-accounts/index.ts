@@ -1,3 +1,1 @@
-import AvitoAccounts from './AvitoAccounts.vue';
-
-export default AvitoAccounts;
+export { default as AvitoAccounts } from './AvitoAccounts.vue';

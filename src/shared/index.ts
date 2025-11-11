@@ -1,4 +1,5 @@
 export * from './constants';
+export * from './components';
 export * from './interfaces';
 export * from './lib';
 export * from './config';

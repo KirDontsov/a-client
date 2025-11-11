@@ -1,0 +1,1 @@
+export { default as AvitoFeedsDetails } from './AvitoFeedsDetails.vue';

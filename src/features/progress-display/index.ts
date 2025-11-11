@@ -1,3 +1,1 @@
-import ProgressDisplay from './ProgressDisplay.vue';
-
-export default ProgressDisplay;
+export { default as ProgressDisplay } from './ProgressDisplay.vue';

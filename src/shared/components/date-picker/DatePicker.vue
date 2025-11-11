@@ -13,17 +13,18 @@
       />
       <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
         <svg
+          class="w-6 h-6 text-gray-800 dark:text-white"
+          aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-gray-400"
-          fill="none"
+          width="24"
+          height="24"
+          fill="currentColor"
           viewBox="0 0 24 24"
-          stroke="currentColor"
         >
           <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 0-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            fill-rule="evenodd"
+            d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z"
+            clip-rule="evenodd"
           />
         </svg>
       </div>
@@ -35,10 +36,12 @@
       @mousedown.prevent
     >
       <div class="flex justify-between items-center mb-2">
-        <button
+        <Button
           type="button"
           @click="prevMonth"
           class="rounded hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center justify-center w-fit overflow-visible p-0!"
+          variant="dark"
+          color="default"
         >
           <svg
             class="w-6 h-6 text-white"
@@ -57,14 +60,16 @@
               d="m14 8-4 4 4 4"
             />
           </svg>
-        </button>
+        </Button>
         <div class="text-sm font-medium text-gray-700 dark:text-white">
           {{ currentMonthYear }}
         </div>
-        <button
+        <Button
           type="button"
           @click="nextMonth"
           class="rounded hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center justify-center w-fit overflow-visible p-0!"
+          variant="dark"
+          color="default"
         >
           <svg
             class="w-6 h-6 text-white"
@@ -83,7 +88,7 @@
               d="m10 16 4-4-4-4"
             />
           </svg>
-        </button>
+        </Button>
       </div>
 
       <div class="grid grid-cols-7 gap-1 mb-1">
@@ -116,20 +121,24 @@
       </div>
 
       <div class="flex justify-end mt-2 space-x-2">
-        <button
+        <Button
           type="button"
           @click="today"
           class="text-sm px-3 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded hover:bg-gray-200 dark:hover:bg-gray-500"
+          variant="dark"
+          color="default"
         >
           Сегодня
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           @click="clear"
           class="text-sm px-3 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded hover:bg-gray-200 dark:hover:bg-gray-500"
+          variant="dark"
+          color="default"
         >
           Очистить
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -137,6 +146,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { Button } from '@/shared/components/button';
 
 interface Props {
   id?: string;

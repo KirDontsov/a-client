@@ -1,3 +1,1 @@
-import AvitoAnalytics from './AvitoAnalytics.vue';
-
-export default AvitoAnalytics;
+export { default as AvitoAnalytics } from './AvitoAnalytics.vue';

@@ -1,3 +1,1 @@
-import LoginView from './LoginView.vue';
-
-export default LoginView;
+export { default as LoginView } from './LoginView.vue';

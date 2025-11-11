@@ -1,3 +1,1 @@
-import LinksList from "./LinksList.vue";
-
-export default LinksList;
+export { default as LinksList } from './LinksList.vue';

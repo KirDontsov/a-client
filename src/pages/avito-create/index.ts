@@ -1,3 +1,1 @@
-import AvitoCreate from './AvitoCreate.vue';
-
-export default AvitoCreate;
+export { default as AvitoCreate } from './AvitoCreate.vue';

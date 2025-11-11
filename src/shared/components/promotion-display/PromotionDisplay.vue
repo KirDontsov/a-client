@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { getPromotionTooltip } from '@/shared/lib/promotionMapper';
+import { getPromotionTooltip } from '@/shared/lib';
 
 interface Props {
   promotionValue: string;

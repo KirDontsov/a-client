@@ -69,9 +69,14 @@
               >
             </span>
           </div>
-          <button @click="avitoCategoriesStore.clearSelectedCategories()" class="mt-2 text-sm w-fit">
+          <Button
+            variant="dark"
+            color="default"
+            @click="avitoCategoriesStore.clearSelectedCategories()"
+            class="mt-2 text-sm w-fit"
+          >
             Сбросить выбор
-          </button>
+          </Button>
         </div>
       </div>
     </template>
@@ -79,18 +84,21 @@
 </template>
 
 <script setup>
-import { useCookies, useAvitoCategoriesStore } from '@/entities';
+import { useCookies, useAvitoCategoriesStore, useAvitoAccountsStore } from '@/entities';
 import { onMounted } from 'vue';
 import { getAvitoToken } from '@/shared/api/avito';
 import { useRouter } from 'vue-router';
-import PageContainer from '@/features/page-container';
+import { PageContainer } from '@/features/page-container';
+import { Button } from '@/shared/index.js';
+import { onAccountChange } from '@/shared/lib';
 
 const router = useRouter();
 
 const { value: avito_token } = useCookies('avito_token');
-const { value: user_id } = useCookies('user_id');
+const { value: account_id } = useCookies('account_id');
 
 const avitoCategoriesStore = useAvitoCategoriesStore();
+const avitoAccountsStore = useAvitoAccountsStore();
 
 const handleSelectCategory = (levelIndex, category) => {
   avitoCategoriesStore.selectCategory(levelIndex, category);
@@ -101,13 +109,19 @@ const handleSelectCategory = (levelIndex, category) => {
 };
 
 onMounted(async () => {
-  if (!avito_token.value) {
-    await getAvitoToken();
-  } else {
-    if (avito_token.value && user_id.value) {
+  if (avito_token.value) {
+    if (avito_token.value && (account_id.value || avitoAccountsStore.selectedAccountId)) {
       await avitoCategoriesStore.getAvitoCategories({ avito_token: avito_token.value });
     }
   }
+
+  // Subscribe to account changes and reload categories when account changes
+  onAccountChange((newAccountId) => {
+    console.log('Account changed in AvitoEditor.vue, reloading categories...');
+    if (avito_token.value && newAccountId) {
+      avitoCategoriesStore.getAvitoCategories({ avito_token: avito_token.value });
+    }
+  });
 });
 </script>
 

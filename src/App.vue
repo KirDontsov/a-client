@@ -7,8 +7,8 @@
 </template>
 
 <script setup>
-import Header from "@/features/header";
-import Sidebar from "@/features/sidebar";
+import { Header } from "@/features/header";
+import { Sidebar } from "@/features/sidebar";
 </script>
 
 <style>

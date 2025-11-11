@@ -145,8 +145,14 @@
           <!-- Pagination info -->
           <div class="flex items-center justify-between w-full mb-4">
             <div class="text-sm text-gray-700 dark:text-gray-400">
-              Показано с {{ (avitoAnalyticsAdsStore.currentAdsPage - 1) * avitoAnalyticsAdsStore.adsItemsPerPage + 1 }}
-              по {{ Math.min(avitoAnalyticsAdsStore.currentAdsPage * avitoAnalyticsAdsStore.adsItemsPerPage, avitoAnalyticsAdsStore.totalAdsItems) }}
+              Показано с
+              {{ (avitoAnalyticsAdsStore.currentAdsPage - 1) * avitoAnalyticsAdsStore.adsItemsPerPage + 1 }} по
+              {{
+                Math.min(
+                  avitoAnalyticsAdsStore.currentAdsPage * avitoAnalyticsAdsStore.adsItemsPerPage,
+                  avitoAnalyticsAdsStore.totalAdsItems,
+                )
+              }}
               из {{ avitoAnalyticsAdsStore.totalAdsItems }} записей
             </div>
             <div class="flex items-center space-x-2">
@@ -164,7 +170,7 @@
               </select>
             </div>
           </div>
-          
+
           <!-- Pagination component -->
           <Pagination
             :total-items="avitoAnalyticsAdsStore.totalAdsItems"
@@ -184,11 +190,11 @@
 import { onMounted, computed, ref, defineAsyncComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAvitoAnalyticsAdsStore } from '@/entities/avito-analytics-ads';
-import PageContainer from '@/features/page-container';
-import TextPopup from '@/shared/components/TextPopup.vue';
 import { CsvDownloadButton } from '@/features';
-import PromotionDisplay from '@/shared/components/PromotionDisplay.vue';
-import Pagination from '@/features/pagination/Pagination.vue';
+import { PageContainer } from '@/features/page-container';
+import { TextPopup } from '@/shared/components/text-popup';
+import { PromotionDisplay } from '@/shared/components/promotion-display';
+import { Pagination } from '@/features/pagination';
 
 const ProgressDisplay = defineAsyncComponent(() => import('@/features/progress-display'));
 

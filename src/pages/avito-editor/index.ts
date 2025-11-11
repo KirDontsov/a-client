@@ -1,3 +1,1 @@
-import AvitoEditor from './AvitoEditor.vue';
-
-export default AvitoEditor;
+export { default as AvitoEditor } from './AvitoEditor.vue';

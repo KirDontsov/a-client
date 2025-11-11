@@ -1,11 +1,12 @@
 <template>
   <aside
+    v-if="authStore.isAuthenticated"
     id="cta-button-sidebar"
     :class="{
       'w-[64px]': !expanded,
       'w-64': expanded,
     }"
-    class="fixed top-[78px] left-0 z-40 h-[calc(100svh-78px)] transition-transform -translate-x-full sm:translate-x-0"
+    class="fixed top-[72px] left-0 z-40 h-[calc(100svh-78px)] transition-transform -translate-x-full sm:translate-x-0"
     aria-label="Sidebar"
   >
     <div :class="{ 'px-1': !expanded }" class="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-700 relative">
@@ -35,10 +36,12 @@
         >
       </div>
 
-      <button
+      <Button
         @click="handleToggleExpanded"
         type="button"
-        class="absolute bottom-10 right-1 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm !p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-60 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        color="default"
+        variant="dark"
+        class="absolute bottom-10 right-1 !p-2.5 me-2"
       >
         <svg
           class="w-4 h-4 text-white"
@@ -58,7 +61,7 @@
           />
         </svg>
         <span class="sr-only">Свернуть</span>
-      </button>
+      </Button>
     </div>
   </aside>
 </template>
@@ -66,9 +69,12 @@
 <script setup>
 import { useSidebarState } from '@/entities';
 import { onMounted, onUnmounted } from 'vue';
-import LinksList from './links-list';
+import { LinksList } from './links-list';
+import { useAuthStore } from '@/entities/auth/model';
+import { Button } from '@/shared/components';
 
 const { expanded, initialize, toggleExpanded } = useSidebarState();
+const authStore = useAuthStore();
 
 onMounted(() => {
   // Initialize the sidebar state management

@@ -1,17 +1,20 @@
 <template>
   <div>
-    <button
+    <Button
       @click="downloadCsv"
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200"
+      color="default"
+      variant="dark"
       :disabled="!items || items.length === 0"
+      class="font-bold py-2 px-4 rounded transition-colors duration-200"
       :class="{ 'opacity-50 cursor-not-allowed': !items || items.length === 0 }"
     >
       Скачать CSV ({{ items?.length || 0 }} элементов)
-    </button>
+    </Button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Button } from '@/shared/components';
 interface AvitoCategory {
   name?: string;
   id?: number;
@@ -22,8 +25,8 @@ export interface AvitoItemWithAnalytics {
   category: AvitoCategory;
   id: number;
   price: number;
- status: string;
- title: string;
+  status: string;
+  title: string;
   url: string;
   analytics: {
     views: string;

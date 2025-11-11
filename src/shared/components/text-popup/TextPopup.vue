@@ -8,7 +8,9 @@
       >
         {{ displayText }}
       </span>
-      <button
+      <Button
+        variant="dark"
+        color="default"
         v-if="showCopyButton"
         @click="copyToClipboard"
         class="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex-shrink-0"
@@ -56,7 +58,7 @@
             clip-rule="evenodd"
           />
         </svg>
-      </button>
+      </Button>
     </div>
 
     <Teleport to="body" v-if="showPopup && shouldShowPopup">
@@ -79,6 +81,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { Button } from '@/shared/components/button';
 
 interface Props {
   textValue: string;

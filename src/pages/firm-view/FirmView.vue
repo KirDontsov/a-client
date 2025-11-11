@@ -12,97 +12,70 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-3">
-          <div class="flex flex-col gap-2 px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-            <label for="firm_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >Firm Name</label
-            >
-            <input
-              type="text"
-              id="firm_name"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:focus:bg-gray-700"
-              placeholder="Firm name"
-              v-model="firm.name"
-            />
-          </div>
-          <div class="flex flex-col gap-2 px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-            <label for="firm_address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Firm Address
-            </label>
-            <input
-              type="text"
-              id="firm_address"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Firm address"
-              v-model="firm.address"
-            />
-          </div>
+          <InputField
+            id="firm_name"
+            v-model="firm.name"
+            type="text"
+            placeholder="Firm name"
+            label="Firm Name"
+            class="px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
+          />
 
-          <div class="flex flex-col gap-2 px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-            <label for="firm_floor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Firm Floor</label
-            >
-            <input
-              type="text"
-              id="firm_floor"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Firm floor"
-              v-model="firm.floor"
-            />
-          </div>
+          <InputField
+            id="firm_address"
+            v-model="firm.address"
+            type="text"
+            placeholder="Firm address"
+            label="Firm Address"
+            class="px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
+          />
+
+          <InputField
+            id="firm_floor"
+            v-model="firm.floor"
+            type="text"
+            placeholder="Firm floor"
+            label="Firm Floor"
+            class="px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
+          />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-x-3">
-          <div class="flex flex-col gap-2 px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-            <label for="firm_default_phone" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Firm Phone
-            </label>
-            <input
-              type="text"
-              id="firm_default_phone"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Firm default_phone"
-              v-model="firm.default_phone"
-            />
-          </div>
+          <InputField
+            id="firm_default_phone"
+            v-model="firm.default_phone"
+            type="text"
+            placeholder="Firm default_phone"
+            label="Firm Phone"
+            class="px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
+          />
 
-          <div class="flex flex-col gap-2 px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-            <label for="firm_default_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Firm Email
-            </label>
-            <input
-              type="text"
-              id="firm_default_email"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Firm default_email"
-              v-model="firm.default_email"
-            />
-          </div>
+          <InputField
+            id="firm_default_email"
+            v-model="firm.default_email"
+            type="text"
+            placeholder="Firm default_email"
+            label="Firm Email"
+            class="px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
+          />
 
-          <div class="flex flex-col gap-2 px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-            <label for="firm_site" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >Firm Site</label
-            >
-            <input
-              type="text"
-              id="firm_site"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Firm site"
-              v-model="firm.site"
-            />
-          </div>
+          <InputField
+            id="firm_site"
+            v-model="firm.site"
+            type="text"
+            placeholder="Firm site"
+            label="Firm Site"
+            class="px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
+          />
 
-          <div class="flex flex-col gap-2 px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-            <label for="firm_coords" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Firm Coords
-            </label>
-            <input
-              type="text"
-              id="firm_coords"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Firm coords"
-              v-model="firm.coords"
-            />
-          </div>
+          <InputField
+            id="firm_coords"
+            v-model="firm.coords"
+            type="text"
+            placeholder="Firm coords"
+            label="Firm Coords"
+            class="px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
+          />
         </div>
 
         <div class="flex flex-col gap-2 px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
@@ -119,47 +92,35 @@
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <div class="flex flex-col gap-2 justify-center px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-            <label for="firm_rating" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Firm Rating
-            </label>
-            <input
-              type="text"
-              id="firm_rating"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Firm rating"
-              v-model="firm.rating"
-            />
-          </div>
-
-          <div class="flex flex-col gap-2 justify-center px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-            <label for="firm_reviews_count" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Firm Reviews count
-            </label>
-            <input
-              type="text"
-              id="firm_reviews_count"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Firm reviews_count"
-              v-model="firm.reviews_count"
-            />
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-2 justify-center px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-          <label for="firm_title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Firm Title
-          </label>
-          <input
+          <InputField
+            id="firm_rating"
+            v-model="firm.rating"
             type="text"
-            id="firm_title"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Firm title"
-            v-model="firm.title"
+            placeholder="Firm rating"
+            label="Firm Rating"
+            class="flex flex-col gap-2 justify-center px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
+          />
+
+          <InputField
+            id="firm_reviews_count"
+            v-model="firm.reviews_count"
+            type="text"
+            placeholder="Firm reviews_count"
+            label="Firm Reviews count"
+            class="flex flex-col gap-2 justify-center px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
           />
         </div>
 
-        <button @click="handleSubmit">Сохранить</button>
+        <InputField
+          id="firm_title"
+          v-model="firm.title"
+          type="text"
+          placeholder="Firm title"
+          label="Firm Title"
+          class="flex flex-col gap-2 justify-center px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700"
+        />
+
+        <Button @click="handleSubmit" color="default" variant="dark">Сохранить</Button>
       </div>
     </template>
   </PageContainer>
@@ -171,7 +132,9 @@ import { useRoute } from 'vue-router';
 import { useSelectedFirmStore } from '@/entities';
 import { storeToRefs } from 'pinia';
 import { updateFirm } from '@/shared/api';
-import PageContainer from '@/features/page-container';
+import { PageContainer } from '@/features/page-container';
+import { InputField } from '@/shared/components/input-field';
+import { Button } from '@/shared/components';
 
 const route = useRoute();
 const selectedFirmStore = useSelectedFirmStore();

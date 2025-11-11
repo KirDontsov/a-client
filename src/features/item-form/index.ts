@@ -1,3 +1,1 @@
-import ItemForm from './ItemForm.vue';
-
-export default ItemForm;
+export { default as ItemForm } from './ItemForm.vue';

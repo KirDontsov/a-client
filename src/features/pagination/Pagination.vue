@@ -3,12 +3,14 @@
     <ul class="flex items-center -space-x-px h-8 text-sm gap-2">
       <!-- Previous button -->
       <li>
-        <button
+        <Button
           @click="prevPage"
           :disabled="!hasPrevPage || loading"
-          class="flex items-center justify-center px-3 h-8 ms-0 leading-tight"
+          color="default"
+          variant="dark"
+          class="flex items-center justify-center px-3 h-8 ms-0 leading-tight rounded-s-lg border-gray-300"
           :class="{
-            'text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white':
+            'text-gray-500 bg-white border border-e-0 border-gray-300 hover:bg-gray-100 hover:text-gray-70 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white':
               !(!hasPrevPage || loading),
             'text-gray-300 bg-gray-100 dark:bg-gray-70 dark:border-gray-600 dark:text-gray-500 cursor-not-allowed':
               !hasPrevPage || loading,
@@ -30,34 +32,38 @@
               d="M5 1 1 5l4 4"
             />
           </svg>
-        </button>
+        </Button>
       </li>
 
       <!-- Page numbers -->
       <li v-for="page in visiblePages" :key="page">
-        <button
+        <Button
           @click="setCurrentPage(page)"
           :aria-current="page === currentPage ? 'page' : undefined"
+          color="default"
+          variant="dark"
           class="flex items-center justify-center px-3 h-8 leading-tight"
           :class="{
             'z-10 text-blue-600 border border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-70 dark:text-white':
               page === currentPage,
-            'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white':
+            'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-70 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white':
               page !== currentPage,
           }"
         >
           {{ page }}
-        </button>
+        </Button>
       </li>
 
       <!-- Next button -->
       <li>
-        <button
+        <Button
           @click="nextPage"
           :disabled="!hasNextPage || loading"
-          class="flex items-center justify-center px-3 h-8 leading-tight rounded-e-lg"
+          color="default"
+          variant="dark"
+          class="flex items-center justify-center px-3 h-8 leading-tight rounded-e-lg border-gray-300"
           :class="{
-            'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white':
+            'text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-70 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white':
               !(!hasNextPage || loading),
             'text-gray-300 bg-gray-100 dark:bg-gray-70 dark:border-gray-600 dark:text-gray-500 cursor-not-allowed':
               !hasNextPage || loading,
@@ -79,7 +85,7 @@
               d="m1 9 4-4-4-4"
             />
           </svg>
-        </button>
+        </Button>
       </li>
     </ul>
   </nav>
@@ -88,6 +94,7 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue';
 import { usePaginationStore } from '@/entities/pagination/model';
+import { Button } from '@/shared/components';
 
 interface Props {
   loading?: boolean;

@@ -32,32 +32,42 @@
 </template>
 
 <script setup>
-import { useAvitoItemFormStore, useAvitoItemsStore, useCookies, useAvitoCategoryFieldsStore } from '@/entities';
-import PageContainer from '@/features/page-container';
-import Pagination from '@/features/pagination';
+import {
+  useAvitoItemFormStore,
+  useAvitoItemsStore,
+  useCookies,
+  useAvitoCategoryFieldsStore,
+  useAvitoAccountsStore,
+} from '@/entities';
+import { PageContainer } from '@/features/page-container';
+import { Pagination } from '@/features/pagination';
 import { onMounted } from 'vue';
-import { getAvitoToken } from '@/shared/api/avito';
-import ItemCard from '@/features/item-card';
-import CsvExporter from '@/features/csv-exporter';
-import ItemForm from '@/features/item-form/index.js';
+import { ItemCard } from '@/features/item-card';
+import { ItemForm } from '@/features/item-form';
+import { onAccountChange } from '@/shared/lib';
 
 const { value: avito_token } = useCookies('avito_token');
-const { value: user_id } = useCookies('user_id');
+const { value: account_id } = useCookies('account_id');
 
 const avitoItemsStore = useAvitoItemsStore();
 const avitoItemFormStore = useAvitoItemFormStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
+const avitoAccountsStore = useAvitoAccountsStore();
 
 const ITEMS_PER_PAGE = 10;
 
 onMounted(async () => {
-  if (!avito_token.value) {
-    await getAvitoToken();
-  } else {
-    if (avito_token.value && user_id.value) {
-      await loadItems(1);
-    }
+  if (avito_token.value && (account_id.value || avitoAccountsStore.selectedAccountId)) {
+    await loadItems(1);
   }
+
+  // Subscribe to account changes and reload items when account changes
+  onAccountChange((newAccountId) => {
+    console.log('Account changed in AvitoView.vue, reloading items...');
+    if (avito_token.value && newAccountId) {
+      loadItems(1);
+    }
+  });
 });
 
 const loadItems = async (page) => {
@@ -69,7 +79,6 @@ const loadItems = async (page) => {
     // For now, we'll use a placeholder category slug
     // In a real implementation, you would determine the actual category slug for each item
 
-    console.log('avitoItemsStore', avitoItemsStore);
     await avitoCategoryFieldsStore.getAvitoCategoryFields({
       avito_token: avito_token.value,
       avito_slug: avitoItemsStore.category, // This should be replaced with actual category slug
@@ -78,26 +87,29 @@ const loadItems = async (page) => {
 
   // Load analytics only on the first page
   if (page === 1) {
-    await avitoItemsStore.getItemsAnalytics({
-      avito_token: avito_token.value,
-      account_id: `${user_id.value}`,
-      dateFrom: '2025-08-01',
-      dateTo: '2025-08-31',
-      grouping: 'item',
-      limit: 100,
-      metrics: [
-        'views',
-        'contacts',
-        'favorites',
-        'viewsToContactsConversion',
-        'averageViewCost',
-        'averageContactCost',
-        'impressions',
-        'impressionsToViewsConversion',
-        'spending',
-      ],
-      offset: 0,
-    });
+    const accountId = avitoAccountsStore.selectedAccountId || account_id.value;
+    if (accountId) {
+      await avitoItemsStore.getItemsAnalytics({
+        avito_token: avito_token.value,
+        account_id: `${accountId}`,
+        dateFrom: '2025-08-01',
+        dateTo: '2025-08-31',
+        grouping: 'item',
+        limit: 100,
+        metrics: [
+          'views',
+          'contacts',
+          'favorites',
+          'viewsToContactsConversion',
+          'averageViewCost',
+          'averageContactCost',
+          'impressions',
+          'impressionsToViewsConversion',
+          'spending',
+        ],
+        offset: 0,
+      });
+    }
   }
 
   avitoItemsStore.setItemsLoading(false);

@@ -9,99 +9,63 @@
 
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <!-- City field -->
-          <div class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg">
-            <div class="mb-3">
-              <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Город <span class="text-red-500">*</span>
-              </label>
-            </div>
-            <input
-              id="city"
-              v-model="formData.city"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-gray-30 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-50 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
-              placeholder="Введите город"
-            />
-          </div>
+          <InputField
+            id="city"
+            v-model="formData.city"
+            type="text"
+            :required="true"
+            placeholder="Введите город"
+            label="Город *"
+            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
+          />
 
           <!-- Request field -->
-          <div class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg">
-            <div class="mb-3">
-              <label for="request" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Запрос <span class="text-red-500">*</span>
-              </label>
-            </div>
-            <input
-              id="request"
-              v-model="formData.request"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-gray-30 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
-              placeholder="Введите запрос, например: ремонт фар"
-            />
-          </div>
+          <InputField
+            id="request"
+            v-model="formData.request"
+            type="text"
+            :required="true"
+            placeholder="Введите запрос, например: ремонт фар"
+            label="Запрос *"
+            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
+          />
 
           <!-- Coords field -->
-          <div class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg">
-            <div class="mb-3">
-              <label for="coords" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Координаты
-              </label>
-            </div>
-            <input
-              id="coords"
-              v-model="formData.coords"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-30 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
-              placeholder="Введите координаты в формате: широта,долгота"
-            />
-          </div>
+          <InputField
+            id="coords"
+            v-model="formData.coords"
+            type="text"
+            placeholder="Введите координаты в формате: широта,долгота"
+            label="Координаты"
+            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
+          />
 
           <!-- Radius field -->
-          <div class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg">
-            <div class="mb-3">
-              <label for="radius" class="block text-sm font-medium text-gray-700 dark:text-gray-300"> Радиус </label>
-            </div>
-            <input
-              id="radius"
-              v-model="formData.radius"
-              type="number"
-              class="w-full px-3 py-2 border border-gray-30 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-50 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
-              placeholder="Введите радиус в метрах"
-            />
-          </div>
+          <InputField
+            id="radius"
+            v-model="formData.radius"
+            type="number"
+            placeholder="Введите радиус в метрах"
+            label="Радиус"
+            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
+          />
 
           <!-- District field -->
-          <div class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg">
-            <div class="mb-3">
-              <label for="district" class="block text-sm font-medium text-gray-700 dark:text-gray-300"> Район </label>
-            </div>
-            <input
-              id="district"
-              v-model="formData.district"
-              type="text"
-              class="w-full px-3 py-2 border border-gray-30 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-50 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
-              placeholder="Введите район"
-            />
-          </div>
+          <InputField
+            id="district"
+            v-model="formData.district"
+            type="text"
+            placeholder="Введите район"
+            label="Район"
+            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
+          />
 
           <!-- Form actions -->
           <div class="flex justify-end space-x-4 pt-4">
-            <button
-              type="button"
-              @click="handleReset"
-              class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:bg-gray-700 transition-colors duration-200"
-            >
-              Сбросить
-            </button>
-            <button
-              type="submit"
-              :disabled="loading"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            >
+            <Button type="button" @click="handleReset" color="default" variant="dark"> Сбросить </Button>
+            <Button type="submit" :disabled="loading" color="default" variant="dark">
               {{ loading ? 'Загрузка...' : 'Отправить запрос' }}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
@@ -111,9 +75,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import PageContainer from '@/features/page-container';
+import { PageContainer } from '@/features/page-container';
 import { createAvitoAnalyticsRequest } from '@/shared/api/avito';
 import { useRouter } from 'vue-router';
+import { InputField } from '@/shared/components/input-field';
+import { Button } from '@/shared/components';
 
 const router = useRouter();
 

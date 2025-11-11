@@ -1,3 +1,1 @@
-import CreateAvitoAnalyticsRequest from './CreateAvitoAnalyticsRequest.vue';
-
-export default CreateAvitoAnalyticsRequest;
+export { default as CreateAvitoAnalyticsRequest } from './CreateAvitoAnalyticsRequest.vue';

@@ -7,12 +7,9 @@
       >
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Аналитика Avito</h2>
-          <button
-            @click="navigateToNewRequest"
-            class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:bg-blue-800 transition-colors duration-200"
-          >
+          <Button @click="navigateToNewRequest" color="default" variant="dark">
             <svg
-              class="w-5 h-5"
+              class="w-5 h-5 mr-2"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -26,7 +23,7 @@
               ></path>
             </svg>
             Создать новый запрос
-          </button>
+          </Button>
         </div>
 
         <!-- Error message -->
@@ -204,9 +201,10 @@
 import { onMounted, computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAvitoAnalyticsAdsStore } from '@/entities/avito-analytics-ads';
-import PageContainer from '@/features/page-container';
+import { PageContainer } from '@/features/page-container';
 import { CsvDownloadButton } from '@/features/csv-download-button';
-import Pagination from '@/features/pagination/Pagination.vue';
+import { Pagination } from '@/features/pagination';
+import { Button } from '@/shared/components';
 
 const router = useRouter();
 const avitoAnalyticsAdsStore = useAvitoAnalyticsAdsStore();

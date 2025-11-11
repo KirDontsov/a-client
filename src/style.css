@@ -37,26 +37,6 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  color: #fff;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
 .card {
   padding: 2em;
 }
@@ -141,4 +121,25 @@ button:focus-visible {
   input:focus {
     font-size: 16px;
   }
+}
+
+@theme {
+  --color-eboni-100: '#7b7e81';
+  --color-eboni-200: '#676a6d';
+  --color-eboni-300: '#54575b';
+  --color-eboni-400: '#414548';
+  --color-eboni-500: '#383c40';
+  --color-eboni-600: '#2f3337';
+  --color-eboni-700: '#2d3034';
+  --color-eboni-800: '#2a2d31';
+  --color-eboni-900: '#202327';
+  --color-negroni-100: '#f3dcbd';
+  --color-negroni-200: '#f2d7b4';
+  --color-negroni-300: '#f0d2ab';
+  --color-negroni-400: '#eecda1';
+  --color-negroni-500: '#d1b48d';
+  --color-negroni-600: '#b39a79';
+  --color-negroni-700: '#776751';
+  --color-negroni-800: '#3c3429';
+  --color-negroni-900: '#1e1a15';
 }

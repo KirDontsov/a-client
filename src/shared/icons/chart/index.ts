@@ -1,3 +1,1 @@
-import Chart from "./Chart.vue";
-
-export default Chart;
+export { default as Chart } from './Chart.vue';

@@ -1,3 +1,1 @@
-import PageContainer from './PageContainer.vue';
-
-export default PageContainer;
+export { default as PageContainer } from './PageContainer.vue';

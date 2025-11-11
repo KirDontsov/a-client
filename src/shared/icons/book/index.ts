@@ -1,3 +1,1 @@
-import Book from "./Book.vue";
-
-export default Book;
+export { default as Book } from './Book.vue';

@@ -1,3 +1,1 @@
-import AvitoView from './AvitoView.vue';
-
-export default AvitoView;
+export { default as AvitoView } from './AvitoView.vue';

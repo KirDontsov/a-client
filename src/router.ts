@@ -1,6 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router';
-import { useAuthStore } from "@/entities";
-
+import { useAuthStore } from '@/entities';
 
 const isAuthenticated = async (to, from, next) => {
   const authStore = useAuthStore();
@@ -22,7 +21,7 @@ const isAuthenticated = async (to, from, next) => {
 const routes = [
   {
     path: '/',
-    component: () => import('@/pages/avito-view/AvitoView.vue'),
+    component: () => import('@/pages/avito-accounts/AvitoAccounts.vue'),
     beforeEnter: (to, from, next) => {
       isAuthenticated(to, from, next);
     },
@@ -37,6 +36,50 @@ const routes = [
   {
     path: '/create',
     component: () => import('@/pages/avito-create/AvitoCreate.vue'),
+    beforeEnter: (to, from, next) => {
+      isAuthenticated(to, from, next);
+    },
+  },
+  {
+    path: '/feed',
+    component: () => import('@/pages/avito-view/AvitoView.vue'),
+    beforeEnter: (to, from, next) => {
+      isAuthenticated(to, from, next);
+    },
+  },
+  {
+    path: '/accounts/create',
+    component: () => import('@/pages/avito-accounts/register-avito-account/RegisterAvitoAccount.vue'),
+    beforeEnter: (to, from, next) => {
+      isAuthenticated(to, from, next);
+    },
+  },
+  {
+    path: '/avito/accounts/:id',
+    component: () => import('@/pages/avito-accounts/edit-avito-account/EditAvitoAccount.vue'),
+    props: true,
+    beforeEnter: (to, from, next) => {
+      isAuthenticated(to, from, next);
+    },
+  },
+  {
+    path: '/avito/feeds',
+    component: () => import('@/pages/avito-feeds/AvitoFeeds.vue'),
+    beforeEnter: (to, from, next) => {
+      isAuthenticated(to, from, next);
+    },
+  },
+  {
+    path: '/feeds/import',
+    component: () => import('@/pages/avito-feeds/import-feeds/ImportFeeds.vue'),
+    beforeEnter: (to, from, next) => {
+      isAuthenticated(to, from, next);
+    },
+  },
+  {
+    path: '/feeds/:id',
+    component: () => import('@/pages/avito-feeds/avito-feeds-details/AvitoFeedsDetails.vue'),
+    props: true,
     beforeEnter: (to, from, next) => {
       isAuthenticated(to, from, next);
     },

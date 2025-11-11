@@ -1,30 +1,35 @@
 <template>
-  <div class="sm:ml-64 p-4 relative top-[78px]">
-    <div class="flex items-center justify-center px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">Login</div>
-    <div class="flex items-center px-8 py-4 mb-4 gap-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-      <input
-        type="text"
-        id="email"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        placeholder="email@email.ru"
-        v-model="email"
-      />
-      <input
-        type="password"
-        id="firm_name"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        placeholder="Password"
-        v-model="password"
-      />
-    </div>
-    <div class="flex items-center px-8 py-4 mb-4 rounded-sm bg-gray-50 dark:bg-gray-700">
-      <button
-        @click="handleSubmit"
-        type="button"
-        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-      >
-        Войти
-      </button>
+  <div class="min-h-screen w-full overflow-hidden relative bg-gray-800">
+    <!-- Orb background element -->
+
+    <div class="flex items-center justify-center px-8 py-4 mb-4 h-[calc(100vh-20px)] relative">
+      <div class="absolute inset-0 w-full h-full z-0">
+        <Orb :hoverIntensity="0.5" :rotateOnHover="true" :hue="0" :forceHoverState="false" />
+      </div>
+      <div class="flex flex-col items-center justify-center p-12 mb-4 gap-4 rounded-sm bg-gray-700 z-11">
+        <h1 class="text-white">A-CLIENT</h1>
+        <InputField
+          id="email"
+          v-model="email"
+          type="text"
+          placeholder="Введите свой email"
+          label="Email"
+          class="w-[300px]"
+          labelClass="text-white"
+          inputClass="bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+        />
+        <InputField
+          id="password"
+          v-model="password"
+          type="password"
+          placeholder="********"
+          label="Password"
+          class="w-[300px]"
+          labelClass="text-white"
+          inputClass="bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+        />
+        <Button class="w-[300px]" @click="handleSubmit" type="button" color="default" variant="dark">Войти</Button>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +38,9 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { login } from '@/shared/api';
+import { InputField } from '@/shared/components/input-field';
+import { Button } from '@/shared/components';
+import Orb from '@/features/orb/Orb.vue';
 
 const router = useRouter();
 const email = ref();
@@ -49,4 +57,10 @@ const handleSubmit = async () => {
 };
 </script>
 
-<style></style>
+<style scoped>
+/* Add some additional styling to ensure the orbs don't interfere with content */
+.min-h-screen {
+  min-height: 100vh;
+  position: relative;
+}
+</style>

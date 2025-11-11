@@ -1,3 +1,1 @@
-import Dashboard from "./Dashboard.vue";
-
-export default Dashboard;
+export { default as Dashboard } from './Dashboard.vue';

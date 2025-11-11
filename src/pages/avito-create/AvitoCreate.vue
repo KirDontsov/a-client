@@ -95,7 +95,7 @@
                       placeholder="Выберите дату"
                     />
                     <!-- Regular input field -->
-                    <input
+                    <InputField
                       v-else
                       :id="field.tag"
                       v-model="avitoCategoryFieldsStore.formData[field.tag]"
@@ -103,7 +103,7 @@
                       :required="field.content[0].required"
                       :min="field.content[0].values_range?.min"
                       :max="field.content[0].values_range?.max"
-                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
+                      class="w-full"
                     />
                   </div>
 
@@ -176,13 +176,13 @@
                       </div>
 
                       <!-- Child input field -->
-                      <input
+                      <InputField
                         v-if="child.content[0].field_type === 'input'"
                         :id="child.tag"
                         v-model="avitoCategoryFieldsStore.formData[child.tag]"
                         :type="getInputType(child.content[0].data_type)"
                         :required="child.content[0].required"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
+                        class="w-full"
                       />
 
                       <!-- Child select field -->
@@ -205,20 +205,15 @@
 
               <!-- Form actions -->
               <div class="flex justify-end space-x-4 pt-4">
-                <button
-                  type="button"
-                  @click="handleReset"
-                  class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:bg-gray-700 transition-colors duration-200"
-                >
-                  Сбросить
-                </button>
-                <button
+                <Button type="button" @click="handleReset" color="default" variant="dark"> Сбросить </Button>
+                <Button
                   type="submit"
                   :disabled="avitoCategoryFieldsStore.categoryFieldsLoading"
-                  class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                  color="default"
+                  variant="dark"
                 >
                   {{ avitoCategoryFieldsStore.categoryFieldsLoading ? 'Загрузка...' : 'Создать объявление' }}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -254,18 +249,19 @@
 import { useCookies, useAvitoCategoriesStore, useAvitoCategoryFieldsStore } from '@/entities';
 import { onMounted } from 'vue';
 import { getAvitoToken } from '@/shared/api/avito';
-import PageContainer from '@/features/page-container';
-import DatePicker from '@/shared/components/DatePicker.vue';
+import { PageContainer } from '@/features/page-container';
+import { DatePicker } from '@/shared/components/date-picker';
+import { InputField } from '@/shared/components/input-field';
+import { Button } from '@/shared/components';
 
 const { value: avito_token } = useCookies('avito_token');
-const { value: user_id } = useCookies('user_id');
 
 const avitoCategoriesStore = useAvitoCategoriesStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
 
-const handleSelectCategory = (levelIndex: number, category: any) => {
-  avitoCategoriesStore.selectCategory(levelIndex, category);
-};
+// const handleSelectCategory = (levelIndex: number, category: any) => {
+//   avitoCategoriesStore.selectCategory(levelIndex, category);
+// };
 
 const getInputType = (dataType: string) => {
   switch (dataType) {
@@ -307,10 +303,7 @@ const isDateField = (field: any): boolean => {
 };
 
 onMounted(async () => {
-  if (!avito_token.value) {
-    await getAvitoToken();
-  } else if (avito_token.value) {
-    console.log('avito_token.value', avito_token.value);
+  if (avito_token.value) {
     await avitoCategoryFieldsStore.getAvitoCategoryFields({
       avito_token: avito_token.value,
       avito_slug: avitoCategoriesStore.selectedFinalCategory,

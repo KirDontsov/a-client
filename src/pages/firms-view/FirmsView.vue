@@ -61,7 +61,7 @@
 <script setup>
 import { watch, onMounted, computed } from 'vue';
 import { useCitiesStore, useCategoriesStore, useCityStore, useCategoryStore, useFirmsStore } from '../../entities';
-import PageContainer from '@/features/page-container';
+import { PageContainer } from '@/features/page-container';
 
 
 const citiesStore = useCitiesStore();

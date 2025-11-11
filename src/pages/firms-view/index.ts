@@ -1,3 +1,1 @@
-import FirmsView from './FirmsView.vue';
-
-export default FirmsView;
+export { default as FirmsView } from './FirmsView.vue';

@@ -1,3 +1,1 @@
-import CsvExporter from './CsvExporter.vue';
-
-export default CsvExporter;
+export { default as CsvExporter } from './CsvExporter.vue';

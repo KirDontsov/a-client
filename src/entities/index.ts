@@ -11,4 +11,5 @@ export * from './avito-item-form';
 export * from './avito-categories';
 export * from './avito-category-fields';
 export * from './avito-feeds';
+export * from './avito-accounts';
 export * from './auth';

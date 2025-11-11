@@ -41,7 +41,7 @@
 import { onMounted, computed, onUnmounted } from 'vue';
 import { useAuthStore } from '@/entities/index.js';
 import { useSidebarState } from '@/entities/sidebar/index.js';
-import Icon from '@/shared/icons/icon/index.ts';
+import { Icon } from '@/shared/icons/icon/index.ts';
 import { createSidebarLinks } from '@/shared/config/index.js';
 
 const links = createSidebarLinks();
