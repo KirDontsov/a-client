@@ -1,12 +1,5 @@
 <template>
-  <Button
-    @click.stop="downloadCsv"
-    :class="buttonClass.replace('bg-green-500', 'bg-green-600').replace('hover:bg-green-60', 'hover:bg-green-700')"
-    :disabled="loading"
-    color="default"
-    variant="dark"
-    title="Download CSV"
-  >
+  <Button @click.stop="downloadCsv" :disabled="loading" color="default" variant="dark" hint-text="Скачать CSV">
     <span v-if="!loading">
       <svg
         class="w-6 h-6 text-white"

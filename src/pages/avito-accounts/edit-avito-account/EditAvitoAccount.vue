@@ -61,7 +61,7 @@
           </div>
 
           <div class="flex items-center space-x-4">
-            <Button type="submit" :disabled="updatingAccount" color="default" variant="solid">
+            <Button type="submit" :disabled="updatingAccount" color="default" variant="dark">
               {{ updatingAccount ? 'Updating...' : 'Update Account' }}
             </Button>
             <Button type="button" @click="goBack" color="default" variant="dark"> Cancel </Button>

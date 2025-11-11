@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { getAvitoCategoryFields, avitoCreateAd } from '@/shared/api/avito';
+import { useAvitoAccountsStore } from '@/entities/avito-accounts';
 
 import type { AvitoTokenParams, CategoryField, AvitoGetCategoryFieldsResponse } from '@/shared';
 
@@ -126,9 +127,16 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
         throw new Error('Form validation failed');
       }
 
+      // Get the selected account ID from the avito accounts store
+      const avitoAccountsStore = useAvitoAccountsStore();
+      const accountId = avitoAccountsStore.selectedAccountId;
+
+      if (!accountId) {
+        throw new Error('No account selected. Please select an Avito account first.');
+      }
+
       // Send the formData to the new API endpoint with account_id and avito_token if available
-      // TODO: find out where to get account_id
-      return await avitoCreateAd(this.formData, '2acc3808-15f1-4abb-b15e-c7f4780a87da');
+      return await avitoCreateAd(this.formData, accountId);
     },
   },
 });

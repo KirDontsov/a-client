@@ -11,9 +11,9 @@
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-6">Создание объявления</h2>
 
             <form @submit.prevent="handleSubmit" class="space-y-6">
-              <!-- Render each field -->
+              <!-- Render each field in specific order: Title, Description, Price, Images first, then other required fields, then optional fields -->
               <div
-                v-for="field in avitoCategoryFieldsStore.categoryFields.filter((f) => f.tag !== 'Id')"
+                v-for="field in getOrderedFields()"
                 :key="field.tag"
                 class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
               >
@@ -115,7 +115,12 @@
                     :required="field.content[0].required"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
                   >
-                    <option v-for="option in field.content[0].values" :key="option.value" :value="option.value">
+                    <option value="">Выберите значение</option>
+                    <option
+                      v-for="option in getSelectOptions(field.content[0].values)"
+                      :key="option.value"
+                      :value="option.value"
+                    >
                       {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
                     </option>
                   </select>
@@ -128,7 +133,7 @@
                         type="checkbox"
                         :value="option.value"
                         v-model="avitoCategoryFieldsStore.formData[field.tag]"
-                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
                       />
                       <label
                         :for="`${field.tag}-${option.value}`"
@@ -194,7 +199,11 @@
                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
                       >
                         <option value="">Выберите значение</option>
-                        <option v-for="option in child.content[0].values" :key="option.value" :value="option.value">
+                        <option
+                          v-for="option in getSelectOptions(child.content[0].values)"
+                          :key="option.value"
+                          :value="option.value"
+                        >
                           {{ option.value }}
                         </option>
                       </select>
@@ -293,13 +302,63 @@ const isDateField = (field: any): boolean => {
   const tag = field.tag.toLowerCase();
   const dataType = field.content[0].data_type?.toLowerCase() || '';
 
-  return (
+ return (
     tag.includes('date') ||
     tag.includes('beg') ||
     tag.includes('end') ||
     dataType.includes('date') ||
     dataType.includes('time')
   );
+};
+
+const getSelectOptions = (values: any) => {
+  // Check if values is an object with a nested values array (like WorkTimeFrom/To fields)
+  if (values && typeof values === 'object' && Array.isArray(values.values)) {
+    return values.values;
+ }
+  // Otherwise, assume it's a regular array
+  return Array.isArray(values) ? values : [];
+};
+
+const getOrderedFields = () => {
+ if (!avitoCategoryFieldsStore.categoryFields) {
+    return [];
+  }
+
+  // Filter out the Id field as before
+  const fields = avitoCategoryFieldsStore.categoryFields.filter((f) => f.tag !== 'Id');
+  
+  // Define the specific order for required fields
+  const specificRequiredOrder = ['Title', 'Description', 'Price', 'Images', 'ImageUrls', 'ImageNames'];
+  
+  // Separate fields into categories
+  const specificRequiredFields = [];
+  const otherRequiredFields = [];
+  const optionalFields = [];
+  
+  fields.forEach(field => {
+    const isRequired = field.content && field.content[0] && field.content[0].required;
+    
+    if (isRequired) {
+      const specificIndex = specificRequiredOrder.indexOf(field.tag);
+      if (specificIndex !== -1) {
+        // Add to specific required fields at the correct position
+        specificRequiredFields[specificIndex] = field;
+      } else {
+        otherRequiredFields.push(field);
+      }
+    } else {
+      optionalFields.push(field);
+    }
+  });
+  
+  // Filter out undefined values and combine in the required order
+  const orderedSpecificRequired = specificRequiredOrder
+    .map(tag => specificRequiredFields[specificRequiredOrder.indexOf(tag)])
+    .filter(field => field !== undefined);
+  
+  // Combine all fields in the correct order
+  return [...orderedSpecificRequired, ...otherRequiredFields.sort((a, b) => a.label.localeCompare(b.label)), ...optionalFields.sort((a, b) => a.label.localeCompare(b.label))];
 };
 
 onMounted(async () => {

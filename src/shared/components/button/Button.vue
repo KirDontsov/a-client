@@ -1,5 +1,6 @@
 <template>
   <button
+    ref="buttonRef"
     :type="type"
     :disabled="disabled"
     :class="[
@@ -10,6 +11,8 @@
       iconClasses,
       { 'opacity-50 cursor-not-allowed': disabled },
     ]"
+    @mouseenter="showTooltip = true"
+    @mouseleave="showTooltip = false"
     @click="$emit('click', $event)"
   >
     <!-- Prepend icon -->
@@ -24,10 +27,22 @@
     <!-- Append icon -->
     <component :is="appendIcon" v-if="appendIcon" :class="[iconSizeClass, 'ml-2']" />
   </button>
+
+  <!-- Tooltip rendered outside the button's DOM structure to avoid layout issues -->
+  <Teleport to="body">
+    <div
+      v-if="hintText && showTooltip"
+      class="absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm whitespace-nowrap"
+      :style="tooltipPositionStyleString"
+    >
+      {{ hintText }}
+      <div class="absolute w-2 h-2 bg-gray-900 transform rotate-45 -bottom-1 left-1/2 -translate-x-1/2"></div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 interface Props {
   type?: 'button' | 'submit' | 'reset';
@@ -39,6 +54,7 @@ interface Props {
   prependIcon?: any;
   appendIcon?: any;
   iconSize?: 'sm' | 'md' | 'lg';
+  hintText?: string;
 }
 
 interface Emits {
@@ -55,6 +71,23 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 defineEmits<Emits>();
+
+// Tooltip functionality
+const showTooltip = ref(false);
+const buttonRef = ref<HTMLElement | null>(null);
+
+// Calculate tooltip position as a CSS string
+const tooltipPositionStyleString = computed(() => {
+  if (!buttonRef.value) {
+    return 'top: 0px; left: 0px; transform: translateX(-50%); position: fixed; z-index: 999;';
+  }
+
+  const buttonRect = buttonRef.value.getBoundingClientRect();
+  const top = buttonRect.top - 42; // 10px above the button
+  const left = buttonRect.left + buttonRect.width / 2; // Center horizontally
+
+  return `top: ${top}px; left: ${left}px; transform: translateX(-50%); position: fixed; z-index: 999;`;
+});
 
 // Base button classes
 const baseClasses =
