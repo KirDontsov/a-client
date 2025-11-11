@@ -67,8 +67,6 @@ const wsProtocol = !isLocalhost && !isLocalIP ? 'wss://' : 'ws://';
 const authStore = useAuthStore();
 const avitoAnalyticsAdsStore = useAvitoAnalyticsAdsStore();
 
-const wsUrl = `${wsProtocol}${DOMAIN}/api/ws?user_id=${authStore.user?.id || ''}&request_id=${avitoAnalyticsAdsStore.selectedRequestId || ''}`;
-
 // Counter to track messages and update table every 2 messages
 let messageCounter = 0;
 
@@ -132,7 +130,22 @@ const connectWebSocket = (shouldShowProgress = true) => {
     // Get current user_id and request_id when establishing connection
     const currentUserId = authStore.user?.id || '';
     const currentRequestId = props.requestId || avitoAnalyticsAdsStore.selectedRequestId || '';
+
+    // Validate that we have both required parameters
+    if (!currentUserId) {
+      console.error('Cannot connect to WebSocket: user_id is missing');
+      return;
+    }
+
+    if (!currentRequestId) {
+      console.error('Cannot connect to WebSocket: request_id is missing');
+      return;
+    }
+
     const currentWsUrl = `${wsProtocol}${DOMAIN}/api/ws?user_id=${currentUserId}&request_id=${currentRequestId}`;
+
+    console.log('Connecting to WebSocket:', currentWsUrl);
+
     ws = new WebSocket(currentWsUrl);
 
     ws.onopen = () => {
@@ -143,37 +156,48 @@ const connectWebSocket = (shouldShowProgress = true) => {
     };
 
     ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      console.log('Received WebSocket message:', message);
+      try {
+        const message = JSON.parse(event.data);
+        console.log('Received WebSocket message:', message);
 
-      progressData.value = message;
-      emit('progressUpdate', message);
+        progressData.value = message;
+        emit('progressUpdate', message);
 
-      // Increment message counter
-      messageCounter++;
+        // Increment message counter
+        messageCounter++;
 
-      // Update table data every 2 messages
-      if (messageCounter % 2 === 0 && message.task_id) {
-        emit('dataUpdate', message.task_id);
-      }
-
-      // If the task is complete, close the connection
-      if (message.status === 'completed' || message.status === 'failed') {
-        closeWebSocket();
-        emit('taskComplete', message);
-        // Fetch final data when task is complete
-        if (message.task_id) {
+        // Update table data every 2 messages
+        if (messageCounter % 2 === 0 && message.task_id) {
           emit('dataUpdate', message.task_id);
         }
+
+        // If the task is complete, close the connection
+        if (message.status === 'completed' || message.status === 'failed') {
+          closeWebSocket();
+          emit('taskComplete', message);
+          // Fetch final data when task is complete
+          if (message.task_id) {
+            emit('dataUpdate', message.task_id);
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+        console.error('Raw message data:', event.data);
       }
     };
 
-    ws.onclose = () => {
-      console.log('WebSocket connection closed');
+    ws.onclose = (event) => {
+      console.log('WebSocket connection closed:', event.code, event.reason);
     };
 
     ws.onerror = (error) => {
       console.error('WebSocket error:', error);
+      // Try to get more specific error information if possible
+      if (error instanceof Event) {
+        console.error('WebSocket connection error event:', error.type);
+      } else {
+        console.error('WebSocket connection error:', error);
+      }
       closeWebSocket();
     };
   } catch (error) {

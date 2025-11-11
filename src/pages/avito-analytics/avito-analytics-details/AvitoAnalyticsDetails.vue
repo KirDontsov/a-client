@@ -196,7 +196,7 @@ import { TextPopup } from '@/shared/components/text-popup';
 import { PromotionDisplay } from '@/shared/components/promotion-display';
 import { Pagination } from '@/features/pagination';
 
-const ProgressDisplay = defineAsyncComponent(() => import('@/features/progress-display'));
+const ProgressDisplay = defineAsyncComponent(() => import('@/features/progress-display/ProgressDisplay.vue'));
 
 const route = useRoute();
 const avitoAnalyticsAdsStore = useAvitoAnalyticsAdsStore();
