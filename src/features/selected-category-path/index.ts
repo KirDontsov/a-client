@@ -1,0 +1,1 @@
+export { default as SelectedCategoryPath } from './SelectedCategoryPath.vue';

@@ -7,3 +7,4 @@ export * from './csv-download-button';
 export * from './progress-display';
 export * from './sidebar';
 export * from './header';
+export * from './selected-category-path';

@@ -35,7 +35,7 @@ const routes = [
   },
   {
     path: '/create',
-    component: () => import('@/pages/avito-create/AvitoCreate.vue'),
+    component: () => import('@/pages/avito-editor/avito-create/AvitoCreate.vue'),
     beforeEnter: (to, from, next) => {
       isAuthenticated(to, from, next);
     },

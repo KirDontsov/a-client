@@ -2,6 +2,7 @@
 <template>
   <PageContainer :loading="avitoCategoryFieldsStore.categoryFieldsLoading">
     <template #body>
+      <SelectedCategoryPath />
       <div
         class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600"
       >
@@ -103,6 +104,7 @@
                       :required="field.content[0].required"
                       :min="field.content[0].values_range?.min"
                       :max="field.content[0].values_range?.max"
+                      :isTextarea="field.tag === 'Description'"
                       class="w-full"
                     />
                   </div>
@@ -187,6 +189,7 @@
                         v-model="avitoCategoryFieldsStore.formData[child.tag]"
                         :type="getInputType(child.content[0].data_type)"
                         :required="child.content[0].required"
+                        :isTextarea="child.tag === 'Description'"
                         class="w-full"
                       />
 
@@ -257,8 +260,8 @@
 <script setup lang="ts">
 import { useCookies, useAvitoCategoriesStore, useAvitoCategoryFieldsStore } from '@/entities';
 import { onMounted } from 'vue';
-import { getAvitoToken } from '@/shared/api/avito';
 import { PageContainer } from '@/features/page-container';
+import { SelectedCategoryPath } from '@/features';
 import { DatePicker } from '@/shared/components/date-picker';
 import { InputField } from '@/shared/components/input-field';
 import { Button } from '@/shared/components';
@@ -267,10 +270,6 @@ const { value: avito_token } = useCookies('avito_token');
 
 const avitoCategoriesStore = useAvitoCategoriesStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
-
-// const handleSelectCategory = (levelIndex: number, category: any) => {
-//   avitoCategoriesStore.selectCategory(levelIndex, category);
-// };
 
 const getInputType = (dataType: string) => {
   switch (dataType) {
@@ -302,7 +301,7 @@ const isDateField = (field: any): boolean => {
   const tag = field.tag.toLowerCase();
   const dataType = field.content[0].data_type?.toLowerCase() || '';
 
- return (
+  return (
     tag.includes('date') ||
     tag.includes('beg') ||
     tag.includes('end') ||
@@ -315,30 +314,30 @@ const getSelectOptions = (values: any) => {
   // Check if values is an object with a nested values array (like WorkTimeFrom/To fields)
   if (values && typeof values === 'object' && Array.isArray(values.values)) {
     return values.values;
- }
+  }
   // Otherwise, assume it's a regular array
   return Array.isArray(values) ? values : [];
 };
 
 const getOrderedFields = () => {
- if (!avitoCategoryFieldsStore.categoryFields) {
+  if (!avitoCategoryFieldsStore.categoryFields) {
     return [];
   }
 
   // Filter out the Id field as before
-  const fields = avitoCategoryFieldsStore.categoryFields.filter((f) => f.tag !== 'Id');
-  
+ const fields = avitoCategoryFieldsStore.categoryFields.filter((f) => f.tag !== 'Id');
+
   // Define the specific order for required fields
-  const specificRequiredOrder = ['Title', 'Description', 'Price', 'Images', 'ImageUrls', 'ImageNames'];
-  
+  const specificRequiredOrder = ['Title', 'Description', 'Price', 'ImageUrls'];
+
   // Separate fields into categories
   const specificRequiredFields = [];
   const otherRequiredFields = [];
   const optionalFields = [];
-  
-  fields.forEach(field => {
+
+  fields.forEach((field) => {
     const isRequired = field.content && field.content[0] && field.content[0].required;
-    
+
     if (isRequired) {
       const specificIndex = specificRequiredOrder.indexOf(field.tag);
       if (specificIndex !== -1) {
@@ -350,15 +349,90 @@ const getOrderedFields = () => {
     } else {
       optionalFields.push(field);
     }
-  });
-  
+ });
+
   // Filter out undefined values and combine in the required order
   const orderedSpecificRequired = specificRequiredOrder
-    .map(tag => specificRequiredFields[specificRequiredOrder.indexOf(tag)])
-    .filter(field => field !== undefined);
-  
+    .map((tag) => specificRequiredFields[specificRequiredOrder.indexOf(tag)])
+    .filter((field) => field !== undefined);
+
+  // Group paired fields (e.g., WorkTimeFrom/WorkTimeTo, ContactTimeFrom/ContactTimeTo)
+  const groupedOtherRequired = groupPairedFields(otherRequiredFields);
+  const groupedOptional = groupPairedFields(optionalFields);
+
   // Combine all fields in the correct order
-  return [...orderedSpecificRequired, ...otherRequiredFields.sort((a, b) => a.label.localeCompare(b.label)), ...optionalFields.sort((a, b) => a.label.localeCompare(b.label))];
+  return [
+    ...orderedSpecificRequired,
+    ...groupedOtherRequired,
+    ...groupedOptional,
+  ];
+};
+
+// Function to group paired fields together (e.g., WorkTimeFrom/WorkTimeTo, ContactTimeFrom/ContactTimeTo)
+const groupPairedFields = (fields) => {
+ // Create a map to group fields by their prefix (e.g., WorkTime, ContactTime)
+  const prefixMap = new Map();
+  
+  fields.forEach(field => {
+    const tag = field.tag;
+    // Check if field tag ends with "From" or "To"
+    if (tag.endsWith('From')) {
+      const prefix = tag.slice(0, -4); // Remove "From" to get the prefix
+      if (!prefixMap.has(prefix)) {
+        prefixMap.set(prefix, { from: field, to: null });
+      } else {
+        prefixMap.get(prefix).from = field;
+      }
+    } else if (tag.endsWith('To')) {
+      const prefix = tag.slice(0, -2); // Remove "To" to get the prefix
+      if (!prefixMap.has(prefix)) {
+        prefixMap.set(prefix, { from: null, to: field });
+      } else {
+        prefixMap.get(prefix).to = field;
+      }
+    }
+  });
+  
+ // Create the result array with paired fields together
+  const result = [];
+  const processedPrefixes = new Set();
+  
+  fields.forEach(field => {
+    const tag = field.tag;
+    
+    if (tag.endsWith('From')) {
+      const prefix = tag.slice(0, -4);
+      if (!processedPrefixes.has(prefix)) {
+        const pair = prefixMap.get(prefix);
+        if (pair && pair.to) {
+          result.push(pair.from, pair.to); // Add both From and To fields
+          processedPrefixes.add(prefix);
+        } else {
+          result.push(field); // Add only the From field if no To field exists
+          processedPrefixes.add(prefix);
+        }
+      }
+    } else if (tag.endsWith('To')) {
+      const prefix = tag.slice(0, -2);
+      if (!processedPrefixes.has(prefix)) {
+        const pair = prefixMap.get(prefix);
+        if (pair && pair.from) {
+          result.push(pair.from, pair.to); // Add both From and To fields
+          processedPrefixes.add(prefix);
+        } else {
+          result.push(field); // Add only the To field if no From field exists
+          processedPrefixes.add(prefix);
+        }
+      }
+    } else {
+      // For non-paired fields, just add them
+      if (!tag.endsWith('From') && !tag.endsWith('To')) {
+        result.push(field);
+      }
+    }
+  });
+  
+  return result;
 };
 
 onMounted(async () => {
