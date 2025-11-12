@@ -1,22 +1,65 @@
 <template>
   <PageContainer :loading="avitoCategoryFieldsStore.categoryFieldsLoading">
     <template #body>
-      <div class="w-full flex flex-col gap-8 text-gray-500 dark:text-gray-40 px-4 py-2 sm:px-8 sm:py-4">
+      <div class="w-full flex flex-col gap-8 text-gray-50 dark:text-gray-40 px-4 py-2 sm:px-8 sm:py-4">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Создание объявления</h2>
         <SelectedCategoryPath />
         <div class="">
+          <!-- Stepper Navigation -->
+          <div class="mb-8">
+            <div class="w-full">
+              <div class="flex items-center justify-between w-full">
+                <div
+                  v-for="(step, index) in totalSteps"
+                  :key="index"
+                  class="flex items-center transition-all duration-300 ease-in-out flex-1 min-w-0 basis-0"
+                >
+                  <button
+                    @click="goToStep(index)"
+                    :class="[
+                      'flex items-center justify-center text-sm font-medium rounded-full transition-all duration-300 ease-in-out',
+                      index === currentStep - 1 || index === currentStep || index === currentStep + 1
+                        ? 'w-10 h-10 bg-opacity-100' // Active steps (prev, current, next)
+                        : 'w-8 h-8 bg-opacity-70', // Collapsed steps
+                      index < currentStep
+                        ? 'bg-blue-600 text-white'
+                        : currentStep === index
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 !text-gray-800 dark:bg-gray-600 dark:text-gray-300',
+                      'cursor-pointer hover:bg-opacity-80',
+                    ]"
+                  >
+                    {{ index + 1 }}
+                  </button>
+                  <div
+                    v-if="index < totalSteps - 1"
+                    class="flex-1 mx-1 rounded-full transition-all duration-300 ease-in-out"
+                    :class="
+                      index === currentStep - 1 || index === currentStep
+                        ? index < currentStep
+                          ? 'bg-blue-600 h-0.5'
+                          : 'bg-gray-50 dark:bg-gray-600 h-1' // Active dividers (prev-current and current-next)
+                        : 'bg-gray-50 dark:bg-gray-500 h-0.25' // Collapsed dividers
+                    "
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Item Form Section -->
           <div
             v-if="avitoCategoryFieldsStore.categoryFields && avitoCategoryFieldsStore.categoryFields.length > 0"
-            class="w-full flex flex-col gap-8"
+            class="w-full flex flex-col gap-8 h-[calc(100vh-300px)]"
           >
             <div
               class="relative overflow-x-auto shadow-md sm:rounded-lg w-full p-4 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
             >
+              <!-- Form Steps -->
               <form @submit.prevent="handleSubmit" class="space-y-6 max-w-[688px] w-full mx-auto">
-                <!-- Render each field in specific order: Title, Description, Price, Images first, then other required fields, then optional fields -->
+                <!-- Render fields for current step -->
                 <div
-                  v-for="field in getOrderedFields()"
+                  v-for="field in getFieldsForCurrentStep()"
                   :key="field.tag"
                   class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
                 >
@@ -220,17 +263,31 @@
                 </div>
               </form>
             </div>
-            <!-- Form actions -->
-            <div class="flex justify-end space-x-4 pt-4">
-              <Button type="button" @click="handleReset" color="default" variant="dark"> Сбросить </Button>
-              <Button
-                type="submit"
-                :disabled="avitoCategoryFieldsStore.categoryFieldsLoading"
-                color="default"
-                variant="dark"
-              >
-                {{ avitoCategoryFieldsStore.categoryFieldsLoading ? 'Загрузка...' : 'Создать объявление' }}
+            <!-- Step Navigation -->
+            <div class="flex justify-between pt-4">
+              <Button type="button" @click="prevStep" :disabled="currentStep === 0" color="default" variant="dark">
+                Назад
               </Button>
+              <div class="flex space-x-2">
+                <Button
+                  v-if="currentStep < totalSteps - 1"
+                  type="button"
+                  @click="nextStep"
+                  color="default"
+                  variant="dark"
+                >
+                  Далее
+                </Button>
+                <Button
+                  v-else
+                  type="submit"
+                  :disabled="avitoCategoryFieldsStore.categoryFieldsLoading"
+                  color="default"
+                  variant="dark"
+                >
+                  {{ avitoCategoryFieldsStore.categoryFieldsLoading ? 'Загрузка...' : 'Создать объявление' }}
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -263,7 +320,7 @@
 
 <script setup lang="ts">
 import { useCookies, useAvitoCategoriesStore, useAvitoCategoryFieldsStore } from '@/entities';
-import { onMounted } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { PageContainer } from '@/features/page-container';
 import { SelectedCategoryPath } from '@/features';
 import { DatePicker } from '@/shared/components/date-picker';
@@ -274,6 +331,49 @@ const { value: avito_token } = useCookies('avito_token');
 
 const avitoCategoriesStore = useAvitoCategoriesStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
+const currentStep = ref(0);
+
+// Calculate total steps based on fields (2 fields per step, but paired fields stay together)
+const calculateTotalSteps = () => {
+  const orderedFields = getOrderedFields();
+  let stepCount = 0;
+  let i = 0;
+
+  while (i < orderedFields.length) {
+    // Each step can have up to 2 fields, but paired fields should stay together
+    let fieldsInStep = 1;
+
+    // Check if the current field is part of a pair and if the next field is its pair
+    if (i + 1 < orderedFields.length) {
+      const currentField = orderedFields[i];
+      const nextField = orderedFields[i + 1];
+
+      // Check if these are paired fields (e.g., WorkTimeFrom/WorkTimeTo)
+      const isPaired = isFieldPaired(currentField, nextField);
+      if (isPaired) {
+        fieldsInStep = 2;
+      } else if (i + 2 < orderedFields.length) {
+        // Check if current field and the one after next are paired
+        const nextNextField = orderedFields[i + 2];
+        const isCurrentPairedWithNextNext = isFieldPaired(currentField, nextNextField);
+        if (isCurrentPairedWithNextNext) {
+          fieldsInStep = 1; // Current field will be in a step with the one after next
+        } else {
+          fieldsInStep = 2; // Take up to 2 fields if not paired
+        }
+      } else {
+        fieldsInStep = 2; // Take up to 2 fields if not paired
+      }
+    }
+
+    stepCount++;
+    i += fieldsInStep;
+  }
+
+  return stepCount;
+};
+
+const totalSteps = computed(() => calculateTotalSteps());
 
 const getInputType = (dataType: string) => {
   switch (dataType) {
@@ -321,51 +421,6 @@ const getSelectOptions = (values: any) => {
   }
   // Otherwise, assume it's a regular array
   return Array.isArray(values) ? values : [];
-};
-
-const getOrderedFields = () => {
-  if (!avitoCategoryFieldsStore.categoryFields) {
-    return [];
-  }
-
-  // Filter out the Id field as before
-  const fields = avitoCategoryFieldsStore.categoryFields.filter((f) => f.tag !== 'Id');
-
-  // Define the specific order for required fields
-  const specificRequiredOrder = ['Title', 'Description', 'Price', 'ImageUrls'];
-
-  // Separate fields into categories
-  const specificRequiredFields = [];
-  const otherRequiredFields = [];
-  const optionalFields = [];
-
-  fields.forEach((field) => {
-    const isRequired = field.content && field.content[0] && field.content[0].required;
-
-    if (isRequired) {
-      const specificIndex = specificRequiredOrder.indexOf(field.tag);
-      if (specificIndex !== -1) {
-        // Add to specific required fields at the correct position
-        specificRequiredFields[specificIndex] = field;
-      } else {
-        otherRequiredFields.push(field);
-      }
-    } else {
-      optionalFields.push(field);
-    }
-  });
-
-  // Filter out undefined values and combine in the required order
-  const orderedSpecificRequired = specificRequiredOrder
-    .map((tag) => specificRequiredFields[specificRequiredOrder.indexOf(tag)])
-    .filter((field) => field !== undefined);
-
-  // Group paired fields (e.g., WorkTimeFrom/WorkTimeTo, ContactTimeFrom/ContactTimeTo)
-  const groupedOtherRequired = groupPairedFields(otherRequiredFields);
-  const groupedOptional = groupPairedFields(optionalFields);
-
-  // Combine all fields in the correct order
-  return [...orderedSpecificRequired, ...groupedOtherRequired, ...groupedOptional];
 };
 
 // Function to group paired fields together (e.g., WorkTimeFrom/WorkTimeTo, ContactTimeFrom/ContactTimeTo)
@@ -433,6 +488,159 @@ const groupPairedFields = (fields) => {
   });
 
   return result;
+};
+
+// Check if two fields are paired (e.g., WorkTimeFrom/WorkTimeTo)
+const isFieldPaired = (field1: any, field2: any) => {
+  const tag1 = field1.tag;
+  const tag2 = field2.tag;
+
+  // Check if they have the same prefix and one ends with 'From' and the other with 'To'
+  if (tag1.endsWith('From') && tag2.endsWith('To')) {
+    return tag1.slice(0, -4) === tag2.slice(0, -2); // Remove 'From' and 'To' and compare
+  } else if (tag1.endsWith('To') && tag2.endsWith('From')) {
+    return tag1.slice(0, -2) === tag2.slice(0, -4); // Remove 'To' and 'From' and compare
+  }
+
+  return false;
+};
+
+// Get fields for the current step - MODIFIED: Show all fields from step 0 up to current step
+const getFieldsForCurrentStep = () => {
+  const orderedFields = getOrderedFields();
+  let currentIndex = 0;
+  let currentStepIndex = 0;
+
+  // Navigate to the end of the current step to get all fields up to this point
+  while (currentStepIndex <= currentStep.value && currentIndex < orderedFields.length) {
+    if (currentStepIndex < currentStep.value) {
+      // For previous steps, we need to skip all fields in that step
+      let fieldsInThisStep = 1;
+
+      // Check if we can add another field to this step
+      if (currentIndex + 1 < orderedFields.length) {
+        // Check if the current and next field are paired
+        if (isFieldPaired(orderedFields[currentIndex], orderedFields[currentIndex + 1])) {
+          fieldsInThisStep = 2;
+        } else if (currentIndex + 2 < orderedFields.length) {
+          // Check if current field and the one after next are paired
+          const nextNextField = orderedFields[currentIndex + 2];
+          const isCurrentPairedWithNextNext = isFieldPaired(orderedFields[currentIndex], nextNextField);
+          if (isCurrentPairedWithNextNext) {
+            fieldsInThisStep = 1; // Current field will be in a step with the one after next
+          } else {
+            fieldsInThisStep = 2; // Take up to 2 fields if not paired
+          }
+        } else {
+          fieldsInThisStep = 2; // Take up to 2 fields if not paired
+        }
+      }
+
+      currentIndex += fieldsInThisStep;
+      currentStepIndex++;
+    } else {
+      // For the current step, we return all fields up to this point plus the fields in this step
+      break;
+    }
+  }
+
+  // Now calculate the fields for the current step (the last step we're showing)
+  if (currentStepIndex === currentStep.value && currentIndex < orderedFields.length) {
+    let fieldsInThisStep = 1;
+
+    // Check if we can add another field to this step
+    if (currentIndex + 1 < orderedFields.length) {
+      // Check if the current and next field are paired
+      if (isFieldPaired(orderedFields[currentIndex], orderedFields[currentIndex + 1])) {
+        fieldsInThisStep = 2;
+      } else if (currentIndex + 2 < orderedFields.length) {
+        // Check if current field and the one after next are paired
+        const nextNextField = orderedFields[currentIndex + 2];
+        const isCurrentPairedWithNextNext = isFieldPaired(orderedFields[currentIndex], nextNextField);
+        if (isCurrentPairedWithNextNext) {
+          fieldsInThisStep = 1; // Current field will be in a step with the one after next
+        } else {
+          fieldsInThisStep = 2; // Take up to 2 fields if not paired
+        }
+      } else {
+        fieldsInThisStep = 2; // Take up to 2 fields if not paired
+      }
+    }
+
+    // Ensure we don't go beyond the array bounds
+    fieldsInThisStep = Math.min(fieldsInThisStep, orderedFields.length - currentIndex);
+
+    // Return all fields from the beginning up to and including the current step
+    return orderedFields.slice(0, currentIndex + fieldsInThisStep);
+  }
+
+  // Return all fields up to the current step index
+  return orderedFields.slice(0, currentIndex);
+};
+
+// Navigation methods
+const nextStep = () => {
+  if (currentStep.value < totalSteps.value - 1) {
+    currentStep.value++;
+  }
+};
+
+const prevStep = () => {
+  if (currentStep.value > 0) {
+    currentStep.value--;
+  }
+};
+
+const goToStep = (stepIndex: number) => {
+  // Allow navigation to any step since all fields are cumulative
+  if (stepIndex >= 0 && stepIndex < totalSteps.value) {
+    currentStep.value = stepIndex;
+  }
+};
+
+const getOrderedFields = () => {
+  if (!avitoCategoryFieldsStore.categoryFields) {
+    return [];
+  }
+
+  // Filter out the Id field as before
+  const fields = avitoCategoryFieldsStore.categoryFields.filter((f) => f.tag !== 'Id');
+
+  // Define the specific order for required fields
+  const specificRequiredOrder = ['Title', 'Description', 'Price', 'ImageUrls'];
+
+  // Separate fields into categories
+  const specificRequiredFields = [];
+  const otherRequiredFields = [];
+  const optionalFields = [];
+
+  fields.forEach((field) => {
+    const isRequired = field.content && field.content[0] && field.content[0].required;
+
+    if (isRequired) {
+      const specificIndex = specificRequiredOrder.indexOf(field.tag);
+      if (specificIndex !== -1) {
+        // Add to specific required fields at the correct position
+        specificRequiredFields[specificIndex] = field;
+      } else {
+        otherRequiredFields.push(field);
+      }
+    } else {
+      optionalFields.push(field);
+    }
+  });
+
+  // Filter out undefined values and combine in the required order
+  const orderedSpecificRequired = specificRequiredOrder
+    .map((tag) => specificRequiredFields[specificRequiredOrder.indexOf(tag)])
+    .filter((field) => field !== undefined);
+
+  // Group paired fields (e.g., WorkTimeFrom/WorkTimeTo, ContactTimeFrom/ContactTimeTo)
+  const groupedOtherRequired = groupPairedFields(otherRequiredFields);
+  const groupedOptional = groupPairedFields(optionalFields);
+
+  // Combine all fields in the correct order
+  return [...orderedSpecificRequired, ...groupedOtherRequired, ...groupedOptional];
 };
 
 onMounted(async () => {
