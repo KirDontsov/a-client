@@ -4,314 +4,312 @@
       <div class="w-full flex flex-col gap-8 text-gray-50 dark:text-gray-40 px-4 py-2 sm:px-8 sm:py-4">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Создание объявления</h2>
         <SelectedCategoryPath />
-        <div class="">
-          <!-- Stepper Navigation -->
-          <div class="mb-8">
-            <div class="w-full">
-              <div class="flex items-center justify-between w-full">
-                <div
-                  v-for="(step, index) in totalSteps"
-                  :key="index"
-                  class="flex items-center transition-all duration-300 ease-in-out flex-1 min-w-0 basis-0"
-                >
-                  <button
-                    @click="goToStep(index)"
-                    :class="[
-                      'flex items-center justify-center text-sm font-medium rounded-full transition-all duration-300 ease-in-out',
-                      index === currentStep - 1 || index === currentStep || index === currentStep + 1
-                        ? 'w-10 h-10 bg-opacity-100' // Active steps (prev, current, next)
-                        : 'w-8 h-8 bg-opacity-70', // Collapsed steps
-                      index < currentStep
+        <!-- Stepper Navigation -->
+        <div class="mb-8">
+          <div class="w-full">
+            <div class="flex items-center justify-between w-full">
+              <div
+                v-for="(step, index) in totalSteps"
+                :key="index"
+                class="flex items-center transition-all duration-300 ease-in-out flex-1 min-w-0 basis-0"
+              >
+                <button
+                  @click="goToStep(index)"
+                  :class="[
+                    'flex items-center justify-center text-sm font-medium rounded-full transition-all duration-300 ease-in-out',
+                    index === currentStep - 1 || index === currentStep || index === currentStep + 1
+                      ? 'w-10 h-10 bg-opacity-100' // Active steps (prev, current, next)
+                      : 'w-8 h-8 bg-opacity-70', // Collapsed steps
+                    index < currentStep
+                      ? 'bg-blue-600 text-white'
+                      : currentStep === index
                         ? 'bg-blue-600 text-white'
-                        : currentStep === index
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 !text-gray-800 dark:bg-gray-600 dark:text-gray-300',
-                      'cursor-pointer hover:bg-opacity-80',
-                    ]"
-                  >
-                    {{ index + 1 }}
-                  </button>
-                  <div
-                    v-if="index < totalSteps - 1"
-                    class="flex-1 mx-1 rounded-full transition-all duration-300 ease-in-out"
-                    :class="
-                      index === currentStep - 1 || index === currentStep
-                        ? index < currentStep
-                          ? 'bg-blue-600 h-0.5'
-                          : 'bg-gray-50 dark:bg-gray-600 h-1' // Active dividers (prev-current and current-next)
-                        : 'bg-gray-50 dark:bg-gray-500 h-0.25' // Collapsed dividers
-                    "
-                  ></div>
-                </div>
+                        : 'bg-gray-100 !text-gray-800 dark:bg-gray-600 dark:text-gray-300',
+                    'cursor-pointer hover:bg-opacity-80',
+                  ]"
+                >
+                  {{ index + 1 }}
+                </button>
+                <div
+                  v-if="index < totalSteps - 1"
+                  class="flex-1 mx-1 rounded-full transition-all duration-300 ease-in-out"
+                  :class="
+                    index === currentStep - 1 || index === currentStep
+                      ? index < currentStep
+                        ? 'bg-blue-600 h-0.5'
+                        : 'bg-gray-50 dark:bg-gray-600 h-1' // Active dividers (prev-current and current-next)
+                      : 'bg-gray-50 dark:bg-gray-500 h-0.25' // Collapsed dividers
+                  "
+                ></div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Item Form Section -->
+        <!-- Item Form Section -->
+        <div
+          ref="itemFormSectionRef"
+          v-if="avitoCategoryFieldsStore.categoryFields && avitoCategoryFieldsStore.categoryFields.length > 0"
+          class="w-full flex flex-col gap-8 h-[calc(100vh-500px)]"
+        >
           <div
-            v-if="avitoCategoryFieldsStore.categoryFields && avitoCategoryFieldsStore.categoryFields.length > 0"
-            class="w-full flex flex-col gap-8 h-[calc(100vh-300px)]"
+            ref="formFieldsSectionRef"
+            class="relative overflow-x-auto shadow-md sm:rounded-lg w-full p-4 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
           >
-            <div
-              class="relative overflow-x-auto shadow-md sm:rounded-lg w-full p-4 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
-            >
-              <!-- Form Steps -->
-              <form @submit.prevent="handleSubmit" class="space-y-6 max-w-[688px] w-full mx-auto">
-                <!-- Render fields for current step -->
-                <div
-                  v-for="field in getFieldsForCurrentStep()"
-                  :key="field.tag"
-                  class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
-                >
-                  <div class="mb-3">
-                    <div class="flex items-center gap-2 mb-1">
-                      <label :for="field.tag" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {{ field.label }}
-                        <span v-if="field.content[0]?.required" class="text-red-500">*</span>
-                      </label>
+            <!-- Form Steps -->
+            <form @submit.prevent="handleSubmit" class="space-y-6 max-w-[688px] w-full mx-auto">
+              <!-- Render fields for current step -->
+              <div
+                v-for="field in getFieldsForCurrentStep()"
+                :key="field.tag"
+                class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
+              >
+                <div class="mb-3">
+                  <div class="flex items-center gap-2 mb-1">
+                    <label :for="field.tag" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {{ field.label }}
+                      <span v-if="field.content[0]?.required" class="text-red-500">*</span>
+                    </label>
 
-                      <!-- Tooltip for field description -->
-                      <div v-if="field.descriptions" class="relative flex flex-col items-center group">
-                        <svg
-                          class="w-4 h-4 text-gray-400 hover:text-gray-500 cursor-pointer"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                            clip-rule="evenodd"
-                          ></path>
-                        </svg>
-                        <div class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex">
-                          <span
-                            class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md min-w-[300px] w-fit max-w-[752px] text-center"
-                          >
-                            {{ field.descriptions }}
-                          </span>
-                          <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-600"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Warnings -->
-                    <div
-                      v-if="field.content[0]?.warnings && field.content[0].warnings.length > 0"
-                      class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 mb-3"
-                    >
-                      <div
-                        v-for="(warning, idx) in field.content[0].warnings"
-                        :key="idx"
-                        class="text-yellow-700 dark:text-yellow-300 text-sm"
+                    <!-- Tooltip for field description -->
+                    <div v-if="field.descriptions" class="relative flex flex-col items-center group">
+                      <svg
+                        class="w-4 h-4 text-gray-400 hover:text-gray-500 cursor-pointer"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-                        <strong class="block">{{ warning.title }}</strong>
-                        {{ warning.content }}
-                      </div>
-                    </div>
-
-                    <!-- Dependencies info -->
-                    <div
-                      v-if="field.content[0]?.dependencies_text && field.content[0].dependencies_text.length > 0"
-                      class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-3 mb-3 text-sm"
-                    >
-                      <p class="text-blue-700 dark:text-blue-300 font-medium mb-1">Условия применения:</p>
-                      <ul class="list-disc list-inside space-y-1">
-                        <li
-                          v-for="(text, idx) in field.content[0].dependencies_text"
-                          :key="idx"
-                          class="text-blue-600 dark:text-blue-300"
+                        <path
+                          fill-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
+                      <div class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex">
+                        <span
+                          class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md min-w-[300px] w-fit max-w-[752px] text-center"
                         >
-                          {{ text }}
-                        </li>
-                      </ul>
+                          {{ field.descriptions }}
+                        </span>
+                        <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-600"></div>
+                      </div>
                     </div>
                   </div>
 
-                  <!-- Field input based on type -->
-                  <div v-if="field.content && field.content.length > 0">
-                    <!-- Input field -->
-                    <div v-if="field.content[0].field_type === 'input'">
-                      <!-- Date field -->
-                      <DatePicker
-                        v-if="isDateField(field)"
-                        :id="field.tag"
-                        v-model="avitoCategoryFieldsStore.formData[field.tag]"
-                        :required="field.content[0].required"
-                        placeholder="Выберите дату"
-                      />
-                      <!-- Regular input field -->
-                      <InputField
-                        v-else
-                        :id="field.tag"
-                        v-model="avitoCategoryFieldsStore.formData[field.tag]"
-                        :type="getInputType(field.content[0].data_type)"
-                        :required="field.content[0].required"
-                        :min="field.content[0].values_range?.min"
-                        :max="field.content[0].values_range?.max"
-                        :isTextarea="field.tag === 'Description'"
-                        class="w-full"
-                      />
+                  <!-- Warnings -->
+                  <div
+                    v-if="field.content[0]?.warnings && field.content[0].warnings.length > 0"
+                    class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 mb-3"
+                  >
+                    <div
+                      v-for="(warning, idx) in field.content[0].warnings"
+                      :key="idx"
+                      class="text-yellow-700 dark:text-yellow-300 text-sm"
+                    >
+                      <strong class="block">{{ warning.title }}</strong>
+                      {{ warning.content }}
                     </div>
+                  </div>
 
-                    <!-- Select field -->
-                    <select
-                      v-else-if="field.content[0].field_type === 'select'"
+                  <!-- Dependencies info -->
+                  <div
+                    v-if="field.content[0]?.dependencies_text && field.content[0].dependencies_text.length > 0"
+                    class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-3 mb-3 text-sm"
+                  >
+                    <p class="text-blue-700 dark:text-blue-300 font-medium mb-1">Условия применения:</p>
+                    <ul class="list-disc list-inside space-y-1">
+                      <li
+                        v-for="(text, idx) in field.content[0].dependencies_text"
+                        :key="idx"
+                        class="text-blue-600 dark:text-blue-300"
+                      >
+                        {{ text }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Field input based on type -->
+                <div v-if="field.content && field.content.length > 0">
+                  <!-- Input field -->
+                  <div v-if="field.content[0].field_type === 'input'">
+                    <!-- Date field -->
+                    <DatePicker
+                      v-if="isDateField(field)"
                       :id="field.tag"
                       v-model="avitoCategoryFieldsStore.formData[field.tag]"
                       :required="field.content[0].required"
-                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
+                      placeholder="Выберите дату"
+                    />
+                    <!-- Regular input field -->
+                    <InputField
+                      v-else
+                      :id="field.tag"
+                      v-model="avitoCategoryFieldsStore.formData[field.tag]"
+                      :type="getInputType(field.content[0].data_type)"
+                      :required="field.content[0].required"
+                      :min="field.content[0].values_range?.min"
+                      :max="field.content[0].values_range?.max"
+                      :isTextarea="field.tag === 'Description'"
+                      class="w-full"
+                    />
+                  </div>
+
+                  <!-- Select field -->
+                  <select
+                    v-else-if="field.content[0].field_type === 'select'"
+                    :id="field.tag"
+                    v-model="avitoCategoryFieldsStore.formData[field.tag]"
+                    :required="field.content[0].required"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
+                  >
+                    <option value="">Выберите значение</option>
+                    <option
+                      v-for="option in getSelectOptions(field.content[0].values)"
+                      :key="option.value"
+                      :value="option.value"
                     >
-                      <option value="">Выберите значение</option>
-                      <option
-                        v-for="option in getSelectOptions(field.content[0].values)"
-                        :key="option.value"
+                      {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
+                    </option>
+                  </select>
+
+                  <!-- Checkbox field -->
+                  <div v-else-if="field.content[0].field_type === 'checkbox'" class="space-y-2">
+                    <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
+                      <input
+                        :id="`${field.tag}-${option.value}`"
+                        type="checkbox"
                         :value="option.value"
+                        v-model="avitoCategoryFieldsStore.formData[field.tag]"
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                      />
+                      <label
+                        :for="`${field.tag}-${option.value}`"
+                        class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
                       >
-                        {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
-                      </option>
-                    </select>
-
-                    <!-- Checkbox field -->
-                    <div v-else-if="field.content[0].field_type === 'checkbox'" class="space-y-2">
-                      <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                        <input
-                          :id="`${field.tag}-${option.value}`"
-                          type="checkbox"
-                          :value="option.value"
-                          v-model="avitoCategoryFieldsStore.formData[field.tag]"
-                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
-                        />
-                        <label
-                          :for="`${field.tag}-${option.value}`"
-                          class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                        >
-                          {{ option.value }}
-                        </label>
-                      </div>
+                        {{ option.value }}
+                      </label>
                     </div>
+                  </div>
 
-                    <!-- Children fields (for complex fields like CompatibleCars) -->
-                    <div
-                      v-if="field.children && field.children.length > 0"
-                      class="mt-4 pl-4 border-l-2 border-gray-200 dark:border-gray-600"
-                    >
-                      <div v-for="child in field.children.filter((c) => c.tag !== 'Id')" :key="child.tag" class="mb-4">
-                        <div class="flex items-center gap-2 mb-1">
-                          <label :for="child.tag" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {{ child.label }}
-                          </label>
+                  <!-- Children fields (for complex fields like CompatibleCars) -->
+                  <div
+                    v-if="field.children && field.children.length > 0"
+                    class="mt-4 pl-4 border-l-2 border-gray-200 dark:border-gray-600"
+                  >
+                    <div v-for="child in field.children.filter((c) => c.tag !== 'Id')" :key="child.tag" class="mb-4">
+                      <div class="flex items-center gap-2 mb-1">
+                        <label :for="child.tag" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {{ child.label }}
+                        </label>
 
-                          <!-- Tooltip for child description -->
-                          <div v-if="child.descriptions" class="relative flex flex-col items-center group">
-                            <svg
-                              class="w-4 h-4 text-gray-400 hover:text-gray-500 cursor-pointer"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              xmlns="http://www.w3.org/2000/svg"
+                        <!-- Tooltip for child description -->
+                        <div v-if="child.descriptions" class="relative flex flex-col items-center group">
+                          <svg
+                            class="w-4 h-4 text-gray-400 hover:text-gray-500 cursor-pointer"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                              clip-rule="evenodd"
+                            ></path>
+                          </svg>
+                          <div class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex">
+                            <span
+                              class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md w-fit max-w-[752px] text-center"
                             >
-                              <path
-                                fill-rule="evenodd"
-                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                                clip-rule="evenodd"
-                              ></path>
-                            </svg>
-                            <div
-                              class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex"
-                            >
-                              <span
-                                class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md w-fit max-w-[752px] text-center"
-                              >
-                                {{ child.descriptions }}
-                              </span>
-                              <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-600"></div>
-                            </div>
+                              {{ child.descriptions }}
+                            </span>
+                            <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-600"></div>
                           </div>
                         </div>
-
-                        <!-- Child input field -->
-                        <InputField
-                          v-if="child.content[0].field_type === 'input'"
-                          :id="child.tag"
-                          v-model="avitoCategoryFieldsStore.formData[child.tag]"
-                          :type="getInputType(child.content[0].data_type)"
-                          :required="child.content[0].required"
-                          :isTextarea="child.tag === 'Description'"
-                          class="w-full"
-                        />
-
-                        <!-- Child select field -->
-                        <select
-                          v-else-if="child.content[0].field_type === 'select'"
-                          :id="child.tag"
-                          v-model="avitoCategoryFieldsStore.formData[child.tag]"
-                          :required="child.content[0].required"
-                          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
-                        >
-                          <option value="">Выберите значение</option>
-                          <option
-                            v-for="option in getSelectOptions(child.content[0].values)"
-                            :key="option.value"
-                            :value="option.value"
-                          >
-                            {{ option.value }}
-                          </option>
-                        </select>
                       </div>
+
+                      <!-- Child input field -->
+                      <InputField
+                        v-if="child.content[0].field_type === 'input'"
+                        :id="child.tag"
+                        v-model="avitoCategoryFieldsStore.formData[child.tag]"
+                        :type="getInputType(child.content[0].data_type)"
+                        :required="child.content[0].required"
+                        :isTextarea="child.tag === 'Description'"
+                        class="w-full"
+                      />
+
+                      <!-- Child select field -->
+                      <select
+                        v-else-if="child.content[0].field_type === 'select'"
+                        :id="child.tag"
+                        v-model="avitoCategoryFieldsStore.formData[child.tag]"
+                        :required="child.content[0].required"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
+                      >
+                        <option value="">Выберите значение</option>
+                        <option
+                          v-for="option in getSelectOptions(child.content[0].values)"
+                          :key="option.value"
+                          :value="option.value"
+                        >
+                          {{ option.value }}
+                        </option>
+                      </select>
                     </div>
                   </div>
                 </div>
-              </form>
-            </div>
-            <!-- Step Navigation -->
-            <div class="flex justify-between pt-4">
-              <Button type="button" @click="prevStep" :disabled="currentStep === 0" color="default" variant="dark">
-                Назад
-              </Button>
-              <div class="flex space-x-2">
-                <Button
-                  v-if="currentStep < totalSteps - 1"
-                  type="button"
-                  @click="nextStep"
-                  color="default"
-                  variant="dark"
-                >
-                  Далее
-                </Button>
-                <Button
-                  v-else
-                  type="submit"
-                  :disabled="avitoCategoryFieldsStore.categoryFieldsLoading"
-                  color="default"
-                  variant="dark"
-                >
-                  {{ avitoCategoryFieldsStore.categoryFieldsLoading ? 'Загрузка...' : 'Создать объявление' }}
-                </Button>
               </div>
+            </form>
+          </div>
+          <!-- Step Navigation -->
+          <div class="flex justify-between pt-4">
+            <Button type="button" @click="prevStep" :disabled="currentStep === 0" color="default" variant="dark">
+              Назад
+            </Button>
+            <div class="flex space-x-2">
+              <Button
+                v-if="currentStep < totalSteps - 1"
+                type="button"
+                @click="nextStep"
+                color="default"
+                variant="dark"
+              >
+                Далее
+              </Button>
+              <Button
+                v-else
+                type="submit"
+                :disabled="avitoCategoryFieldsStore.categoryFieldsLoading"
+                color="default"
+                variant="dark"
+              >
+                {{ avitoCategoryFieldsStore.categoryFieldsLoading ? 'Загрузка...' : 'Создать объявление' }}
+              </Button>
             </div>
           </div>
+        </div>
 
-          <!-- Empty state when no category selected -->
-          <div v-else-if="!avitoCategoriesStore.selectedCategories.length" class="text-center py-12">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-12 w-12 mx-auto text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">Выберите категорию</h3>
-            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Пожалуйста, выберите категорию для создания объявления.
-            </p>
-          </div>
+        <!-- Empty state when no category selected -->
+        <div v-else-if="!avitoCategoriesStore.selectedCategories.length" class="text-center py-12">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-12 w-12 mx-auto text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
+          </svg>
+          <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">Выберите категорию</h3>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Пожалуйста, выберите категорию для создания объявления.
+          </p>
         </div>
       </div>
     </template>
@@ -320,7 +318,7 @@
 
 <script setup lang="ts">
 import { useCookies, useAvitoCategoriesStore, useAvitoCategoryFieldsStore } from '@/entities';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, nextTick } from 'vue';
 import { PageContainer } from '@/features/page-container';
 import { SelectedCategoryPath } from '@/features';
 import { DatePicker } from '@/shared/components/date-picker';
@@ -332,6 +330,8 @@ const { value: avito_token } = useCookies('avito_token');
 const avitoCategoriesStore = useAvitoCategoriesStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
 const currentStep = ref(0);
+const itemFormSectionRef = ref(null);
+const formFieldsSectionRef = ref(null);
 
 // Calculate total steps based on fields (2 fields per step, but paired fields stay together)
 const calculateTotalSteps = () => {
@@ -582,12 +582,28 @@ const getFieldsForCurrentStep = () => {
 const nextStep = () => {
   if (currentStep.value < totalSteps.value - 1) {
     currentStep.value++;
+
+    // Scroll to the item form section after a small delay to ensure DOM is updated
+    nextTick(() => {
+      if (formFieldsSectionRef.value) {
+        // Scroll to the bottom of the section
+        formFieldsSectionRef.value.scroll({ top: formFieldsSectionRef.value.scrollHeight, behavior: 'smooth' });
+      }
+    });
   }
 };
 
 const prevStep = () => {
   if (currentStep.value > 0) {
     currentStep.value--;
+
+    // Scroll to the item form section after a small delay to ensure DOM is updated
+    nextTick(() => {
+      if (formFieldsSectionRef.value) {
+        // Scroll to the bottom of the section
+        formFieldsSectionRef.value.scroll({ top: formFieldsSectionRef.value.scrollHeight, behavior: 'smooth' });
+      }
+    });
   }
 };
 
@@ -595,6 +611,14 @@ const goToStep = (stepIndex: number) => {
   // Allow navigation to any step since all fields are cumulative
   if (stepIndex >= 0 && stepIndex < totalSteps.value) {
     currentStep.value = stepIndex;
+
+    // Scroll to the item form section after a small delay to ensure DOM is updated
+    nextTick(() => {
+      if (formFieldsSectionRef.value) {
+        // Scroll to the bottom of the section
+        formFieldsSectionRef.value.scroll({ top: formFieldsSectionRef.value.scrollHeight, behavior: 'smooth' });
+      }
+    });
   }
 };
 
