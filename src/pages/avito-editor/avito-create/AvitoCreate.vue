@@ -59,12 +59,23 @@
             <!-- Form Steps -->
             <form class="space-y-6 max-w-[688px] w-full mx-auto">
               <!-- Render fields for current step -->
-              <div
-                v-for="field in getFieldsForCurrentStep()"
-                :key="field.tag"
-                class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
-              >
+              <div v-for="field in getFieldsForCurrentStep()" :key="field.tag" class="p-4">
                 <div class="mb-3">
+                  <!-- Dependencies info -->
+                  <div
+                    v-if="field.content[0]?.dependencies_text && field.content[0].dependencies_text.length > 0"
+                    class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-3 mb-3 text-sm"
+                  >
+                    <ul class="list-disc list-inside space-y-1">
+                      <li
+                        v-for="(text, idx) in field.content[0].dependencies_text"
+                        :key="idx"
+                        class="text-blue-600 dark:text-blue-300"
+                      >
+                        {{ text }}
+                      </li>
+                    </ul>
+                  </div>
                   <div class="flex items-center gap-2 mb-1">
                     <label :for="field.tag" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                       {{ field.label }}
@@ -110,23 +121,6 @@
                       {{ warning.content }}
                     </div>
                   </div>
-
-                  <!-- Dependencies info -->
-                  <div
-                    v-if="field.content[0]?.dependencies_text && field.content[0].dependencies_text.length > 0"
-                    class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-3 mb-3 text-sm"
-                  >
-                    <p class="text-blue-700 dark:text-blue-300 font-medium mb-1">Условия применения:</p>
-                    <ul class="list-disc list-inside space-y-1">
-                      <li
-                        v-for="(text, idx) in field.content[0].dependencies_text"
-                        :key="idx"
-                        class="text-blue-600 dark:text-blue-300"
-                      >
-                        {{ text }}
-                      </li>
-                    </ul>
-                  </div>
                 </div>
 
                 <!-- Field input based on type -->
@@ -145,26 +139,47 @@
                     <InputField
                       v-else
                       :id="field.tag"
-                      v-model="avitoCategoryFieldsStore.formData[field.tag]"
+                      v-model="trimmedFieldValues[field.tag]"
                       :type="getInputType(field.content[0].data_type)"
                       :required="field.content[0].required"
                       :min="field.content[0].values_range?.min"
                       :max="field.content[0].values_range?.max"
                       :isTextarea="field.tag === 'Description'"
+                      :helperText="field.tag === 'ImageUrls' ? 'Ссылки на фотографии через запятую' : undefined"
                       class="w-full"
                     />
                   </div>
 
                   <!-- Select field -->
                   <select
-                    v-else-if="field.content[0].field_type === 'select'"
+                    v-else-if="field.content[0].field_type === 'select' || field.tag === 'Make'"
                     :id="field.tag"
                     v-model="avitoCategoryFieldsStore.formData[field.tag]"
                     :required="field.content[0].required"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
                   >
                     <option value="" disabled>Выберите значение</option>
+                    <!-- Special handling for Make field with new structure -->
                     <option
+                      v-if="field.tag === 'Make' && isMakeFieldWithNewStructure(field)"
+                      v-for="option in field.content[0].values.values"
+                      :key="option.value"
+                      :value="option.value"
+                    >
+                      {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
+                    </option>
+                    <!-- Regular Make field with old structure -->
+                    <option
+                      v-else-if="field.tag === 'Make'"
+                      v-for="option in getSelectOptions(field.content[0].values)"
+                      :key="option.value"
+                      :value="option.value"
+                    >
+                      {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
+                    </option>
+                    <!-- Regular select field -->
+                    <option
+                      v-else
                       v-for="option in getSelectOptions(field.content[0].values)"
                       :key="option.value"
                       :value="option.value"
@@ -174,21 +189,42 @@
                   </select>
 
                   <!-- Checkbox field -->
-                  <div v-else-if="field.content[0].field_type === 'checkbox'" class="space-y-2">
-                    <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                      <input
-                        :id="`${field.tag}-${option.value}`"
-                        type="checkbox"
-                        :value="option.value"
-                        v-model="avitoCategoryFieldsStore.formData[field.tag]"
-                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
-                      />
-                      <label
-                        :for="`${field.tag}-${option.value}`"
-                        class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                      >
-                        {{ option.value }}
-                      </label>
+                  <div v-else-if="field.content[0].field_type === 'checkbox' && field.tag !== 'Make'" class="space-y-2">
+                    <!-- Special handling for fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
+                    <div v-if="field.tag.includes('Days')" class="flex flex-wrap gap-4">
+                      <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
+                        <input
+                          :id="`${field.tag}-${option.value}`"
+                          type="checkbox"
+                          :value="option.value"
+                          v-model="avitoCategoryFieldsStore.formData[field.tag]"
+                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                        />
+                        <label
+                          :for="`${field.tag}-${option.value}`"
+                          class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                        >
+                          {{ option.value }}
+                        </label>
+                      </div>
+                    </div>
+                    <!-- Regular checkbox field -->
+                    <div v-else class="space-y-2">
+                      <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
+                        <input
+                          :id="`${field.tag}-${option.value}`"
+                          type="checkbox"
+                          :value="option.value"
+                          v-model="avitoCategoryFieldsStore.formData[field.tag]"
+                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                        />
+                        <label
+                          :for="`${field.tag}-${option.value}`"
+                          class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                        >
+                          {{ option.value }}
+                        </label>
+                      </div>
                     </div>
                   </div>
 
@@ -239,16 +275,79 @@
                         class="w-full"
                       />
 
+                      <!-- Child checkbox field -->
+                      <div
+                        v-else-if="child.content[0].field_type === 'checkbox' && child.tag !== 'Make'"
+                        class="space-y-2"
+                      >
+                        <!-- Special handling for child fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
+                        <div v-if="child.tag.includes('Days')" class="flex flex-wrap gap-4">
+                          <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
+                            <input
+                              :id="`${child.tag}-${option.value}`"
+                              type="checkbox"
+                              :value="option.value"
+                              v-model="avitoCategoryFieldsStore.formData[child.tag]"
+                              class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                            />
+                            <label
+                              :for="`${child.tag}-${option.value}`"
+                              class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                            >
+                              {{ option.value }}
+                            </label>
+                          </div>
+                        </div>
+                        <!-- Regular child checkbox field -->
+                        <div v-else class="space-y-2">
+                          <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
+                            <input
+                              :id="`${child.tag}-${option.value}`"
+                              type="checkbox"
+                              :value="option.value"
+                              v-model="avitoCategoryFieldsStore.formData[child.tag]"
+                              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                            />
+                            <label
+                              :for="`${child.tag}-${option.value}`"
+                              class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                            >
+                              {{ option.value }}
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
                       <!-- Child select field -->
                       <select
-                        v-else-if="child.content[0].field_type === 'select'"
+                        v-else-if="child.content[0].field_type === 'select' || child.tag === 'Make'"
                         :id="child.tag"
                         v-model="avitoCategoryFieldsStore.formData[child.tag]"
                         :required="child.content[0].required"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
+                        class="w-full px-3 py-2 border border-gray-30 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
                       >
                         <option value="" disabled>Выберите значение</option>
+                        <!-- Special handling for Make field with new structure -->
                         <option
+                          v-if="child.tag === 'Make' && isMakeFieldWithNewStructure(child)"
+                          v-for="option in child.content[0].values.values"
+                          :key="option.value"
+                          :value="option.value"
+                        >
+                          {{ option.value }}
+                        </option>
+                        <!-- Regular Make field with old structure -->
+                        <option
+                          v-else-if="child.tag === 'Make'"
+                          v-for="option in getSelectOptions(child.content[0].values)"
+                          :key="option.value"
+                          :value="option.value"
+                        >
+                          {{ option.value }}
+                        </option>
+                        <!-- Regular select field -->
+                        <option
+                          v-else
                           v-for="option in getSelectOptions(child.content[0].values)"
                           :key="option.value"
                           :value="option.value"
@@ -319,7 +418,7 @@
 
 <script setup lang="ts">
 import { useCookies, useAvitoCategoriesStore, useAvitoCategoryFieldsStore } from '@/entities';
-import { onMounted, ref, computed, nextTick } from 'vue';
+import { onMounted, ref, computed, nextTick, watch } from 'vue';
 import { PageContainer } from '@/features/page-container';
 import { SelectedCategoryPath } from '@/features';
 import { DatePicker } from '@/shared/components/date-picker';
@@ -333,6 +432,9 @@ const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
 const currentStep = ref(0);
 const itemFormSectionRef = ref(null);
 const formFieldsSectionRef = ref(null);
+
+// Reactive object to store trimmed values for fields that need trimming
+const trimmedFieldValues = ref({});
 
 // Calculate total steps based on fields (2 fields per step, but paired fields stay together)
 const calculateTotalSteps = () => {
@@ -387,6 +489,17 @@ const getInputType = (dataType: string) => {
 };
 
 const handleSubmit = async () => {
+  // Validate required fields before submitting
+  const invalidField = validateRequiredFields();
+  if (invalidField) {
+    // Scroll to the invalid field
+    scrollToInvalidField(invalidField);
+    return;
+  }
+
+  // Sync trimmed values back to store before submitting
+  syncTrimmedValuesToStore();
+
   try {
     await avitoCategoryFieldsStore.submitForm();
     // Show success message
@@ -422,6 +535,19 @@ const getSelectOptions = (values: any) => {
   }
   // Otherwise, assume it's a regular array
   return Array.isArray(values) ? values : [];
+};
+
+// Function to check if Make field has the new structure with nested values
+const isMakeFieldWithNewStructure = (field: any): boolean => {
+  // Check if field is Make and has the new structure where values is an object with a values array
+  return (
+    field.tag === 'Make' &&
+    field.content &&
+    field.content[0] &&
+    field.content[0].values &&
+    typeof field.content[0].values === 'object' &&
+    Array.isArray(field.content[0].values.values)
+  );
 };
 
 // Function to group paired fields together (e.g., WorkTimeFrom/WorkTimeTo, ContactTimeFrom/ContactTimeTo)
@@ -628,8 +754,21 @@ const getOrderedFields = () => {
     return [];
   }
 
-  // Filter out the Id field as before
-  const fields = avitoCategoryFieldsStore.categoryFields.filter((f) => f.tag !== 'Id');
+  // Filter out the Id field and the fields that shouldn't be rendered
+  const fields = avitoCategoryFieldsStore.categoryFields.filter(
+    (f) =>
+      f.tag !== 'Id' &&
+      f.tag !== 'Category' &&
+      f.tag !== 'ServiceType' &&
+      f.tag !== 'ServiceSubtype' &&
+      f.tag !== 'AutoserviceServiceType' &&
+      f.tag !== 'AvitoId' &&
+      f.tag !== 'CallsDevices' &&
+      f.tag !== 'Latitude' &&
+      f.tag !== 'Longitude' &&
+      f.tag !== 'Images' &&
+      f.tag !== 'ImageNames',
+  );
 
   // Define the specific order for required fields
   const specificRequiredOrder = ['Title', 'Description', 'Price', 'ImageUrls'];
@@ -676,6 +815,105 @@ onMounted(async () => {
     });
   }
 });
+
+// Function to sync trimmed values to the store
+const syncTrimmedValuesToStore = () => {
+  Object.keys(trimmedFieldValues.value).forEach((key) => {
+    if (key === 'ImageUrls') {
+      // For ImageUrls, apply trim to each URL in the comma-separated list
+      const urls = trimmedFieldValues.value[key] || '';
+      const trimmedUrls = urls
+        .split(',')
+        .map((url) => url.trim())
+        .join(',');
+      avitoCategoryFieldsStore.formData[key] = trimmedUrls;
+    } else {
+      avitoCategoryFieldsStore.formData[key] = trimmedFieldValues.value[key];
+    }
+  });
+};
+
+// Watch for changes in the form data from the store and update trimmed values
+watch(
+  () => avitoCategoryFieldsStore.formData,
+  (newFormData) => {
+    Object.keys(newFormData).forEach((key) => {
+      if (key === 'ImageUrls') {
+        // For ImageUrls, apply trim to each URL in the comma-separated list
+        const urls = newFormData[key] || '';
+        if (urls) {
+          const trimmedUrls = urls
+            .split(',')
+            .map((url) => url.trim())
+            .join(',');
+          trimmedFieldValues.value[key] = trimmedUrls;
+        } else {
+          trimmedFieldValues.value[key] = newFormData[key];
+        }
+      } else {
+        trimmedFieldValues.value[key] = newFormData[key];
+      }
+    });
+  },
+  { deep: true, immediate: true },
+);
+
+// Function to validate required fields
+const validateRequiredFields = () => {
+  if (!avitoCategoryFieldsStore.categoryFields) {
+    return null;
+  }
+
+  // Get all fields that are required
+  const orderedFields = getOrderedFields();
+  for (const field of orderedFields) {
+    const isRequired = field.content && field.content[0] && field.content[0].required;
+    if (isRequired) {
+      // Check if the field has a value
+      const fieldValue = avitoCategoryFieldsStore.formData[field.tag];
+      if (!fieldValue || fieldValue.toString().trim() === '') {
+        // Return the field element that needs to be scrolled to
+        const fieldElement = document.getElementById(field.tag);
+        if (fieldElement) {
+          return fieldElement;
+        }
+      }
+    }
+
+    // Also check child fields if they exist
+    if (field.children && field.children.length > 0) {
+      for (const child of field.children.filter((c) => c.tag !== 'Id')) {
+        const isChildRequired = child.content && child.content[0] && child.content[0].required;
+        if (isChildRequired) {
+          const childFieldValue = avitoCategoryFieldsStore.formData[child.tag];
+          if (!childFieldValue || childFieldValue.toString().trim() === '') {
+            const childElement = document.getElementById(child.tag);
+            if (childElement) {
+              return childElement;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // If all required fields are filled, return null
+  return null;
+};
+
+// Function to scroll to the invalid field
+const scrollToInvalidField = (fieldElement: HTMLElement) => {
+  if (itemFormSectionRef.value && fieldElement) {
+    // Scroll the container to bring the field into view
+    itemFormSectionRef.value.scrollTo({
+      top: fieldElement.offsetTop - itemFormSectionRef.value.offsetTop - 100,
+      behavior: 'smooth'
+    });
+
+    // Add visual indication to the field
+    fieldElement.focus();
+  }
+};
 </script>
 
 <style scoped>
