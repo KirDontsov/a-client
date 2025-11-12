@@ -66,7 +66,7 @@
         </div>
 
         <!-- Tab Content -->
-        <form @submit.prevent="submitFeed" class="space-y-6">
+        <form class="space-y-6">
           <!-- XML Tab -->
           <div v-if="activeTab === 'xml'" class="space-y-6">
             <div class="mb-4">
@@ -125,7 +125,7 @@
           </div>
 
           <div class="flex items-center space-x-4">
-            <Button type="submit" :disabled="submitting" color="default" variant="dark">
+            <Button type="button" @click="submitFeed" :disabled="submitting" color="default" variant="dark">
               {{ submitting ? 'Загружаем...' : 'Загрузить фид' }}
             </Button>
             <Button type="button" @click="goBack" color="default" variant="dark">Отмена</Button>

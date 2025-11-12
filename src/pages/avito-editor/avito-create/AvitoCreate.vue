@@ -57,7 +57,7 @@
             class="relative overflow-x-auto shadow-md sm:rounded-lg w-full p-4 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
           >
             <!-- Form Steps -->
-            <form @submit.prevent="handleSubmit" class="space-y-6 max-w-[688px] w-full mx-auto">
+            <form class="space-y-6 max-w-[688px] w-full mx-auto">
               <!-- Render fields for current step -->
               <div
                 v-for="field in getFieldsForCurrentStep()"
@@ -163,7 +163,7 @@
                     :required="field.content[0].required"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
                   >
-                    <option value="">Выберите значение</option>
+                    <option value="" disabled>Выберите значение</option>
                     <option
                       v-for="option in getSelectOptions(field.content[0].values)"
                       :key="option.value"
@@ -247,7 +247,7 @@
                         :required="child.content[0].required"
                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
                       >
-                        <option value="">Выберите значение</option>
+                        <option value="" disabled>Выберите значение</option>
                         <option
                           v-for="option in getSelectOptions(child.content[0].values)"
                           :key="option.value"
@@ -279,10 +279,11 @@
               </Button>
               <Button
                 v-else
-                type="submit"
+                type="button"
                 :disabled="avitoCategoryFieldsStore.categoryFieldsLoading"
                 color="default"
                 variant="dark"
+                @click="handleSubmit"
               >
                 {{ avitoCategoryFieldsStore.categoryFieldsLoading ? 'Загрузка...' : 'Создать объявление' }}
               </Button>

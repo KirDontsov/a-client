@@ -7,7 +7,6 @@
         </div>
 
         <form
-          @submit.prevent="updateAccount"
           class="space-y-6 bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -63,7 +62,7 @@
         </form>
 
         <div class="flex items-center space-x-4">
-          <Button type="submit" :disabled="updatingAccount" color="default" variant="dark">
+          <Button type="button" @click="updateAccount" :disabled="updatingAccount" color="default" variant="dark">
             {{ updatingAccount ? 'Updating...' : 'Update Account' }}
           </Button>
           <Button type="button" @click="goBack" color="default" variant="dark"> Cancel </Button>

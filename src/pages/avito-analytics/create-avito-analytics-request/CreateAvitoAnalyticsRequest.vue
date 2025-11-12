@@ -6,7 +6,6 @@
         <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Анализ конкурентов Avito</h2>
 
         <form
-          @submit.prevent="handleSubmit"
           class="space-y-6 relative overflow-x-auto bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
         >
           <!-- City field -->
@@ -54,7 +53,7 @@
         <!-- Form actions -->
         <div class="flex justify-end space-x-4 pt-4">
           <Button type="button" @click="handleReset" color="default" variant="dark"> Сбросить </Button>
-          <Button type="submit" :disabled="loading" color="default" variant="dark">
+          <Button type="button" @click="handleSubmit" :disabled="loading" color="default" variant="dark">
             {{ loading ? 'Загрузка...' : 'Отправить запрос' }}
           </Button>
         </div>
