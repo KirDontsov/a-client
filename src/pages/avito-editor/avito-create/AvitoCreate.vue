@@ -131,7 +131,7 @@
                     <DatePicker
                       v-if="isDateField(field)"
                       :id="field.tag"
-                      v-model="avitoCategoryFieldsStore.formData[field.tag]"
+                      v-model="trimmedFieldValues[field.tag]"
                       :required="field.content[0].required"
                       placeholder="Выберите дату"
                     />
@@ -265,10 +265,17 @@
                       </div>
 
                       <!-- Child input field -->
-                      <InputField
-                        v-if="child.content[0].field_type === 'input'"
+                      <DatePicker
+                        v-if="child.content[0].field_type === 'input' && isDateField(child)"
                         :id="child.tag"
-                        v-model="avitoCategoryFieldsStore.formData[child.tag]"
+                        v-model="trimmedFieldValues[child.tag]"
+                        :required="child.content[0].required"
+                        placeholder="Выберите дату"
+                      />
+                      <InputField
+                        v-else-if="child.content[0].field_type === 'input'"
+                        :id="child.tag"
+                        v-model="trimmedFieldValues[child.tag]"
                         :type="getInputType(child.content[0].data_type)"
                         :required="child.content[0].required"
                         :isTextarea="child.tag === 'Description'"
@@ -767,7 +774,10 @@ const getOrderedFields = () => {
       f.tag !== 'Latitude' &&
       f.tag !== 'Longitude' &&
       f.tag !== 'Images' &&
-      f.tag !== 'ImageNames',
+      f.tag !== 'ImageNames' &&
+      f.tag !== 'Promo' &&
+      f.tag !== 'PromoAutoOptions' &&
+      f.tag !== 'PromoManualOptions',
   );
 
   // Define the specific order for required fields
@@ -838,6 +848,11 @@ watch(
   () => avitoCategoryFieldsStore.formData,
   (newFormData) => {
     Object.keys(newFormData).forEach((key) => {
+      // Check if this is a date field to determine if it should be in trimmedFieldValues
+      // Find the field definition to check if it's a date field
+      const isDateFld =
+        avitoCategoryFieldsStore.categoryFields?.some((field) => field.tag === key && isDateField(field)) || false;
+
       if (key === 'ImageUrls') {
         // For ImageUrls, apply trim to each URL in the comma-separated list
         const urls = newFormData[key] || '';
@@ -850,6 +865,10 @@ watch(
         } else {
           trimmedFieldValues.value[key] = newFormData[key];
         }
+      } else if (isDateFld) {
+        // For date fields, we still need to sync from store to local for initialization
+        // but the user interactions will be with trimmedFieldValues
+        trimmedFieldValues.value[key] = newFormData[key];
       } else {
         trimmedFieldValues.value[key] = newFormData[key];
       }
@@ -870,7 +889,9 @@ const validateRequiredFields = () => {
     const isRequired = field.content && field.content[0] && field.content[0].required;
     if (isRequired) {
       // Check if the field has a value
-      const fieldValue = avitoCategoryFieldsStore.formData[field.tag];
+      // Use trimmedFieldValues for date fields, otherwise use formData
+      const isDateFld = isDateField(field);
+      const fieldValue = isDateFld ? trimmedFieldValues.value[field.tag] : avitoCategoryFieldsStore.formData[field.tag];
       if (!fieldValue || fieldValue.toString().trim() === '') {
         // Return the field element that needs to be scrolled to
         const fieldElement = document.getElementById(field.tag);
@@ -885,7 +906,11 @@ const validateRequiredFields = () => {
       for (const child of field.children.filter((c) => c.tag !== 'Id')) {
         const isChildRequired = child.content && child.content[0] && child.content[0].required;
         if (isChildRequired) {
-          const childFieldValue = avitoCategoryFieldsStore.formData[child.tag];
+          // Use trimmedFieldValues for date fields, otherwise use formData
+          const isChildDateFld = isDateField(child);
+          const childFieldValue = isChildDateFld
+            ? trimmedFieldValues.value[child.tag]
+            : avitoCategoryFieldsStore.formData[child.tag];
           if (!childFieldValue || childFieldValue.toString().trim() === '') {
             const childElement = document.getElementById(child.tag);
             if (childElement) {
@@ -907,7 +932,7 @@ const scrollToInvalidField = (fieldElement: HTMLElement) => {
     // Scroll the container to bring the field into view
     itemFormSectionRef.value.scrollTo({
       top: fieldElement.offsetTop - itemFormSectionRef.value.offsetTop - 100,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
 
     // Add visual indication to the field
