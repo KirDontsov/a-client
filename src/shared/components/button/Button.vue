@@ -9,23 +9,18 @@
       colorClasses,
       variantClasses,
       iconClasses,
+      buttonClass,
       { 'opacity-50 cursor-not-allowed': disabled },
     ]"
     @mouseenter="showTooltip = true"
     @mouseleave="showTooltip = false"
     @click="$emit('click', $event)"
   >
-    <!-- Prepend icon -->
-    <component :is="prependIcon" v-if="prependIcon" :class="[iconSizeClass, 'mr-2']" />
-
     <!-- Button text -->
     <span v-if="$slots.default" class="flex items-center">
       <slot />
     </span>
     <span v-else>{{ text }}</span>
-
-    <!-- Append icon -->
-    <component :is="appendIcon" v-if="appendIcon" :class="[iconSizeClass, 'ml-2']" />
   </button>
 
   <!-- Tooltip rendered outside the button's DOM structure to avoid layout issues -->
@@ -51,10 +46,8 @@ interface Props {
   size?: 'sm' | 'md' | 'lg';
   color?: 'default' | 'blue' | 'gray' | 'red' | 'green' | 'yellow' | 'indigo' | 'purple' | 'pink' | 'teal';
   variant?: 'light' | 'dark';
-  prependIcon?: any;
-  appendIcon?: any;
-  iconSize?: 'sm' | 'md' | 'lg';
   hintText?: string;
+  buttonClass?: string | string[];
 }
 
 interface Emits {

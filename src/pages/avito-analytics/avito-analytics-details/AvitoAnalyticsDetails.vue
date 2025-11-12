@@ -2,10 +2,8 @@
 <template>
   <PageContainer>
     <template #body>
-      <div
-        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-700 dark:border-gray-600"
-      >
-        <div class="flex items-center justify-between gap-4 mb-6">
+      <div class="w-full flex flex-col gap-8 px-4 py-2 sm:px-8 sm:py-4">
+        <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-4">
             <h2 class="text-xl font-semibold text-gray-80 dark:text-white">
               {{ selectedRequest?.createdTs ? formatDate(selectedRequest.createdTs) : '' }}
@@ -34,7 +32,7 @@
         <!-- Table to display ads data -->
         <div
           v-if="avitoAnalyticsAdsStore.ads && avitoAnalyticsAdsStore.ads.length > 0"
-          class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-full"
+          class="relative overflow-x-auto bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
         >
           <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 bg-gray-50 uppercase dark:bg-gray-700 dark:text-gray-400">
@@ -140,7 +138,7 @@
         <!-- Pagination -->
         <div
           v-if="avitoAnalyticsAdsStore.ads && avitoAnalyticsAdsStore.ads.length > 0"
-          class="flex flex-col items-center mt-6"
+          class="flex flex-col items-center w-full relative overflow-x-auto bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
         >
           <!-- Pagination info -->
           <div class="flex items-center justify-between w-full mb-4">

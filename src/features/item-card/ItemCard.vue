@@ -67,7 +67,7 @@
               @click.stop="prevImage"
               color="default"
               variant="dark"
-              class="absolute left-2 top-1/2 transform -translate-y-1/2 !bg-white dark:bg-black opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all"
+              button-class="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all"
               aria-label="Previous image"
             >
               <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -81,7 +81,7 @@
               @click.stop="nextImage"
               color="default"
               variant="dark"
-              class="absolute right-2 top-1/2 transform -translate-y-1/2 !bg-white dark:bg-black opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all"
+              button-class="absolute right-2 top-1/2 transform -translate-y-1/2 opacity-50 text-white rounded-full p-2 hover:bg-opacity-75 transition-all"
               aria-label="Next image"
             >
               <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -98,9 +98,9 @@
                 @click.stop="goToImage(index)"
                 color="default"
                 variant="dark"
-                :class="[
+                :button-class="[
               'w-3 h-3 rounded-full transition-all',
-              index === currentImageIndex ? 'bg-white' : '!bg-white opacity-50'
+              index === currentImageIndex ? 'opacity-100' : 'opacity-30'
             ]"
                 :aria-label="`Go to image ${index + 1}`"
               />
@@ -274,7 +274,7 @@
                 <p class="text-sm font-medium text-gray-900 truncate dark:text-white">Ср. цена просмотра:</p>
               </div>
               <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                {{ formatCurrency(getMetricValue('averageViewCost')) }} &#8381
+                {{ formatCurrency(Number(getMetricValue('averageViewCost'))) }} &#8381
               </div>
             </div>
           </li>
@@ -286,7 +286,7 @@
                 <p class="text-sm font-medium text-gray-900 truncate dark:text-white">Ср. цена контакта:</p>
               </div>
               <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                {{ formatCurrency(getMetricValue('averageContactCost')) }} &#8381
+                {{ formatCurrency(Number(getMetricValue('averageContactCost'))) }} &#8381
               </div>
             </div>
           </li>
@@ -298,7 +298,7 @@
                 <p class="text-sm font-medium text-gray-900 truncate dark:text-white">Затраты:</p>
               </div>
               <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                {{ formatCurrency(getMetricValue('spending')) }} &#8381
+                {{ formatCurrency(Number(getMetricValue('spending'))) }} &#8381
               </div>
             </div>
           </li>

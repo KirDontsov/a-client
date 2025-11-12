@@ -2,7 +2,7 @@
 <template>
   <div
     v-if="showProgress || progressData"
-    class="mt-6 p-6 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
+    class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
   >
     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">Прогресс обработки</h3>
 

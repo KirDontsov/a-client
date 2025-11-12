@@ -41,7 +41,7 @@
         type="button"
         color="default"
         variant="dark"
-        class="absolute bottom-10 right-1 !p-2.5 me-2"
+        button-class="absolute bottom-10 right-1 !p-2.5 me-2"
       >
         <svg
           class="w-4 h-4 text-white"

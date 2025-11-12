@@ -2,12 +2,13 @@
 <template>
   <PageContainer :loading="loading">
     <template #body>
-      <div
-        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-700 dark:border-gray-600"
-      >
-        <h2 class="text-xl font-semibold text-gray-80 dark:text-white mb-6">Анализ конкурентов Avito</h2>
+      <div class="w-full flex flex-col gap-8 px-4 py-2 sm:px-8 sm:py-4">
+        <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Анализ конкурентов Avito</h2>
 
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <form
+          @submit.prevent="handleSubmit"
+          class="space-y-6 relative overflow-x-auto bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
+        >
           <!-- City field -->
           <InputField
             id="city"
@@ -16,7 +17,6 @@
             :required="true"
             placeholder="Введите город"
             label="Город *"
-            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
           />
 
           <!-- Request field -->
@@ -27,7 +27,6 @@
             :required="true"
             placeholder="Введите запрос, например: ремонт фар"
             label="Запрос *"
-            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
           />
 
           <!-- Coords field -->
@@ -37,7 +36,6 @@
             type="text"
             placeholder="Введите координаты в формате: широта,долгота"
             label="Координаты"
-            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
           />
 
           <!-- Radius field -->
@@ -47,27 +45,19 @@
             type="number"
             placeholder="Введите радиус в метрах"
             label="Радиус"
-            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
           />
 
           <!-- District field -->
-          <InputField
-            id="district"
-            v-model="formData.district"
-            type="text"
-            placeholder="Введите район"
-            label="Район"
-            class="bg-gray-50 dark:bg-gray-600 p-4 rounded-lg"
-          />
-
-          <!-- Form actions -->
-          <div class="flex justify-end space-x-4 pt-4">
-            <Button type="button" @click="handleReset" color="default" variant="dark"> Сбросить </Button>
-            <Button type="submit" :disabled="loading" color="default" variant="dark">
-              {{ loading ? 'Загрузка...' : 'Отправить запрос' }}
-            </Button>
-          </div>
+          <InputField id="district" v-model="formData.district" type="text" placeholder="Введите район" label="Район" />
         </form>
+
+        <!-- Form actions -->
+        <div class="flex justify-end space-x-4 pt-4">
+          <Button type="button" @click="handleReset" color="default" variant="dark"> Сбросить </Button>
+          <Button type="submit" :disabled="loading" color="default" variant="dark">
+            {{ loading ? 'Загрузка...' : 'Отправить запрос' }}
+          </Button>
+        </div>
       </div>
     </template>
   </PageContainer>

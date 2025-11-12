@@ -2,10 +2,8 @@
 <template>
   <PageContainer>
     <template #body>
-      <div
-        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-700 dark:border-gray-600"
-      >
-        <div class="flex items-center justify-between gap-4 mb-6">
+      <div class="w-full flex flex-col gap-8 text-gray-500 dark:text-gray-40 px-4 py-2 sm:px-8 sm:py-4">
+        <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-4">
             <h2 class="text-xl font-semibold text-gray-80 dark:text-white">
               Feed ID: {{ feedDetails?.feed_id || 'N/A' }}
@@ -14,6 +12,34 @@
               Category: {{ feedDetails?.category || 'N/A' }}
             </h2>
           </div>
+
+          <!-- View toggle switch -->
+          <div class="flex items-center space-x-2">
+            <span
+              :class="
+                viewType === 'table' ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-500 dark:text-gray-400'
+              "
+              >Таблица</span
+            >
+            <button
+              @click="toggleViewType"
+              class="relative rounded-full w-12 h-6 transition duration-200 ease-linear"
+              :class="viewType === 'table' ? 'bg-gray-200 dark:bg-gray-600' : 'bg-blue-500'"
+            >
+              <span
+                class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 ease-in-out flex items-center justify-center"
+                :class="viewType === 'table' ? 'transform translate-x-0' : 'transform translate-x-6'"
+              >
+                <span class="text-xs">{{ viewType === 'table' ? 'T' : 'C' }}</span>
+              </span>
+            </button>
+            <span
+              :class="
+                viewType === 'cards' ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-500 dark:text-gray-400'
+              "
+              >Карточки</span
+            >
+          </div>
         </div>
 
         <!-- Error message -->
@@ -21,70 +47,88 @@
           {{ error }}
         </div>
 
-        <!-- Table to display feed ads data -->
-        <div v-if="feedAds && feedAds.length > 0" class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-full">
-          <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 bg-gray-50 uppercase dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" class="px-3 py-3 font-medium">Ad ID</th>
-                <th scope="col" class="px-3 py-3 font-medium">Avito Ad ID</th>
-                <th
-                  v-for="fieldKey in fieldKeys"
-                  :key="fieldKey"
-                  scope="col"
-                  class="px-3 py-3 font-medium cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-nowrap"
-                  @click="sortTable(fieldKey)"
-                >
-                  {{ fieldKey }}
-                  <span v-if="sortColumn === fieldKey" class="ml-1">
-                    {{ sortDirection === 'asc' ? '↑' : '↓' }}
-                  </span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="ad in feedAds"
-                :key="ad.ad_id"
-                :class="[
-                  'bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600',
-                ]"
-              >
-                <td class="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-xs truncate" :title="ad.ad_id">
-                  {{ ad.ad_id || 'N/A' }}
-                </td>
-                <td
-                  class="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-xs truncate"
-                  :title="ad.avito_ad_id"
-                >
-                  <a
-                    :href="ad.avito_ad_id ? 'https://www.avito.ru/' + ad.avito_ad_id : '#'"
-                    target="_blank"
-                    class="text-blue-600 hover:underline dark:text-blue-50 truncate max-w-xs inline-block"
-                    :title="ad.avito_ad_id || 'N/A'"
+        <!-- Table or Cards to display feed ads data -->
+        <div v-if="feedAds && feedAds.length > 0">
+          <!-- Cards view -->
+          <div v-if="viewType === 'cards'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ItemCard
+              v-for="ad in feedAds"
+              :key="ad.ad_id"
+              :item="transformAdToItemCardFormat(ad)"
+              :analytics-data="analyticsData"
+              :analytics-loading="analyticsLoading"
+              @select="handleItemSelect"
+            />
+          </div>
+
+          <!-- Table view -->
+          <div
+            v-else
+            class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-full p-4 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
+          >
+            <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead class="text-xs text-gray-700 bg-gray-50 uppercase dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" class="px-3 py-3 font-medium">Ad ID</th>
+                  <th scope="col" class="px-3 py-3 font-medium">Avito Ad ID</th>
+                  <th
+                    v-for="fieldKey in fieldKeys"
+                    :key="fieldKey"
+                    scope="col"
+                    class="px-3 py-3 font-medium cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-nowrap"
+                    @click="sortTable(fieldKey)"
                   >
-                    {{ ad.avito_ad_id || 'N/A' }}
-                  </a>
-                </td>
-                <td
-                  v-for="fieldKey in fieldKeys"
-                  :key="fieldKey"
-                  class="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-xs truncate"
-                  :title="ad[fieldKey] || 'N/A'"
+                    {{ fieldKey }}
+                    <span v-if="sortColumn === fieldKey" class="ml-1">
+                      {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="ad in feedAds"
+                  :key="ad.ad_id"
+                  :class="[
+                    'bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600',
+                  ]"
                 >
-                  <TextPopup
-                    v-if="['title', 'description', 'address'].includes(fieldKey)"
-                    :text-value="ad[fieldKey] || 'N/A'"
-                    :max-length="40"
-                    :title="fieldKey"
-                    custom-class="max-w-xs"
-                  />
-                  <PromotionDisplay v-else-if="fieldKey === 'promotion'" :promotion-value="ad[fieldKey] || 'N/A'" />
-                  <span v-else>{{ ad[fieldKey] || 'N/A' }}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  <td class="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-xs truncate" :title="ad.ad_id">
+                    {{ ad.ad_id || 'N/A' }}
+                  </td>
+                  <td
+                    class="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-xs truncate"
+                    :title="ad.avito_ad_id"
+                  >
+                    <a
+                      :href="ad.avito_ad_id ? 'https://www.avito.ru/' + ad.avito_ad_id : '#'"
+                      target="_blank"
+                      class="text-blue-600 hover:underline dark:text-blue-50 truncate max-w-xs inline-block"
+                      :title="ad.avito_ad_id || 'N/A'"
+                    >
+                      {{ ad.avito_ad_id || 'N/A' }}
+                    </a>
+                  </td>
+                  <td
+                    v-for="fieldKey in fieldKeys"
+                    :key="fieldKey"
+                    class="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-xs truncate"
+                    :title="ad[fieldKey] || 'N/A'"
+                  >
+                    <TextPopup
+                      v-if="['title', 'description', 'address'].includes(fieldKey)"
+                      :text-value="ad[fieldKey] || 'N/A'"
+                      :max-length="40"
+                      :title="fieldKey"
+                      custom-class="max-w-xs"
+                    />
+                    <PromotionDisplay v-else-if="fieldKey === 'promotion'" :promotion-value="ad[fieldKey] || 'N/A'" />
+                    <span v-else>{{ ad[fieldKey] || 'N/A' }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div
@@ -98,7 +142,10 @@
         <div v-if="loading" class="text-center py-4 text-gray-50 dark:text-gray-400">Загрузка данных...</div>
 
         <!-- Pagination -->
-        <div v-if="feedAds && feedAds.length > 0" class="flex flex-col items-center mt-6">
+        <div
+          v-if="feedAds && feedAds.length > 0"
+          class="flex flex-col items-center w-full relative overflow-x-auto bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
+        >
           <!-- Pagination info -->
           <div class="flex items-center justify-between w-full mb-4">
             <div class="text-sm text-gray-700 dark:text-gray-400">
@@ -143,7 +190,10 @@ import { PageContainer } from '@/features/page-container';
 import { TextPopup } from '@/shared/components/text-popup';
 import { PromotionDisplay } from '@/shared/components/promotion-display';
 import { Pagination } from '@/features/pagination';
-import { getAvitoFeedById } from '@/shared/api/avito/avito';
+import { ItemCard } from '@/features/item-card';
+import { getAvitoFeedById, getAvitoItemAnalytics } from '@/shared/api/avito/avito';
+import type { AvitoItemAnalytics } from '@/shared/interfaces/avito';
+import { useCookies } from '@/entities/cookies/model';
 
 const route = useRoute();
 
@@ -152,6 +202,11 @@ const feedDetails = ref<any>(null);
 const feedAds = ref<any[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
+const viewType = ref<'table' | 'cards'>('table'); // Add view type state
+
+// Analytics state
+const analyticsData = ref<AvitoItemAnalytics[] | null>(null);
+const analyticsLoading = ref(false);
 
 // Pagination state
 const currentPage = ref(1);
@@ -251,6 +306,11 @@ const fetchFeedDetails = async (feedId: string, page: number = 1, limit: number 
     totalItems.value = 0;
   } finally {
     loading.value = false;
+
+    // Fetch analytics data if we're in cards view and have feed details
+    if (viewType.value === 'cards' && feedDetails.value) {
+      await fetchAnalyticsData();
+    }
   }
 };
 
@@ -336,6 +396,124 @@ const sortTable = (column: string) => {
       }
       return 0;
     });
+  }
+};
+
+// Toggle between table and cards view
+const toggleViewType = async () => {
+  const previousView = viewType.value;
+  viewType.value = viewType.value === 'table' ? 'cards' : 'table';
+
+  // Fetch analytics if switching to cards view and we haven't loaded them yet
+  if (viewType.value === 'cards' && previousView !== 'cards' && feedDetails.value && !analyticsData.value) {
+    await fetchAnalyticsData();
+  }
+};
+
+// Transform ad data to the format expected by ItemCard component
+const transformAdToItemCardFormat = (ad: any) => {
+  // Create the basic structure expected by ItemCard
+  const transformedAd: any = {
+    ad_id: ad.ad_id,
+    avito_ad_id: ad.avito_ad_id,
+    parsed_id: ad.parsed_id,
+    is_active: ad.is_active,
+    status: ad.status,
+    created_ts: ad.created_ts,
+    fields: [],
+  };
+
+  // Convert the flattened ad properties back to the fields array structure expected by ItemCard
+  Object.keys(ad).forEach((key) => {
+    // Skip the basic properties that are already handled separately
+    if (!['ad_id', 'avito_ad_id', 'parsed_id', 'is_active', 'status', 'created_ts'].includes(key)) {
+      // Create a field object for each property
+      const field = {
+        field_id: key, // Using the key as field_id since we don't have the original field_id
+        tag: key,
+        data_type: 'string', // Default to string, could be improved with better type detection
+        field_type: 'text', // Default to text, could be improved with better type detection
+        created_ts: ad.created_ts,
+        values: [
+          {
+            field_value_id: `${key}_${ad.ad_id}`, // Create a unique value ID
+            value: ad[key] || 'N/A',
+            created_ts: ad.created_ts,
+          },
+        ],
+      };
+      transformedAd.fields.push(field);
+    }
+  });
+
+  return transformedAd;
+};
+
+// Handle item selection in card view
+const handleItemSelect = (itemId: string) => {
+  console.log('Item selected:', itemId);
+  // Add any necessary logic for when an item card is selected
+};
+
+// Function to fetch analytics data for the feed ads
+const fetchAnalyticsData = async () => {
+  // Get the account_id from the feed details
+  const accountId = feedDetails.value?.account_id;
+
+  if (!accountId) {
+    console.error('Account ID not found in feed details');
+    return;
+  }
+
+  analyticsLoading.value = true;
+
+  try {
+    // Prepare analytics parameters
+    const analyticsParams = {
+      avito_token: '', // We need to get this from cookies or context
+      account_id: accountId,
+      dateFrom: '2025-08-01', // Using default date, should be configurable
+      dateTo: '2025-08-31', // Using default date, should be configurable
+      grouping: 'item',
+      limit: 100,
+      metrics: [
+        'views',
+        'contacts',
+        'favorites',
+        'viewsToContactsConversion',
+        'averageViewCost',
+        'averageContactCost',
+        'impressions',
+        'impressionsToViewsConversion',
+        'spending',
+      ],
+      offset: 0,
+      page: 1,
+    };
+
+    // Get the avito_token from cookies using the composable
+    const { value: avitoToken } = useCookies<string>('avito_token');
+    analyticsParams.avito_token = avitoToken.value || '';
+
+    if (!analyticsParams.avito_token) {
+      console.error('Avito token not found in cookies');
+      return;
+    }
+
+    // Fetch analytics data
+    const response = await getAvitoItemAnalytics(analyticsParams);
+
+    if (response?.result?.groupings) {
+      analyticsData.value = response.result.groupings;
+    } else {
+      console.warn('Analytics data not found in response');
+      analyticsData.value = [];
+    }
+  } catch (error) {
+    console.error('Error fetching analytics data:', error);
+    analyticsData.value = [];
+  } finally {
+    analyticsLoading.value = false;
   }
 };
 </script>

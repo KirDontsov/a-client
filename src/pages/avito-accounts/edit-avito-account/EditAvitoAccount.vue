@@ -1,14 +1,15 @@
 <template>
   <PageContainer :loading="loading">
     <template #body>
-      <div
-        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-700 dark:border-gray-600"
-      >
-        <div class="flex justify-between items-center mb-6">
+      <div class="w-full px-4 py-2 sm:px-8 sm:py-4 flex flex-col gap-8">
+        <div class="flex justify-between items-center">
           <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Edit Avito Account</h2>
         </div>
 
-        <form @submit.prevent="updateAccount" class="space-y-6">
+        <form
+          @submit.prevent="updateAccount"
+          class="space-y-6 bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
+        >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <InputField
               id="avito_client_id"
@@ -36,7 +37,7 @@
                   @click="toggleSecretVisibility"
                   color="default"
                   variant="dark"
-                  class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  button-class="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
                   <svg
                     class="w-6 h-6 text-white"
@@ -59,14 +60,14 @@
               </div>
             </div>
           </div>
-
-          <div class="flex items-center space-x-4">
-            <Button type="submit" :disabled="updatingAccount" color="default" variant="dark">
-              {{ updatingAccount ? 'Updating...' : 'Update Account' }}
-            </Button>
-            <Button type="button" @click="goBack" color="default" variant="dark"> Cancel </Button>
-          </div>
         </form>
+
+        <div class="flex items-center space-x-4">
+          <Button type="submit" :disabled="updatingAccount" color="default" variant="dark">
+            {{ updatingAccount ? 'Updating...' : 'Update Account' }}
+          </Button>
+          <Button type="button" @click="goBack" color="default" variant="dark"> Cancel </Button>
+        </div>
 
         <!-- Error message -->
         <div

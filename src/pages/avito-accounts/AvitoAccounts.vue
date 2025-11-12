@@ -2,9 +2,7 @@
 <template>
   <PageContainer :loading="avitoAccountsStore.loading">
     <template #body>
-      <div
-        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-700 dark:border-gray-600"
-      >
+      <div class="w-full px-4 py-2 sm:px-8 sm:py-4">
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Центр управления аккаунтами</h2>
           <Button @click="goToCreateAccount" color="default" variant="dark" class="flex items-center gap-2">
@@ -38,7 +36,7 @@
         <!-- Table to display avito accounts -->
         <div
           v-if="avitoAccountsStore.accounts && avitoAccountsStore.accounts.length > 0"
-          class="relative overflow-x-auto shadow-md sm:rounded-lg"
+          class="relative overflow-x-auto bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
         >
           <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-40">
