@@ -3,7 +3,6 @@
     v-if="avitoCategoriesStore.selectedCategories.length > 0"
     class="p-8 bg-gray-50 dark:bg-gray-700 rounded-lg flex flex-col gap-4"
   >
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Выбранная категория:</h2>
     <div class="flex items-center justify-between mt-1 flex-wrap">
       <div class="flex items-center flex-wrap">
         <span

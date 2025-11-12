@@ -5,43 +5,41 @@
         <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Создание объявления</h2>
         <SelectedCategoryPath />
         <!-- Stepper Navigation -->
-        <div class="mb-8">
-          <div class="w-full">
-            <div class="flex items-center justify-between w-full">
-              <div
-                v-for="(step, index) in totalSteps"
-                :key="index"
-                class="flex items-center transition-all duration-300 ease-in-out flex-1 min-w-0 basis-0"
-              >
-                <button
-                  @click="goToStep(index)"
-                  :class="[
-                    'flex items-center justify-center text-sm font-medium rounded-full transition-all duration-300 ease-in-out',
-                    index === currentStep - 1 || index === currentStep || index === currentStep + 1
-                      ? 'w-10 h-10 bg-opacity-100' // Active steps (prev, current, next)
-                      : 'w-8 h-8 bg-opacity-70', // Collapsed steps
-                    index < currentStep
+        <div class="w-full">
+          <div class="flex items-center justify-between w-full">
+            <div
+              v-for="(step, index) in totalSteps"
+              :key="index"
+              class="flex items-center transition-all duration-300 ease-in-out flex-1 min-w-0 basis-0"
+            >
+              <button
+                @click="goToStep(index)"
+                :class="[
+                  'flex items-center justify-center text-sm font-medium rounded-full transition-all duration-300 ease-in-out',
+                  index === currentStep - 1 || index === currentStep || index === currentStep + 1
+                    ? 'w-10 h-10 bg-opacity-100' // Active steps (prev, current, next)
+                    : 'w-8 h-8 bg-opacity-70', // Collapsed steps
+                  index < currentStep
+                    ? 'bg-blue-600 text-white'
+                    : currentStep === index
                       ? 'bg-blue-600 text-white'
-                      : currentStep === index
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 !text-gray-800 dark:bg-gray-600 dark:text-gray-300',
-                    'cursor-pointer hover:bg-opacity-80',
-                  ]"
-                >
-                  {{ index + 1 }}
-                </button>
-                <div
-                  v-if="index < totalSteps - 1"
-                  class="flex-1 mx-1 rounded-full transition-all duration-300 ease-in-out"
-                  :class="
-                    index === currentStep - 1 || index === currentStep
-                      ? index < currentStep
-                        ? 'bg-blue-600 h-0.5'
-                        : 'bg-gray-50 dark:bg-gray-600 h-1' // Active dividers (prev-current and current-next)
-                      : 'bg-gray-50 dark:bg-gray-500 h-0.25' // Collapsed dividers
-                  "
-                ></div>
-              </div>
+                      : 'bg-gray-100 !text-gray-800 dark:bg-gray-600 dark:text-gray-300',
+                  'cursor-pointer hover:bg-opacity-80',
+                ]"
+              >
+                {{ index + 1 }}
+              </button>
+              <div
+                v-if="index < totalSteps - 1"
+                class="flex-1 mx-1 rounded-full transition-all duration-300 ease-in-out"
+                :class="
+                  index === currentStep - 1 || index === currentStep
+                    ? index < currentStep
+                      ? 'bg-blue-600 h-0.5'
+                      : 'bg-gray-50 dark:bg-gray-600 h-1' // Active dividers (prev-current and current-next)
+                    : 'bg-gray-50 dark:bg-gray-500 h-0.25' // Collapsed dividers
+                "
+              ></div>
             </div>
           </div>
         </div>
@@ -154,7 +152,7 @@
                   <select
                     v-else-if="field.content[0].field_type === 'select' || field.tag === 'Make'"
                     :id="field.tag"
-                    v-model="avitoCategoryFieldsStore.formData[field.tag]"
+                    v-model="trimmedFieldValues[field.tag]"
                     :required="field.content[0].required"
                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
                   >
@@ -197,12 +195,12 @@
                           :id="`${field.tag}-${option.value}`"
                           type="checkbox"
                           :value="option.value"
-                          v-model="avitoCategoryFieldsStore.formData[field.tag]"
-                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                          v-model="trimmedFieldValues[field.tag]"
+                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-60"
                         />
                         <label
                           :for="`${field.tag}-${option.value}`"
-                          class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                          class="ml-2 block text-sm text-gray-70 dark:text-gray-300"
                         >
                           {{ option.value }}
                         </label>
@@ -215,7 +213,7 @@
                           :id="`${field.tag}-${option.value}`"
                           type="checkbox"
                           :value="option.value"
-                          v-model="avitoCategoryFieldsStore.formData[field.tag]"
+                          v-model="trimmedFieldValues[field.tag]"
                           class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
                         />
                         <label
@@ -294,7 +292,7 @@
                               :id="`${child.tag}-${option.value}`"
                               type="checkbox"
                               :value="option.value"
-                              v-model="avitoCategoryFieldsStore.formData[child.tag]"
+                              v-model="trimmedFieldValues[child.tag]"
                               class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
                             />
                             <label
@@ -312,7 +310,7 @@
                               :id="`${child.tag}-${option.value}`"
                               type="checkbox"
                               :value="option.value"
-                              v-model="avitoCategoryFieldsStore.formData[child.tag]"
+                              v-model="trimmedFieldValues[child.tag]"
                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
                             />
                             <label
@@ -329,9 +327,9 @@
                       <select
                         v-else-if="child.content[0].field_type === 'select' || child.tag === 'Make'"
                         :id="child.tag"
-                        v-model="avitoCategoryFieldsStore.formData[child.tag]"
+                        v-model="trimmedFieldValues[child.tag]"
                         :required="child.content[0].required"
-                        class="w-full px-3 py-2 border border-gray-30 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
                       >
                         <option value="" disabled>Выберите значение</option>
                         <!-- Special handling for Make field with new structure -->
@@ -817,14 +815,7 @@ const getOrderedFields = () => {
   return [...orderedSpecificRequired, ...groupedOtherRequired, ...groupedOptional];
 };
 
-onMounted(async () => {
-  if (avito_token.value) {
-    await avitoCategoryFieldsStore.getAvitoCategoryFields({
-      avito_token: avito_token.value,
-      avito_slug: avitoCategoriesStore.selectedFinalCategory,
-    });
-  }
-});
+// The original onMounted function is now included in the watch section above
 
 // Function to sync trimmed values to the store
 const syncTrimmedValuesToStore = () => {
@@ -836,9 +827,9 @@ const syncTrimmedValuesToStore = () => {
         .split(',')
         .map((url) => url.trim())
         .join(',');
-      avitoCategoryFieldsStore.formData[key] = trimmedUrls;
+      avitoCategoryFieldsStore.updateFormField(key, trimmedUrls);
     } else {
-      avitoCategoryFieldsStore.formData[key] = trimmedFieldValues.value[key];
+      avitoCategoryFieldsStore.updateFormField(key, trimmedFieldValues.value[key]);
     }
   });
 };
@@ -847,35 +838,80 @@ const syncTrimmedValuesToStore = () => {
 watch(
   () => avitoCategoryFieldsStore.formData,
   (newFormData) => {
+    // Only update trimmedFieldValues for fields that don't exist in trimmedFieldValues yet
+    // This prevents overwriting user-entered values when other fields change
     Object.keys(newFormData).forEach((key) => {
-      // Check if this is a date field to determine if it should be in trimmedFieldValues
-      // Find the field definition to check if it's a date field
+      // Check if this is a date or checkbox field to determine if it should be in trimmedFieldValues
+      // Find the field definition to check if it's a date or checkbox field
       const isDateFld =
         avitoCategoryFieldsStore.categoryFields?.some((field) => field.tag === key && isDateField(field)) || false;
+      const isCheckboxFld =
+        avitoCategoryFieldsStore.categoryFields?.some(
+          (field) => field.tag === key && field.content[0]?.field_type === 'checkbox',
+        ) || false;
 
-      if (key === 'ImageUrls') {
-        // For ImageUrls, apply trim to each URL in the comma-separated list
-        const urls = newFormData[key] || '';
-        if (urls) {
-          const trimmedUrls = urls
-            .split(',')
-            .map((url) => url.trim())
-            .join(',');
-          trimmedFieldValues.value[key] = trimmedUrls;
+      // Only update if the value doesn't exist in trimmedFieldValues (initialization)
+      if (!(key in trimmedFieldValues.value)) {
+        if (key === 'ImageUrls') {
+          // For ImageUrls, apply trim to each URL in the comma-separated list
+          const urls = newFormData[key] || '';
+          if (urls) {
+            const trimmedUrls = urls
+              .split(',')
+              .map((url) => url.trim())
+              .join(',');
+            trimmedFieldValues.value[key] = trimmedUrls;
+          } else {
+            trimmedFieldValues.value[key] = newFormData[key];
+          }
+        } else if (isDateFld || isCheckboxFld) {
+          // For date and checkbox fields, we still need to sync from store to local for initialization
+          // but the user interactions will be with trimmedFieldValues
+          trimmedFieldValues.value[key] = newFormData[key];
         } else {
+          // For input fields, we'll use the store's formData only if not already in trimmedFieldValues
+          // This prevents overwriting user input when other fields change
           trimmedFieldValues.value[key] = newFormData[key];
         }
-      } else if (isDateFld) {
-        // For date fields, we still need to sync from store to local for initialization
-        // but the user interactions will be with trimmedFieldValues
-        trimmedFieldValues.value[key] = newFormData[key];
-      } else {
-        trimmedFieldValues.value[key] = newFormData[key];
       }
     });
   },
   { deep: true, immediate: true },
 );
+
+// Also watch trimmedFieldValues to sync back to store
+watch(
+  trimmedFieldValues,
+  (newTrimmedValues) => {
+    Object.keys(newTrimmedValues).forEach((key) => {
+      // Only update the store if the value is different from what's in the store
+      if (avitoCategoryFieldsStore.formData[key] !== newTrimmedValues[key]) {
+        avitoCategoryFieldsStore.updateFormField(key, newTrimmedValues[key]);
+      }
+    });
+  },
+  { deep: true },
+);
+
+// Initialize trimmedFieldValues when component mounts to ensure all fields are in sync
+onMounted(async () => {
+  if (avito_token.value) {
+    await avitoCategoryFieldsStore.getAvitoCategoryFields({
+      avito_token: avito_token.value,
+      avito_slug: avitoCategoriesStore.selectedFinalCategory,
+    });
+
+    // After getting the fields, ensure all store values are in trimmedFieldValues
+    if (avitoCategoryFieldsStore.formData) {
+      Object.keys(avitoCategoryFieldsStore.formData).forEach((key) => {
+        if (!(key in trimmedFieldValues.value)) {
+          const value = avitoCategoryFieldsStore.formData[key];
+          trimmedFieldValues.value[key] = value;
+        }
+      });
+    }
+  }
+});
 
 // Function to validate required fields
 const validateRequiredFields = () => {
@@ -889,10 +925,10 @@ const validateRequiredFields = () => {
     const isRequired = field.content && field.content[0] && field.content[0].required;
     if (isRequired) {
       // Check if the field has a value
-      // Use trimmedFieldValues for date fields, otherwise use formData
-      const isDateFld = isDateField(field);
-      const fieldValue = isDateFld ? trimmedFieldValues.value[field.tag] : avitoCategoryFieldsStore.formData[field.tag];
-      if (!fieldValue || fieldValue.toString().trim() === '') {
+      // Use trimmedFieldValues for all fields since they're all now in the same place
+      let fieldValue = trimmedFieldValues.value[field.tag];
+
+      if (!fieldValue || (Array.isArray(fieldValue) ? fieldValue.length === 0 : fieldValue.toString().trim() === '')) {
         // Return the field element that needs to be scrolled to
         const fieldElement = document.getElementById(field.tag);
         if (fieldElement) {
@@ -906,12 +942,13 @@ const validateRequiredFields = () => {
       for (const child of field.children.filter((c) => c.tag !== 'Id')) {
         const isChildRequired = child.content && child.content[0] && child.content[0].required;
         if (isChildRequired) {
-          // Use trimmedFieldValues for date fields, otherwise use formData
-          const isChildDateFld = isDateField(child);
-          const childFieldValue = isChildDateFld
-            ? trimmedFieldValues.value[child.tag]
-            : avitoCategoryFieldsStore.formData[child.tag];
-          if (!childFieldValue || childFieldValue.toString().trim() === '') {
+          // Use trimmedFieldValues for child fields as well
+          let childFieldValue = trimmedFieldValues.value[child.tag];
+
+          if (
+            !childFieldValue ||
+            (Array.isArray(childFieldValue) ? childFieldValue.length === 0 : childFieldValue.toString().trim() === '')
+          ) {
             const childElement = document.getElementById(child.tag);
             if (childElement) {
               return childElement;
@@ -939,6 +976,25 @@ const scrollToInvalidField = (fieldElement: HTMLElement) => {
     fieldElement.focus();
   }
 };
+
+onMounted(async () => {
+  if (avito_token.value) {
+    await avitoCategoryFieldsStore.getAvitoCategoryFields({
+      avito_token: avito_token.value,
+      avito_slug: avitoCategoriesStore.selectedFinalCategory,
+    });
+
+    // After getting the fields, ensure all store values are in trimmedFieldValues
+    if (avitoCategoryFieldsStore.formData) {
+      Object.keys(avitoCategoryFieldsStore.formData).forEach((key) => {
+        if (!(key in trimmedFieldValues.value)) {
+          const value = avitoCategoryFieldsStore.formData[key];
+          trimmedFieldValues.value[key] = value;
+        }
+      });
+    }
+  }
+});
 </script>
 
 <style scoped>
