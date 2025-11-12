@@ -34,8 +34,8 @@
       :rows="rows"
       :class="[
         'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-        error ? 'border-red-400' : '',
-        required && !modelValue && touched ? '!border-red-400' : '',
+        error ? '!border-red-400' : '',
+        required && !modelValue && touched ? '!border-red-40' : '',
         disabled ? 'opacity-50 cursor-not-allowed' : '',
         inputClass,
       ]"
@@ -43,7 +43,7 @@
       @blur="handleBlur"
       @focus="$emit('focus', $event)"
     />
-    <p v-if="error" class="mt-2 text-sm text-red-600 dark:text-red-50">{{ error }}</p>
+    <p v-if="error" class="mt-2 text-sm text-red-400 dark:text-red-40">{{ error }}</p>
     <p v-else-if="required && !modelValue && touched" class="mt-2 text-sm !text-red-400 dark:text-red-50">
       Обязательное поле
     </p>

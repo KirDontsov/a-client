@@ -336,7 +336,7 @@ const carouselInterval = ref<NodeJS.Timeout | null>(null);
 
 // Extract image URLs from the item fields
 const imageUrls = computed(() => {
-  const imagesField = props.item.fields?.find(field => field.tag === 'Images');
+  const imagesField = props.item.fields?.find(field => field.tag === 'Images' || field.tag === 'ImageUrls');
   if (imagesField && imagesField.values.length > 0) {
     const imagesValue = imagesField.values[0].value;
     // Split comma-separated URLs and filter out empty strings

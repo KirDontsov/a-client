@@ -4,45 +4,7 @@
       <div class="w-full flex flex-col gap-8 text-gray-50 dark:text-gray-40 px-4 py-2 sm:px-8 sm:py-4">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Создание объявления</h2>
         <SelectedCategoryPath />
-        <!-- Stepper Navigation -->
-        <div class="w-full">
-          <div class="flex items-center justify-between w-full">
-            <div
-              v-for="(step, index) in totalSteps"
-              :key="index"
-              class="flex items-center transition-all duration-300 ease-in-out flex-1 min-w-0 basis-0"
-            >
-              <button
-                @click="goToStep(index)"
-                :class="[
-                  'flex items-center justify-center text-sm font-medium rounded-full transition-all duration-300 ease-in-out',
-                  index === currentStep - 1 || index === currentStep || index === currentStep + 1
-                    ? 'w-10 h-10 bg-opacity-100' // Active steps (prev, current, next)
-                    : 'w-8 h-8 bg-opacity-70', // Collapsed steps
-                  index < currentStep
-                    ? 'bg-blue-600 text-white'
-                    : currentStep === index
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 !text-gray-800 dark:bg-gray-600 dark:text-gray-300',
-                  'cursor-pointer hover:bg-opacity-80',
-                ]"
-              >
-                {{ index + 1 }}
-              </button>
-              <div
-                v-if="index < totalSteps - 1"
-                class="flex-1 mx-1 rounded-full transition-all duration-300 ease-in-out"
-                :class="
-                  index === currentStep - 1 || index === currentStep
-                    ? index < currentStep
-                      ? 'bg-blue-600 h-0.5'
-                      : 'bg-gray-50 dark:bg-gray-600 h-1' // Active dividers (prev-current and current-next)
-                    : 'bg-gray-50 dark:bg-gray-500 h-0.25' // Collapsed dividers
-                "
-              ></div>
-            </div>
-          </div>
-        </div>
+        <Stepper />
 
         <!-- Item Form Section -->
         <div
@@ -131,6 +93,7 @@
                       :id="field.tag"
                       v-model="trimmedFieldValues[field.tag]"
                       :required="field.content[0].required"
+                      :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
                       placeholder="Выберите дату"
                     />
                     <!-- Regular input field -->
@@ -140,51 +103,62 @@
                       v-model="trimmedFieldValues[field.tag]"
                       :type="getInputType(field.content[0].data_type)"
                       :required="field.content[0].required"
-                      :min="field.content[0].values_range?.min"
-                      :max="field.content[0].values_range?.max"
                       :isTextarea="field.tag === 'Description'"
                       :helperText="field.tag === 'ImageUrls' ? 'Ссылки на фотографии через запятую' : undefined"
+                      :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
                       class="w-full"
                     />
                   </div>
-
                   <!-- Select field -->
-                  <select
-                    v-else-if="field.content[0].field_type === 'select' || field.tag === 'Make'"
-                    :id="field.tag"
-                    v-model="trimmedFieldValues[field.tag]"
-                    :required="field.content[0].required"
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
-                  >
-                    <option value="" disabled>Выберите значение</option>
-                    <!-- Special handling for Make field with new structure -->
-                    <option
-                      v-if="field.tag === 'Make' && isMakeFieldWithNewStructure(field)"
-                      v-for="option in field.content[0].values.values"
-                      :key="option.value"
-                      :value="option.value"
+                  <div v-else-if="field.content[0].field_type === 'select' || field.tag === 'Make'" class="relative">
+                    <select
+                      :id="field.tag"
+                      v-model="trimmedFieldValues[field.tag]"
+                      :required="field.content[0].required"
+                      :class="[
+                        'w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-200',
+                        avitoCategoryFieldsStore.getFieldError(field.tag)
+                          ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
+                          : 'border-gray-300 dark:border-gray-600',
+                      ]"
                     >
-                      {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
-                    </option>
-                    <!-- Regular Make field with old structure -->
-                    <option
-                      v-else-if="field.tag === 'Make'"
-                      v-for="option in getSelectOptions(field.content[0].values)"
-                      :key="option.value"
-                      :value="option.value"
+                      <option value="" disabled>Выберите значение</option>
+                      <!-- Special handling for Make field with new structure -->
+                      <option
+                        v-if="field.tag === 'Make' && isMakeFieldWithNewStructure(field)"
+                        v-for="option in field.content[0].values.values"
+                        :key="option.value"
+                        :value="option.value"
+                      >
+                        {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
+                      </option>
+                      <!-- Regular Make field with old structure -->
+                      <option
+                        v-else-if="field.tag === 'Make'"
+                        v-for="option in getSelectOptions(field.content[0].values)"
+                        :key="option.value"
+                        :value="option.value"
+                      >
+                        {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
+                      </option>
+                      <!-- Regular select field -->
+                      <option
+                        v-else
+                        v-for="option in getSelectOptions(field.content[0].values)"
+                        :key="option.value"
+                        :value="option.value"
+                      >
+                        {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
+                      </option>
+                    </select>
+                    <!-- Error message for select field -->
+                    <p
+                      v-if="avitoCategoryFieldsStore.getFieldError(field.tag)"
+                      class="mt-1 text-sm text-red-600 dark:text-red-50"
                     >
-                      {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
-                    </option>
-                    <!-- Regular select field -->
-                    <option
-                      v-else
-                      v-for="option in getSelectOptions(field.content[0].values)"
-                      :key="option.value"
-                      :value="option.value"
-                    >
-                      {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
-                    </option>
-                  </select>
+                      {{ avitoCategoryFieldsStore.getFieldError(field.tag) }}
+                    </p>
+                  </div>
 
                   <!-- Checkbox field -->
                   <div v-else-if="field.content[0].field_type === 'checkbox' && field.tag !== 'Make'" class="space-y-2">
@@ -268,6 +242,7 @@
                         :id="child.tag"
                         v-model="trimmedFieldValues[child.tag]"
                         :required="child.content[0].required"
+                        :error="avitoCategoryFieldsStore.getFieldError(child.tag)"
                         placeholder="Выберите дату"
                       />
                       <InputField
@@ -277,6 +252,7 @@
                         :type="getInputType(child.content[0].data_type)"
                         :required="child.content[0].required"
                         :isTextarea="child.tag === 'Description'"
+                        :error="avitoCategoryFieldsStore.getFieldError(child.tag)"
                         class="w-full"
                       />
 
@@ -324,42 +300,58 @@
                       </div>
 
                       <!-- Child select field -->
-                      <select
+                      <div
                         v-else-if="child.content[0].field_type === 'select' || child.tag === 'Make'"
-                        :id="child.tag"
-                        v-model="trimmedFieldValues[child.tag]"
-                        :required="child.content[0].required"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200"
+                        class="relative"
                       >
-                        <option value="" disabled>Выберите значение</option>
-                        <!-- Special handling for Make field with new structure -->
-                        <option
-                          v-if="child.tag === 'Make' && isMakeFieldWithNewStructure(child)"
-                          v-for="option in child.content[0].values.values"
-                          :key="option.value"
-                          :value="option.value"
+                        <select
+                          :id="child.tag"
+                          v-model="trimmedFieldValues[child.tag]"
+                          :required="child.content[0].required"
+                          :class="[
+                            'w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-200',
+                            avitoCategoryFieldsStore.getFieldError(child.tag)
+                              ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
+                              : 'border-gray-300 dark:border-gray-600',
+                          ]"
                         >
-                          {{ option.value }}
-                        </option>
-                        <!-- Regular Make field with old structure -->
-                        <option
-                          v-else-if="child.tag === 'Make'"
-                          v-for="option in getSelectOptions(child.content[0].values)"
-                          :key="option.value"
-                          :value="option.value"
+                          <option value="" disabled>Выберите значение</option>
+                          <!-- Special handling for Make field with new structure -->
+                          <option
+                            v-if="child.tag === 'Make' && isMakeFieldWithNewStructure(child)"
+                            v-for="option in child.content[0].values.values"
+                            :key="option.value"
+                            :value="option.value"
+                          >
+                            {{ option.value }}
+                          </option>
+                          <!-- Regular Make field with old structure -->
+                          <option
+                            v-else-if="child.tag === 'Make'"
+                            v-for="option in getSelectOptions(child.content[0].values)"
+                            :key="option.value"
+                            :value="option.value"
+                          >
+                            {{ option.value }}
+                          </option>
+                          <!-- Regular select field -->
+                          <option
+                            v-else
+                            v-for="option in getSelectOptions(child.content[0].values)"
+                            :key="option.value"
+                            :value="option.value"
+                          >
+                            {{ option.value }}
+                          </option>
+                        </select>
+                        <!-- Error message for child select field -->
+                        <p
+                          v-if="avitoCategoryFieldsStore.getFieldError(child.tag)"
+                          class="mt-1 text-sm text-red-600 dark:text-red-500"
                         >
-                          {{ option.value }}
-                        </option>
-                        <!-- Regular select field -->
-                        <option
-                          v-else
-                          v-for="option in getSelectOptions(child.content[0].values)"
-                          :key="option.value"
-                          :value="option.value"
-                        >
-                          {{ option.value }}
-                        </option>
-                      </select>
+                          {{ avitoCategoryFieldsStore.getFieldError(child.tag) }}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -368,12 +360,18 @@
           </div>
           <!-- Step Navigation -->
           <div class="flex justify-between pt-4">
-            <Button type="button" @click="prevStep" :disabled="currentStep === 0" color="default" variant="dark">
+            <Button
+              type="button"
+              @click="prevStep"
+              :disabled="stepperStore.getCurrentStep === 0"
+              color="default"
+              variant="dark"
+            >
               Назад
             </Button>
             <div class="flex space-x-2">
               <Button
-                v-if="currentStep < totalSteps - 1"
+                v-if="stepperStore.getCurrentStep < stepperStore.getTotalSteps - 1"
                 type="button"
                 @click="nextStep"
                 color="default"
@@ -425,7 +423,7 @@
 import { useCookies, useAvitoCategoriesStore, useAvitoCategoryFieldsStore } from '@/entities';
 import { onMounted, ref, computed, nextTick, watch } from 'vue';
 import { PageContainer } from '@/features/page-container';
-import { SelectedCategoryPath } from '@/features';
+import { SelectedCategoryPath, Stepper, useStepperStore } from '@/features';
 import { DatePicker } from '@/shared/components/date-picker';
 import { InputField } from '@/shared/components/input-field';
 import { Button } from '@/shared/components';
@@ -434,54 +432,12 @@ const { value: avito_token } = useCookies('avito_token');
 
 const avitoCategoriesStore = useAvitoCategoriesStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
-const currentStep = ref(0);
+const stepperStore = useStepperStore();
 const itemFormSectionRef = ref(null);
 const formFieldsSectionRef = ref(null);
 
 // Reactive object to store trimmed values for fields that need trimming
 const trimmedFieldValues = ref({});
-
-// Calculate total steps based on fields (2 fields per step, but paired fields stay together)
-const calculateTotalSteps = () => {
-  const orderedFields = getOrderedFields();
-  let stepCount = 0;
-  let i = 0;
-
-  while (i < orderedFields.length) {
-    // Each step can have up to 2 fields, but paired fields should stay together
-    let fieldsInStep = 1;
-
-    // Check if the current field is part of a pair and if the next field is its pair
-    if (i + 1 < orderedFields.length) {
-      const currentField = orderedFields[i];
-      const nextField = orderedFields[i + 1];
-
-      // Check if these are paired fields (e.g., WorkTimeFrom/WorkTimeTo)
-      const isPaired = isFieldPaired(currentField, nextField);
-      if (isPaired) {
-        fieldsInStep = 2;
-      } else if (i + 2 < orderedFields.length) {
-        // Check if current field and the one after next are paired
-        const nextNextField = orderedFields[i + 2];
-        const isCurrentPairedWithNextNext = isFieldPaired(currentField, nextNextField);
-        if (isCurrentPairedWithNextNext) {
-          fieldsInStep = 1; // Current field will be in a step with the one after next
-        } else {
-          fieldsInStep = 2; // Take up to 2 fields if not paired
-        }
-      } else {
-        fieldsInStep = 2; // Take up to 2 fields if not paired
-      }
-    }
-
-    stepCount++;
-    i += fieldsInStep;
-  }
-
-  return stepCount;
-};
-
-const totalSteps = computed(() => calculateTotalSteps());
 
 const getInputType = (dataType: string) => {
   switch (dataType) {
@@ -493,17 +449,100 @@ const getInputType = (dataType: string) => {
   }
 };
 
-const handleSubmit = async () => {
-  // Validate required fields before submitting
-  const invalidField = validateRequiredFields();
-  if (invalidField) {
-    // Scroll to the invalid field
-    scrollToInvalidField(invalidField);
-    return;
+// Initialize the stepper store when category fields are loaded
+const initializeStepper = () => {
+  if (avitoCategoryFieldsStore.categoryFields) {
+    const orderedFields = getOrderedFields();
+    stepperStore.setOrderedFields(orderedFields);
+
+    // Calculate total steps based on fields (2 fields per step, but paired fields stay together)
+    let stepCount = 0;
+    let i = 0;
+
+    while (i < orderedFields.length) {
+      // Each step can have up to 2 fields, but paired fields should stay together
+      let fieldsInStep = 1;
+
+      // Check if the current field is part of a pair and if the next field is its pair
+      if (i + 1 < orderedFields.length) {
+        const currentField = orderedFields[i];
+        const nextField = orderedFields[i + 1];
+
+        // Check if these are paired fields (e.g., WorkTimeFrom/WorkTimeTo)
+        const isPaired = isFieldPaired(currentField, nextField);
+        if (isPaired) {
+          fieldsInStep = 2;
+        } else if (i + 2 < orderedFields.length) {
+          // Check if current field and the one after next are paired
+          const nextNextField = orderedFields[i + 2];
+          const isCurrentPairedWithNextNext = isFieldPaired(currentField, nextNextField);
+          if (isCurrentPairedWithNextNext) {
+            fieldsInStep = 1; // Current field will be in a step with the one after next
+          } else {
+            fieldsInStep = 2; // Take up to 2 fields if not paired
+          }
+        } else {
+          fieldsInStep = 2; // Take up to 2 fields if not paired
+        }
+      }
+
+      stepCount++;
+      i += fieldsInStep;
+    }
+
+    stepperStore.setTotalSteps(stepCount);
+  }
+};
+
+// Check if two fields are paired (e.g., WorkTimeFrom/WorkTimeTo)
+const isFieldPaired = (field1: any, field2: any) => {
+  const tag1 = field1.tag;
+  const tag2 = field2.tag;
+
+  // Check if they have the same prefix and one ends with 'From' and the other with 'To'
+  if (tag1.endsWith('From') && tag2.endsWith('To')) {
+    return tag1.slice(0, -4) === tag2.slice(0, -2); // Remove 'From' and 'To' and compare
+  } else if (tag1.endsWith('To') && tag2.endsWith('From')) {
+    return tag1.slice(0, -2) === tag2.slice(0, -4); // Remove 'To' and 'From' and compare
   }
 
+  return false;
+};
+
+const handleSubmit = async () => {
   // Sync trimmed values back to store before submitting
   syncTrimmedValuesToStore();
+
+  // Validate using store's validation
+  const isValid = avitoCategoryFieldsStore.validateForm();
+
+  if (!isValid) {
+    // Find the first field with an error to scroll to
+    const orderedFields = getOrderedFields();
+    for (const field of orderedFields) {
+      if (avitoCategoryFieldsStore.getFieldError(field.tag)) {
+        const fieldElement = document.getElementById(field.tag);
+        if (fieldElement) {
+          scrollToInvalidField(fieldElement);
+          break;
+        }
+      }
+
+      // Also check child fields if they exist
+      if (field.children && field.children.length > 0) {
+        for (const child of field.children.filter((c) => c.tag !== 'Id')) {
+          if (avitoCategoryFieldsStore.getFieldError(child.tag)) {
+            const childElement = document.getElementById(child.tag);
+            if (childElement) {
+              scrollToInvalidField(childElement);
+              break;
+            }
+          }
+        }
+      }
+    }
+    return;
+  }
 
   try {
     await avitoCategoryFieldsStore.submitForm();
@@ -555,203 +594,34 @@ const isMakeFieldWithNewStructure = (field: any): boolean => {
   );
 };
 
-// Function to group paired fields together (e.g., WorkTimeFrom/WorkTimeTo, ContactTimeFrom/ContactTimeTo)
-const groupPairedFields = (fields) => {
-  // Create a map to group fields by their prefix (e.g., WorkTime, ContactTime)
-  const prefixMap = new Map();
-
-  fields.forEach((field) => {
-    const tag = field.tag;
-    // Check if field tag ends with "From" or "To"
-    if (tag.endsWith('From')) {
-      const prefix = tag.slice(0, -4); // Remove "From" to get the prefix
-      if (!prefixMap.has(prefix)) {
-        prefixMap.set(prefix, { from: field, to: null });
-      } else {
-        prefixMap.get(prefix).from = field;
-      }
-    } else if (tag.endsWith('To')) {
-      const prefix = tag.slice(0, -2); // Remove "To" to get the prefix
-      if (!prefixMap.has(prefix)) {
-        prefixMap.set(prefix, { from: null, to: field });
-      } else {
-        prefixMap.get(prefix).to = field;
-      }
-    }
-  });
-
-  // Create the result array with paired fields together
-  const result = [];
-  const processedPrefixes = new Set();
-
-  fields.forEach((field) => {
-    const tag = field.tag;
-
-    if (tag.endsWith('From')) {
-      const prefix = tag.slice(0, -4);
-      if (!processedPrefixes.has(prefix)) {
-        const pair = prefixMap.get(prefix);
-        if (pair && pair.to) {
-          result.push(pair.from, pair.to); // Add both From and To fields
-          processedPrefixes.add(prefix);
-        } else {
-          result.push(field); // Add only the From field if no To field exists
-          processedPrefixes.add(prefix);
-        }
-      }
-    } else if (tag.endsWith('To')) {
-      const prefix = tag.slice(0, -2);
-      if (!processedPrefixes.has(prefix)) {
-        const pair = prefixMap.get(prefix);
-        if (pair && pair.from) {
-          result.push(pair.from, pair.to); // Add both From and To fields
-          processedPrefixes.add(prefix);
-        } else {
-          result.push(field); // Add only the To field if no From field exists
-          processedPrefixes.add(prefix);
-        }
-      }
-    } else {
-      // For non-paired fields, just add them
-      if (!tag.endsWith('From') && !tag.endsWith('To')) {
-        result.push(field);
-      }
-    }
-  });
-
-  return result;
-};
-
-// Check if two fields are paired (e.g., WorkTimeFrom/WorkTimeTo)
-const isFieldPaired = (field1: any, field2: any) => {
-  const tag1 = field1.tag;
-  const tag2 = field2.tag;
-
-  // Check if they have the same prefix and one ends with 'From' and the other with 'To'
-  if (tag1.endsWith('From') && tag2.endsWith('To')) {
-    return tag1.slice(0, -4) === tag2.slice(0, -2); // Remove 'From' and 'To' and compare
-  } else if (tag1.endsWith('To') && tag2.endsWith('From')) {
-    return tag1.slice(0, -2) === tag2.slice(0, -4); // Remove 'To' and 'From' and compare
-  }
-
-  return false;
-};
-
 // Get fields for the current step - MODIFIED: Show all fields from step 0 up to current step
 const getFieldsForCurrentStep = () => {
-  const orderedFields = getOrderedFields();
-  let currentIndex = 0;
-  let currentStepIndex = 0;
-
-  // Navigate to the end of the current step to get all fields up to this point
-  while (currentStepIndex <= currentStep.value && currentIndex < orderedFields.length) {
-    if (currentStepIndex < currentStep.value) {
-      // For previous steps, we need to skip all fields in that step
-      let fieldsInThisStep = 1;
-
-      // Check if we can add another field to this step
-      if (currentIndex + 1 < orderedFields.length) {
-        // Check if the current and next field are paired
-        if (isFieldPaired(orderedFields[currentIndex], orderedFields[currentIndex + 1])) {
-          fieldsInThisStep = 2;
-        } else if (currentIndex + 2 < orderedFields.length) {
-          // Check if current field and the one after next are paired
-          const nextNextField = orderedFields[currentIndex + 2];
-          const isCurrentPairedWithNextNext = isFieldPaired(orderedFields[currentIndex], nextNextField);
-          if (isCurrentPairedWithNextNext) {
-            fieldsInThisStep = 1; // Current field will be in a step with the one after next
-          } else {
-            fieldsInThisStep = 2; // Take up to 2 fields if not paired
-          }
-        } else {
-          fieldsInThisStep = 2; // Take up to 2 fields if not paired
-        }
-      }
-
-      currentIndex += fieldsInThisStep;
-      currentStepIndex++;
-    } else {
-      // For the current step, we return all fields up to this point plus the fields in this step
-      break;
-    }
-  }
-
-  // Now calculate the fields for the current step (the last step we're showing)
-  if (currentStepIndex === currentStep.value && currentIndex < orderedFields.length) {
-    let fieldsInThisStep = 1;
-
-    // Check if we can add another field to this step
-    if (currentIndex + 1 < orderedFields.length) {
-      // Check if the current and next field are paired
-      if (isFieldPaired(orderedFields[currentIndex], orderedFields[currentIndex + 1])) {
-        fieldsInThisStep = 2;
-      } else if (currentIndex + 2 < orderedFields.length) {
-        // Check if current field and the one after next are paired
-        const nextNextField = orderedFields[currentIndex + 2];
-        const isCurrentPairedWithNextNext = isFieldPaired(orderedFields[currentIndex], nextNextField);
-        if (isCurrentPairedWithNextNext) {
-          fieldsInThisStep = 1; // Current field will be in a step with the one after next
-        } else {
-          fieldsInThisStep = 2; // Take up to 2 fields if not paired
-        }
-      } else {
-        fieldsInThisStep = 2; // Take up to 2 fields if not paired
-      }
-    }
-
-    // Ensure we don't go beyond the array bounds
-    fieldsInThisStep = Math.min(fieldsInThisStep, orderedFields.length - currentIndex);
-
-    // Return all fields from the beginning up to and including the current step
-    return orderedFields.slice(0, currentIndex + fieldsInThisStep);
-  }
-
-  // Return all fields up to the current step index
-  return orderedFields.slice(0, currentIndex);
+  return stepperStore.getFieldsForCurrentStep;
 };
 
 // Navigation methods
 const nextStep = () => {
-  if (currentStep.value < totalSteps.value - 1) {
-    currentStep.value++;
+  stepperStore.nextStep();
 
-    // Scroll to the item form section after a small delay to ensure DOM is updated
-    nextTick(() => {
-      if (formFieldsSectionRef.value) {
-        // Scroll to the bottom of the section
-        formFieldsSectionRef.value.scroll({ top: formFieldsSectionRef.value.scrollHeight, behavior: 'smooth' });
-      }
-    });
-  }
+  // Scroll to the item form section after a small delay to ensure DOM is updated
+  nextTick(() => {
+    if (formFieldsSectionRef.value) {
+      // Scroll to the bottom of the section
+      formFieldsSectionRef.value.scroll({ top: formFieldsSectionRef.value.scrollHeight, behavior: 'smooth' });
+    }
+  });
 };
 
 const prevStep = () => {
-  if (currentStep.value > 0) {
-    currentStep.value--;
+  stepperStore.prevStep();
 
-    // Scroll to the item form section after a small delay to ensure DOM is updated
-    nextTick(() => {
-      if (formFieldsSectionRef.value) {
-        // Scroll to the bottom of the section
-        formFieldsSectionRef.value.scroll({ top: formFieldsSectionRef.value.scrollHeight, behavior: 'smooth' });
-      }
-    });
-  }
-};
-
-const goToStep = (stepIndex: number) => {
-  // Allow navigation to any step since all fields are cumulative
-  if (stepIndex >= 0 && stepIndex < totalSteps.value) {
-    currentStep.value = stepIndex;
-
-    // Scroll to the item form section after a small delay to ensure DOM is updated
-    nextTick(() => {
-      if (formFieldsSectionRef.value) {
-        // Scroll to the bottom of the section
-        formFieldsSectionRef.value.scroll({ top: formFieldsSectionRef.value.scrollHeight, behavior: 'smooth' });
-      }
-    });
-  }
+  // Scroll to the item form section after a small delay to ensure DOM is updated
+  nextTick(() => {
+    if (formFieldsSectionRef.value) {
+      // Scroll to the bottom of the section
+      formFieldsSectionRef.value.scroll({ top: formFieldsSectionRef.value.scrollHeight, behavior: 'smooth' });
+    }
+  });
 };
 
 const getOrderedFields = () => {
@@ -807,12 +677,8 @@ const getOrderedFields = () => {
     .map((tag) => specificRequiredFields[specificRequiredOrder.indexOf(tag)])
     .filter((field) => field !== undefined);
 
-  // Group paired fields (e.g., WorkTimeFrom/WorkTimeTo, ContactTimeFrom/ContactTimeTo)
-  const groupedOtherRequired = groupPairedFields(otherRequiredFields);
-  const groupedOptional = groupPairedFields(optionalFields);
-
   // Combine all fields in the correct order
-  return [...orderedSpecificRequired, ...groupedOtherRequired, ...groupedOptional];
+  return [...orderedSpecificRequired, ...otherRequiredFields, ...optionalFields];
 };
 
 // The original onMounted function is now included in the watch section above
@@ -893,76 +759,6 @@ watch(
   { deep: true },
 );
 
-// Initialize trimmedFieldValues when component mounts to ensure all fields are in sync
-onMounted(async () => {
-  if (avito_token.value) {
-    await avitoCategoryFieldsStore.getAvitoCategoryFields({
-      avito_token: avito_token.value,
-      avito_slug: avitoCategoriesStore.selectedFinalCategory,
-    });
-
-    // After getting the fields, ensure all store values are in trimmedFieldValues
-    if (avitoCategoryFieldsStore.formData) {
-      Object.keys(avitoCategoryFieldsStore.formData).forEach((key) => {
-        if (!(key in trimmedFieldValues.value)) {
-          const value = avitoCategoryFieldsStore.formData[key];
-          trimmedFieldValues.value[key] = value;
-        }
-      });
-    }
-  }
-});
-
-// Function to validate required fields
-const validateRequiredFields = () => {
-  if (!avitoCategoryFieldsStore.categoryFields) {
-    return null;
-  }
-
-  // Get all fields that are required
-  const orderedFields = getOrderedFields();
-  for (const field of orderedFields) {
-    const isRequired = field.content && field.content[0] && field.content[0].required;
-    if (isRequired) {
-      // Check if the field has a value
-      // Use trimmedFieldValues for all fields since they're all now in the same place
-      let fieldValue = trimmedFieldValues.value[field.tag];
-
-      if (!fieldValue || (Array.isArray(fieldValue) ? fieldValue.length === 0 : fieldValue.toString().trim() === '')) {
-        // Return the field element that needs to be scrolled to
-        const fieldElement = document.getElementById(field.tag);
-        if (fieldElement) {
-          return fieldElement;
-        }
-      }
-    }
-
-    // Also check child fields if they exist
-    if (field.children && field.children.length > 0) {
-      for (const child of field.children.filter((c) => c.tag !== 'Id')) {
-        const isChildRequired = child.content && child.content[0] && child.content[0].required;
-        if (isChildRequired) {
-          // Use trimmedFieldValues for child fields as well
-          let childFieldValue = trimmedFieldValues.value[child.tag];
-
-          if (
-            !childFieldValue ||
-            (Array.isArray(childFieldValue) ? childFieldValue.length === 0 : childFieldValue.toString().trim() === '')
-          ) {
-            const childElement = document.getElementById(child.tag);
-            if (childElement) {
-              return childElement;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // If all required fields are filled, return null
-  return null;
-};
-
 // Function to scroll to the invalid field
 const scrollToInvalidField = (fieldElement: HTMLElement) => {
   if (itemFormSectionRef.value && fieldElement) {
@@ -993,6 +789,9 @@ onMounted(async () => {
         }
       });
     }
+
+    // Initialize the stepper with the loaded fields
+    initializeStepper();
   }
 });
 </script>

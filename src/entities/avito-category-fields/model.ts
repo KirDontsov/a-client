@@ -8,6 +8,7 @@ interface AvitoCategoryFieldsState {
   categoryFields: CategoryField[] | null;
   categoryFieldsLoading: boolean;
   formData: Record<string, any>;
+  errors: Record<string, string>;
 }
 
 export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', {
@@ -15,6 +16,7 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
     categoryFields: null,
     categoryFieldsLoading: true,
     formData: {},
+    errors: {},
   }),
 
   actions: {
@@ -45,6 +47,7 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
       if (!this.categoryFields) return;
 
       this.formData = {};
+      this.errors = {}; // Clear errors when initializing form data
       this.categoryFields.forEach((field) => {
         if (field.content && field.content.length > 0) {
           const firstContent = field.content[0];
@@ -83,39 +86,90 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
       this.formData[fieldTag] = value;
     },
 
+    getFieldError(fieldTag: string): string | undefined {
+      return this.errors[fieldTag];
+    },
+
+    clearFieldError(fieldTag: string) {
+      if (this.errors[fieldTag]) {
+        delete this.errors[fieldTag];
+      }
+    },
+
     validateForm(): boolean {
       if (!this.categoryFields) return false;
 
+      // Clear previous errors
+      this.errors = {};
+
       let isValid = true;
 
+      // Fields to exclude from validation (similar to UI filtering)
+      const excludedFields = [
+        'Id',
+        'Category',
+        'ServiceType',
+        'ServiceSubtype',
+        'AutoserviceServiceType',
+        'AvitoId',
+        'CallsDevices',
+        'Latitude',
+        'Longitude',
+        'Images',
+        'ImageNames',
+        'Promo',
+        'PromoAutoOptions',
+        'PromoManualOptions'
+      ];
+
+      // Validate each field
       this.categoryFields.forEach((field) => {
+        // Skip validation for excluded fields
+        if (excludedFields.includes(field.tag)) {
+          return;
+        }
+
         if (field.content && field.content.length > 0) {
           const firstContent = field.content[0];
 
-          // if (firstContent.required && !this.formData[field.tag]) {
-          //   isValid = false;
-          // }
+          // Validate required fields
+          if (firstContent.required) {
+            const fieldValue = this.formData[field.tag];
+            if (
+              !fieldValue ||
+              (Array.isArray(fieldValue) && fieldValue.length === 0) ||
+              (typeof fieldValue === 'string' && fieldValue.trim() === '')
+            ) {
+              this.errors[field.tag] = 'Это поле обязательно для заполнения';
+              isValid = false;
+            }
+          }
 
-          // Check data type validation
-          // if (this.formData[field.tag]) {
-          //   switch (firstContent.data_type) {
-          //     case 'integer':
-          //       if (!Number.isInteger(Number(this.formData[field.tag]))) {
-          //         isValid = false;
-          //       }
-          //       break;
-          //     case 'float':
-          //       if (isNaN(parseFloat(this.formData[field.tag]))) {
-          //         isValid = false;
-          //       }
-          //       break;
-          //     case 'array':
-          //       if (!Array.isArray(this.formData[field.tag])) {
-          //         isValid = false;
-          //       }
-          //       break;
-          //   }
-          // }
+          // Validate children fields if they exist
+          if (field.children && field.children.length > 0) {
+            field.children.forEach((child) => {
+              // Skip validation for excluded child fields
+              if (excludedFields.includes(child.tag)) {
+                return;
+              }
+
+              if (child.content && child.content.length > 0) {
+                const childContent = child.content[0];
+
+                if (childContent.required) {
+                  const childValue = this.formData[child.tag];
+                  if (
+                    !childValue ||
+                    (Array.isArray(childValue) && childValue.length === 0) ||
+                    (typeof childValue === 'string' && childValue.trim() === '')
+                  ) {
+                    this.errors[child.tag] = 'Это поле обязательно для заполнения';
+                    isValid = false;
+                  }
+                }
+              }
+            });
+          }
         }
       });
 
