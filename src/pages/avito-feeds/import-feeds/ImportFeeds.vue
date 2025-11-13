@@ -2,7 +2,7 @@
   <PageContainer>
     <template #body>
       <div
-        class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-700 dark:border-gray-600"
+        class="w-full p-4 bg-white border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-700 dark:border-gray-600"
       >
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Загрузить новый фид</h2>
@@ -42,7 +42,7 @@
                 :aria-controls="'xls-tab'"
                 :aria-selected="activeTab === 'xls'"
               >
-                Загрузить XLS/XLSX
+                Загрузить XLS/XLSX (Скоро)
               </button>
             </li>
             <li class="mr-2" role="presentation">
@@ -51,7 +51,7 @@
                 :class="[
                   'inline-block p-4 border-b-2 rounded-t-lg cursor-pointer',
                   activeTab === 'text'
-                    ? 'bg-white text-blue-600 border-blue-600 active dark:bg-gray-800 dark:text-blue-500 dark:border-blue-500'
+                    ? 'bg-white text-blue-60 border-blue-600 active dark:bg-gray-800 dark:text-blue-500 dark:border-blue-500'
                     : 'bg-transparent text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-30 dark:bg-transparent dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800',
                 ]"
                 type="button"
@@ -59,7 +59,7 @@
                 :aria-controls="'text-tab'"
                 :aria-selected="activeTab === 'text'"
               >
-                Ввести текст XML
+                Ввести текст XML (Скоро)
               </button>
             </li>
           </ul>
@@ -77,19 +77,22 @@
                 id="xml_url"
                 v-model="feedData.xml_url"
                 type="url"
-                placeholder="Enter URL to XML file"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Введите ссылку на XML файл"
+                class="bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
             </div>
-            <div class="mb-4">
-              <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Загрузить XML файл</label>
-              <input
-                type="file"
-                accept=".xml"
-                @change="handleFileUpload"
-                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-              />
-            </div>
+            <!--            <div class="mb-4">-->
+            <!--              <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"-->
+            <!--                >Загрузить XML файл (Скоро)</label-->
+            <!--              >-->
+            <!--              <input-->
+            <!--                disabled-->
+            <!--                type="file"-->
+            <!--                accept=".xml"-->
+            <!--                @change="handleFileUpload"-->
+            <!--                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"-->
+            <!--              />-->
+            <!--            </div>-->
           </div>
 
           <!-- XLS/XLSX Tab -->
@@ -98,9 +101,10 @@
               <div>
                 <div class="mb-4">
                   <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Загрузить XLS/XLSX файл
+                    Загрузить XLS/XLSX файл (Скоро)
                   </label>
                   <input
+                    disabled
                     type="file"
                     accept=".xls,.xlsx"
                     @change="handleFileUpload"
@@ -114,8 +118,9 @@
           <!-- Text Tab -->
           <div v-if="activeTab === 'text'" class="space-y-6">
             <div class="mb-4">
-              <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">XML Текст</label>
+              <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">XML Текст (Скоро)</label>
               <textarea
+                disabled
                 v-model="feedData.xml_content"
                 rows="10"
                 placeholder="Вставьте XML контент сюда"
@@ -133,7 +138,7 @@
         </form>
 
         <!-- Error message -->
-        <div v-if="error" class="mt-4 p-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-900 dark:text-red-100">
+        <div v-if="error" class="mt-4 p-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-90 dark:text-red-100">
           {{ error }}
         </div>
       </div>
@@ -146,8 +151,11 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { PageContainer } from '@/features/page-container';
 import { Button } from '@/shared/components';
+import { importAvitoXml } from '@/shared/api/avito/avito';
+import { useAvitoAccountsStore } from '@/entities/avito-accounts/model';
 
 const router = useRouter();
+const avitoAccountsStore = useAvitoAccountsStore();
 
 const activeTab = ref('xml');
 const submitting = ref<boolean>(false);
@@ -169,16 +177,36 @@ const handleFileUpload = (event: Event) => {
 
 // Submit feed
 const submitFeed = async () => {
+  if (activeTab.value === 'xml' && !feedData.value.xml_url) {
+    error.value = 'Пожалуйста, введите ссылку на XML';
+    return;
+  }
+
   submitting.value = true;
   error.value = null;
 
   try {
-    // Here you would implement the actual feed import logic
-    // For now, we'll just simulate a successful submission
-    console.log('Submitting feed:', {
-      activeTab: activeTab.value,
-      feedData: feedData.value,
-    });
+    if (activeTab.value === 'xml') {
+      // For the XML tab, call the importAvitoXml API
+      const selectedAccountId = avitoAccountsStore.selectedAccountId;
+
+      if (!selectedAccountId) {
+        throw new Error('No Avito account selected');
+      }
+
+      const response = await importAvitoXml({
+        account_id: selectedAccountId,
+        xml_url: feedData.value.xml_url,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      // Show success message or handle response as needed
+      console.log('XML import successful', await response.json());
+    }
 
     // Reset form
     feedData.value = {
@@ -188,7 +216,7 @@ const submitFeed = async () => {
     };
 
     // Navigate back to feeds list
-    router.push('/feeds');
+    router.push('/avito/feeds');
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to import feed';
     console.error('Error importing feed:', err);
