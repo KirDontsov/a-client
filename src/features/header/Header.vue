@@ -9,7 +9,7 @@
           <a href="#" class="flex ms-2 md:me-24">
             <span
               class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
-            >ТОП ВЫБОР</span
+            >SUN7</span
             >
           </a>
         </div>

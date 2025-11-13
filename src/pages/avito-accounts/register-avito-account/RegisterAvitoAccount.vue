@@ -3,7 +3,7 @@
     <template #body>
       <div class="w-full flex flex-col gap-8 px-4 py-2 sm:px-8 sm:py-4">
         <div class="flex justify-between items-center">
-          <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Connect New Avito Account</h2>
+          <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Подключить новый аккаунт Avito</h2>
         </div>
 
         <form
@@ -14,16 +14,16 @@
               id="avito_client_id"
               v-model="newAccount.avito_client_id"
               type="text"
-              placeholder="Enter Avito client ID"
-              label="Avito Client ID"
+              placeholder="Введите ID клиента Avito"
+              label="ID клиента Avito"
               :required="true"
             />
             <InputField
               id="avito_client_secret"
               v-model="newAccount.avito_client_secret"
               type="password"
-              placeholder="Enter Avito client secret"
-              label="Avito Client Secret"
+              placeholder="Введите секретный ключ клиента Avito"
+              label="Секретный ключ клиента Avito"
               :required="true"
             />
           </div>
@@ -31,9 +31,9 @@
 
         <div class="flex items-center space-x-4">
           <Button type="button" @click="createAccount" :disabled="creatingAccount" color="default" variant="dark">
-            {{ creatingAccount ? 'Connecting...' : 'Connect Account' }}
+            {{ creatingAccount ? 'Подключение...' : 'Подключить аккаунт' }}
           </Button>
-          <Button type="button" @click="goBack" color="default" variant="dark"> Cancel </Button>
+          <Button type="button" @click="goBack" color="default" variant="dark"> Отмена </Button>
         </div>
 
         <!-- Error message -->

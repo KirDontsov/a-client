@@ -141,11 +141,11 @@
           "
           class="text-center py-4 text-gray-50 dark:text-gray-400"
         >
-          No accounts available
+          Нет доступных аккаунтов
         </div>
 
         <div v-else-if="avitoAccountsStore.loading" class="text-center py-4 text-gray-50 dark:text-gray-400">
-          Loading accounts...
+          Загрузка аккаунтов...
         </div>
 
         <!-- Pagination -->
@@ -228,7 +228,7 @@ const selectAccount = async (accountId: string) => {
 };
 
 const deleteAccount = async (accountId: string) => {
-  if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
+  if (confirm('Вы уверены, что хотите удалить этот аккаунт? Это действие нельзя отменить.')) {
     try {
       await avitoAccountsStore.deleteAccount(accountId);
       // The accounts will be refetched automatically by the store after deletion

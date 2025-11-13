@@ -3,7 +3,7 @@
     <template #body>
       <div class="w-full px-4 py-2 sm:px-8 sm:py-4 flex flex-col gap-8">
         <div class="flex justify-between items-center">
-          <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Edit Avito Account</h2>
+          <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Редактировать аккаунт Avito</h2>
         </div>
 
         <form
@@ -14,13 +14,13 @@
               id="avito_client_id"
               v-model="formData.avito_client_id"
               type="text"
-              placeholder="Enter Avito client ID"
-              label="Avito Client ID"
+              placeholder="Введите ID клиента Avito"
+              label="ID клиента Avito"
               :required="true"
             />
             <div>
               <label for="avito_client_secret" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Avito Client Secret
+                Секретный ключ клиента Avito
               </label>
               <div class="relative">
                 <input
@@ -28,7 +28,7 @@
                   id="avito_client_secret"
                   v-model="formData.avito_client_secret"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Enter Avito client secret"
+                  placeholder="Введите секретный ключ клиента Avito"
                   required
                 />
                 <Button
@@ -63,9 +63,9 @@
 
         <div class="flex items-center space-x-4">
           <Button type="button" @click="updateAccount" :disabled="updatingAccount" color="default" variant="dark">
-            {{ updatingAccount ? 'Updating...' : 'Update Account' }}
+            {{ updatingAccount ? 'Обновление...' : 'Обновить аккаунт' }}
           </Button>
-          <Button type="button" @click="goBack" color="default" variant="dark"> Cancel </Button>
+          <Button type="button" @click="goBack" color="default" variant="dark"> Отмена </Button>
         </div>
 
         <!-- Error message -->

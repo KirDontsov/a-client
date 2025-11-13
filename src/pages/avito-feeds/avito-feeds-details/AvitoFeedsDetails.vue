@@ -6,10 +6,10 @@
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-4">
             <h2 class="text-xl font-semibold text-gray-80 dark:text-white">
-              Feed ID: {{ feedDetails?.feed_id || 'N/A' }}
+              ID фида: {{ feedDetails?.feed_id || 'N/A' }}
             </h2>
             <h2 class="text-xl font-semibold text-gray-80 dark:text-white">
-              Category: {{ feedDetails?.category || 'N/A' }}
+              Категория: {{ feedDetails?.category || 'N/A' }}
             </h2>
           </div>
 
