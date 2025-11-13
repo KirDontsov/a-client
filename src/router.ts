@@ -106,21 +106,21 @@ const routes = [
       isAuthenticated(to, from, next);
     },
   },
-  {
-    path: '/firms',
-    component: () => import('@/pages/firms-view/FirmsView.vue'),
-    beforeEnter: (to, from, next) => {
-      isAuthenticated(to, from, next);
-    },
-  },
-  {
-    path: '/firm/:id',
-    component: () => import('@/pages/firm-view/FirmView.vue'),
-    props: true,
-    beforeEnter: (to, from, next) => {
-      isAuthenticated(to, from, next);
-    },
-  },
+  // {
+  //   path: '/firms',
+  //   component: () => import('@/pages/firms-view/FirmsView.vue'),
+  //   beforeEnter: (to, from, next) => {
+  //     isAuthenticated(to, from, next);
+  //   },
+  // },
+  // {
+  //   path: '/firm/:id',
+  //   component: () => import('@/pages/firm-view/FirmView.vue'),
+  //   props: true,
+  //   beforeEnter: (to, from, next) => {
+  //     isAuthenticated(to, from, next);
+  //   },
+  // },
   { path: '/login', component: () => import('@/pages/login-view/LoginView.vue') },
   { path: '/register', component: () => import('@/pages/register-view/RegisterView.vue') },
 ];
