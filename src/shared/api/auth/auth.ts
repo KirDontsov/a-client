@@ -33,7 +33,7 @@ export const register = async (userData: { name: string; email: string; password
 export const logout = async () => {
   try {
     const res = await fetch(`${BACKEND_PORT}/api/auth/logout`, {
-      method: 'POST',
+      method: 'GET',
       credentials: 'include',
     });
 
@@ -48,9 +48,10 @@ export const checkAuth = async () => {
     const res = await fetch(`${BACKEND_PORT}/api/users/me`, {
       method: 'GET',
       credentials: 'include',
-    }).then((res) => res.json())
+    })
+      .then((res) => res.json())
       .catch(() => {
-        console.warn("error");
+        console.warn('error');
       });
 
     return res || null;
