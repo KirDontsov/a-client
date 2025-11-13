@@ -122,6 +122,7 @@ const routes = [
     },
   },
   { path: '/login', component: () => import('@/pages/login-view/LoginView.vue') },
+  { path: '/register', component: () => import('@/pages/register-view/RegisterView.vue') },
 ];
 
 const router = createRouter({
