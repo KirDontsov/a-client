@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { getAvitoCategoryFields, avitoCreateAd } from '@/shared/api/avito';
 import { useAvitoAccountsStore } from '@/entities/avito-accounts';
+import { getOrderedFields } from '@/shared/lib/field-ordering';
 
 import type { AvitoTokenParams, CategoryField, AvitoGetCategoryFieldsResponse } from '@/shared';
 
@@ -191,6 +192,10 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
 
       // Send the formData to the new API endpoint with account_id and avito_token if available
       return await avitoCreateAd(this.formData, accountId);
+    },
+
+    getOrderedFields(): CategoryField[] {
+      return getOrderedFields(this.categoryFields);
     },
   },
 });

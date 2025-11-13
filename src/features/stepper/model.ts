@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { isFieldPaired, calculateTotalSteps } from '@/shared/lib/field-ordering';
 import type { CategoryField } from '@/shared';
 
 interface StepperState {
@@ -52,6 +53,12 @@ export const useStepperStore = defineStore('stepper', {
       this.totalSteps = 0;
       this.orderedFields = [];
     },
+
+    initializeStepper(orderedFields: CategoryField[]) {
+      this.setOrderedFields(orderedFields);
+      const totalSteps = calculateTotalSteps(orderedFields);
+      this.setTotalSteps(totalSteps);
+    },
   },
 
   getters: {
@@ -62,21 +69,6 @@ export const useStepperStore = defineStore('stepper', {
       if (!state.orderedFields || state.orderedFields.length === 0) {
         return [];
       }
-
-      // Logic to group paired fields (e.g., WorkTimeFrom/WorkTimeTo)
-      const isFieldPaired = (field1: CategoryField, field2: CategoryField): boolean => {
-        const tag1 = field1.tag;
-        const tag2 = field2.tag;
-
-        // Check if they have the same prefix and one ends with 'From' and the other with 'To'
-        if (tag1.endsWith('From') && tag2.endsWith('To')) {
-          return tag1.slice(0, -4) === tag2.slice(0, -2); // Remove 'From' and 'To' and compare
-        } else if (tag1.endsWith('To') && tag2.endsWith('From')) {
-          return tag1.slice(0, -2) === tag2.slice(0, -4); // Remove 'To' and 'From' and compare
-        }
-
-        return false;
-      };
 
       let currentIndex = 0;
       let currentStepIndex = 0;

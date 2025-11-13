@@ -427,6 +427,7 @@ import { SelectedCategoryPath, Stepper, useStepperStore } from '@/features';
 import { DatePicker } from '@/shared/components/date-picker';
 import { InputField } from '@/shared/components/input-field';
 import { Button } from '@/shared/components';
+import { isDateField, getSelectOptions, isMakeFieldWithNewStructure } from '@/shared/lib/field-helpers';
 
 const { value: avito_token } = useCookies('avito_token');
 
@@ -449,66 +450,6 @@ const getInputType = (dataType: string) => {
   }
 };
 
-// Initialize the stepper store when category fields are loaded
-const initializeStepper = () => {
-  if (avitoCategoryFieldsStore.categoryFields) {
-    const orderedFields = getOrderedFields();
-    stepperStore.setOrderedFields(orderedFields);
-
-    // Calculate total steps based on fields (2 fields per step, but paired fields stay together)
-    let stepCount = 0;
-    let i = 0;
-
-    while (i < orderedFields.length) {
-      // Each step can have up to 2 fields, but paired fields should stay together
-      let fieldsInStep = 1;
-
-      // Check if the current field is part of a pair and if the next field is its pair
-      if (i + 1 < orderedFields.length) {
-        const currentField = orderedFields[i];
-        const nextField = orderedFields[i + 1];
-
-        // Check if these are paired fields (e.g., WorkTimeFrom/WorkTimeTo)
-        const isPaired = isFieldPaired(currentField, nextField);
-        if (isPaired) {
-          fieldsInStep = 2;
-        } else if (i + 2 < orderedFields.length) {
-          // Check if current field and the one after next are paired
-          const nextNextField = orderedFields[i + 2];
-          const isCurrentPairedWithNextNext = isFieldPaired(currentField, nextNextField);
-          if (isCurrentPairedWithNextNext) {
-            fieldsInStep = 1; // Current field will be in a step with the one after next
-          } else {
-            fieldsInStep = 2; // Take up to 2 fields if not paired
-          }
-        } else {
-          fieldsInStep = 2; // Take up to 2 fields if not paired
-        }
-      }
-
-      stepCount++;
-      i += fieldsInStep;
-    }
-
-    stepperStore.setTotalSteps(stepCount);
-  }
-};
-
-// Check if two fields are paired (e.g., WorkTimeFrom/WorkTimeTo)
-const isFieldPaired = (field1: any, field2: any) => {
-  const tag1 = field1.tag;
-  const tag2 = field2.tag;
-
-  // Check if they have the same prefix and one ends with 'From' and the other with 'To'
-  if (tag1.endsWith('From') && tag2.endsWith('To')) {
-    return tag1.slice(0, -4) === tag2.slice(0, -2); // Remove 'From' and 'To' and compare
-  } else if (tag1.endsWith('To') && tag2.endsWith('From')) {
-    return tag1.slice(0, -2) === tag2.slice(0, -4); // Remove 'To' and 'From' and compare
-  }
-
-  return false;
-};
-
 const handleSubmit = async () => {
   // Sync trimmed values back to store before submitting
   syncTrimmedValuesToStore();
@@ -518,7 +459,7 @@ const handleSubmit = async () => {
 
   if (!isValid) {
     // Find the first field with an error to scroll to
-    const orderedFields = getOrderedFields();
+    const orderedFields = avitoCategoryFieldsStore.getOrderedFields();
     for (const field of orderedFields) {
       if (avitoCategoryFieldsStore.getFieldError(field.tag)) {
         const fieldElement = document.getElementById(field.tag);
@@ -558,41 +499,6 @@ const handleReset = () => {
   avitoCategoryFieldsStore.initializeFormData();
 };
 
-const isDateField = (field: any): boolean => {
-  // Check if field tag contains date-related words or if data type is date
-  const tag = field.tag.toLowerCase();
-  const dataType = field.content[0].data_type?.toLowerCase() || '';
-
-  return (
-    tag.includes('date') ||
-    tag.includes('beg') ||
-    tag.includes('end') ||
-    dataType.includes('date') ||
-    dataType.includes('time')
-  );
-};
-
-const getSelectOptions = (values: any) => {
-  // Check if values is an object with a nested values array (like WorkTimeFrom/To fields)
-  if (values && typeof values === 'object' && Array.isArray(values.values)) {
-    return values.values;
-  }
-  // Otherwise, assume it's a regular array
-  return Array.isArray(values) ? values : [];
-};
-
-// Function to check if Make field has the new structure with nested values
-const isMakeFieldWithNewStructure = (field: any): boolean => {
-  // Check if field is Make and has the new structure where values is an object with a values array
-  return (
-    field.tag === 'Make' &&
-    field.content &&
-    field.content[0] &&
-    field.content[0].values &&
-    typeof field.content[0].values === 'object' &&
-    Array.isArray(field.content[0].values.values)
-  );
-};
 
 // Get fields for the current step - MODIFIED: Show all fields from step 0 up to current step
 const getFieldsForCurrentStep = () => {
@@ -624,62 +530,6 @@ const prevStep = () => {
   });
 };
 
-const getOrderedFields = () => {
-  if (!avitoCategoryFieldsStore.categoryFields) {
-    return [];
-  }
-
-  // Filter out the Id field and the fields that shouldn't be rendered
-  const fields = avitoCategoryFieldsStore.categoryFields.filter(
-    (f) =>
-      f.tag !== 'Id' &&
-      f.tag !== 'Category' &&
-      f.tag !== 'ServiceType' &&
-      f.tag !== 'ServiceSubtype' &&
-      f.tag !== 'AutoserviceServiceType' &&
-      f.tag !== 'AvitoId' &&
-      f.tag !== 'CallsDevices' &&
-      f.tag !== 'Latitude' &&
-      f.tag !== 'Longitude' &&
-      f.tag !== 'Images' &&
-      f.tag !== 'ImageNames' &&
-      f.tag !== 'Promo' &&
-      f.tag !== 'PromoAutoOptions' &&
-      f.tag !== 'PromoManualOptions',
-  );
-
-  // Define the specific order for required fields
-  const specificRequiredOrder = ['Title', 'Description', 'Price', 'ImageUrls'];
-
-  // Separate fields into categories
-  const specificRequiredFields = [];
-  const otherRequiredFields = [];
-  const optionalFields = [];
-
-  fields.forEach((field) => {
-    const isRequired = field.content && field.content[0] && field.content[0].required;
-
-    if (isRequired) {
-      const specificIndex = specificRequiredOrder.indexOf(field.tag);
-      if (specificIndex !== -1) {
-        // Add to specific required fields at the correct position
-        specificRequiredFields[specificIndex] = field;
-      } else {
-        otherRequiredFields.push(field);
-      }
-    } else {
-      optionalFields.push(field);
-    }
-  });
-
-  // Filter out undefined values and combine in the required order
-  const orderedSpecificRequired = specificRequiredOrder
-    .map((tag) => specificRequiredFields[specificRequiredOrder.indexOf(tag)])
-    .filter((field) => field !== undefined);
-
-  // Combine all fields in the correct order
-  return [...orderedSpecificRequired, ...otherRequiredFields, ...optionalFields];
-};
 
 // The original onMounted function is now included in the watch section above
 
@@ -791,7 +641,8 @@ onMounted(async () => {
     }
 
     // Initialize the stepper with the loaded fields
-    initializeStepper();
+    const orderedFields = avitoCategoryFieldsStore.getOrderedFields();
+    stepperStore.initializeStepper(orderedFields);
   }
 });
 </script>
