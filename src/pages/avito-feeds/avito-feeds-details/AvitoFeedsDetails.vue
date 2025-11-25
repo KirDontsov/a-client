@@ -58,6 +58,8 @@
               :analytics-data="analyticsData"
               :analytics-loading="analyticsLoading"
               @select="handleItemSelect"
+              @click="handleRowClick(ad.ad_id)"
+              class="cursor-pointer"
             />
           </div>
 
@@ -90,8 +92,9 @@
                   v-for="ad in feedAds"
                   :key="ad.ad_id"
                   :class="[
-                    'bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600',
+                    'bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer',
                   ]"
+                  @click="handleRowClick(ad.ad_id)"
                 >
                   <td class="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-xs truncate" :title="ad.ad_id">
                     {{ ad.ad_id || 'N/A' }}
@@ -185,7 +188,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { PageContainer } from '@/features/page-container';
 import { TextPopup } from '@/shared/components/text-popup';
 import { PromotionDisplay } from '@/shared/components/promotion-display';
@@ -515,6 +518,13 @@ const fetchAnalyticsData = async () => {
   } finally {
     analyticsLoading.value = false;
   }
+};
+
+const router = useRouter();
+
+const handleRowClick = (adId: string) => {
+  const feedId = route.params.id as string;
+  router.push(`/feeds/${feedId}/edit/${adId}`);
 };
 </script>
 

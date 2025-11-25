@@ -206,7 +206,7 @@ export const getAvitoCategories = async ({ avito_token }: AvitoTokenParams) => {
     return res;
   } catch (e) {
     console.log(e);
- }
+  }
 };
 
 export const getAvitoCategoryFields = async ({ avito_token, avito_slug }: AvitoCategoryFieldsParams) => {
@@ -259,7 +259,7 @@ export async function createAvitoAnalyticsRequest(data) {
     return res;
   } catch (e) {
     throw e;
- }
+  }
 }
 
 export async function getAvitoAnalyticsAds(avitoRequestId: string) {
@@ -272,7 +272,7 @@ export async function getAvitoAnalyticsAds(avitoRequestId: string) {
     return res;
   } catch (e) {
     throw e;
- }
+  }
 }
 
 export async function getAvitoAnalyticsAdsWithPagination(avitoRequestId: string, page: number = 1, limit: number = 10) {
@@ -283,9 +283,9 @@ export async function getAvitoAnalyticsAdsWithPagination(avitoRequestId: string,
       credentials: 'include',
     });
     return res;
- } catch (e) {
+  } catch (e) {
     throw e;
- }
+  }
 }
 
 export async function getAvitoRequests(page: number = 1, limit: number = 10) {
@@ -303,9 +303,9 @@ export async function getAvitoRequests(page: number = 1, limit: number = 10) {
       credentials: 'include',
     });
     return res;
- } catch (e) {
+  } catch (e) {
     throw e;
- }
+  }
 }
 
 export async function downloadAvitoRequestCsv(avitoRequestId: string) {
@@ -316,9 +316,9 @@ export async function downloadAvitoRequestCsv(avitoRequestId: string) {
       credentials: 'include',
     });
     return res;
- } catch (e) {
+  } catch (e) {
     throw e;
- }
+  }
 }
 
 export async function avitoCreateAd(formData: Record<string, any>, account_id?: string) {
@@ -345,7 +345,7 @@ export async function avitoCreateAd(formData: Record<string, any>, account_id?: 
   } catch (e) {
     console.error('Error creating Avito ad:', e);
     throw e;
- }
+  }
 }
 
 export async function createAvitoAccount(accountData: {
@@ -361,9 +361,9 @@ export async function createAvitoAccount(accountData: {
       body: JSON.stringify(accountData),
     });
     return res;
- } catch (e) {
+  } catch (e) {
     throw e;
- }
+  }
 }
 
 export async function getAvitoAccounts(page: number = 1, limit: number = 10) {
@@ -374,9 +374,9 @@ export async function getAvitoAccounts(page: number = 1, limit: number = 10) {
       credentials: 'include',
     });
     return res;
- } catch (e) {
+  } catch (e) {
     throw e;
- }
+  }
 }
 
 export async function getAvitoAccountById(accountId: string) {
@@ -387,14 +387,14 @@ export async function getAvitoAccountById(accountId: string) {
       credentials: 'include',
     });
     return res;
- } catch (e) {
+  } catch (e) {
     throw e;
   }
 }
 
 export async function updateAvitoAccount(
   accountId: string,
- accountData: {
+  accountData: {
     avito_client_id: string;
     avito_client_secret: string;
   },
@@ -420,9 +420,9 @@ export async function deleteAvitoAccount(accountId: string) {
       credentials: 'include',
     });
     return res;
- } catch (e) {
+  } catch (e) {
     throw e;
- }
+  }
 }
 
 export async function getAvitoFeeds(account_id: string) {
@@ -462,6 +462,52 @@ export async function importAvitoXml(data: { account_id: string; xml_url: string
     });
     return res;
   } catch (e) {
+    throw e;
+  }
+}
+
+export async function getAvitoAdById(feed_id: string, ad_id: string, account_id: string) {
+  try {
+    const res = await fetch(`${BACKEND_PORT}/api/avito/feed/${feed_id}/ad/${ad_id}`, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify({ account_id }),
+    });
+    return res;
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function avitoUpdateAd(
+  ad_id: string,
+  feed_id: string,
+  formData: Record<string, any>,
+  account_id?: string,
+) {
+  try {
+    const requestBody: any = {
+      account_id: account_id || '', // Use provided account_id or empty string
+      fields: {
+        ...formData,
+      },
+    };
+
+    const res = await fetch(`${BACKEND_PORT}/api/avito/feed/${feed_id}/ad/${ad_id}`, {
+      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (e) {
+    console.error('Error updating Avito ad:', e);
     throw e;
   }
 }

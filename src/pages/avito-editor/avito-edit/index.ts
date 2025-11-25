@@ -1,0 +1,1 @@
+export { default as AvitoEdit } from './AvitoEdit.vue';

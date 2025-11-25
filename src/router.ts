@@ -11,7 +11,7 @@ const isAuthenticated = async (to, from, next) => {
       next();
     } else {
       // There was an error so redirect
-      window.location.href = '/login';
+      // window.location.href = '/login';
     }
   } catch (e) {
     console.log('e', e);
@@ -79,6 +79,14 @@ const routes = [
   {
     path: '/feeds/:id',
     component: () => import('@/pages/avito-feeds/avito-feeds-details/AvitoFeedsDetails.vue'),
+    props: true,
+    beforeEnter: (to, from, next) => {
+      isAuthenticated(to, from, next);
+    },
+  },
+  {
+    path: '/feeds/:feedId/edit/:adId',
+    component: () => import('@/pages/avito-editor/avito-edit/AvitoEdit.vue'),
     props: true,
     beforeEnter: (to, from, next) => {
       isAuthenticated(to, from, next);

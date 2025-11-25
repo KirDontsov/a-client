@@ -1250,32 +1250,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"a-client@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "a-client@workspace:."
-  dependencies:
-    "@tailwindcss/vite": "npm:^4.1.16"
-    "@types/js-cookie": "npm:^3"
-    "@types/node": "npm:^24.6.0"
-    "@types/tailwindcss": "npm:^3.1.0"
-    "@vitejs/plugin-vue": "npm:^6.0.1"
-    "@vue/tsconfig": "npm:^0.8.1"
-    "@vueuse/core": "npm:^14.0.0"
-    eslint: "npm:^9.38.0"
-    js-cookie: "npm:^3.0.5"
-    ogl: "npm:^1.0.11"
-    pinia: "npm:^3.0.3"
-    prettier: "npm:^3.6.2"
-    sass-embedded: "npm:^1.93.3"
-    tailwindcss: "npm:^4.1.16"
-    typescript: "npm:~5.9.3"
-    vite: "npm:^7.1.7"
-    vue: "npm:^3.5.22"
-    vue-router: "npm:^4.6.3"
-    vue-tsc: "npm:^3.1.0"
-  languageName: unknown
-  linkType: soft
-
 "abbrev@npm:^3.0.0":
   version: 3.0.1
   resolution: "abbrev@npm:3.0.1"
@@ -3239,6 +3213,32 @@ __metadata:
   checksum: 10c0/9681a6257b925a7fa0f285851c0e613cc934a50661fa7bb41ca9cbbff89686bb4a0ee366e6ecedc4daafd01e83eee0720111ab294366fe7c185e935475ebcecd
   languageName: node
   linkType: hard
+
+"sun7@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "sun7@workspace:."
+  dependencies:
+    "@tailwindcss/vite": "npm:^4.1.16"
+    "@types/js-cookie": "npm:^3"
+    "@types/node": "npm:^24.6.0"
+    "@types/tailwindcss": "npm:^3.1.0"
+    "@vitejs/plugin-vue": "npm:^6.0.1"
+    "@vue/tsconfig": "npm:^0.8.1"
+    "@vueuse/core": "npm:^14.0.0"
+    eslint: "npm:^9.38.0"
+    js-cookie: "npm:^3.0.5"
+    ogl: "npm:^1.0.11"
+    pinia: "npm:^3.0.3"
+    prettier: "npm:^3.6.2"
+    sass-embedded: "npm:^1.93.3"
+    tailwindcss: "npm:^4.1.16"
+    typescript: "npm:~5.9.3"
+    vite: "npm:^7.1.7"
+    vue: "npm:^3.5.22"
+    vue-router: "npm:^4.6.3"
+    vue-tsc: "npm:^3.1.0"
+  languageName: unknown
+  linkType: soft
 
 "superjson@npm:^2.2.2":
   version: 2.2.5

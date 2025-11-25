@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getAvitoCategoryFields, avitoCreateAd } from '@/shared/api/avito';
+import { getAvitoCategoryFields, avitoCreateAd, getAvitoAdById, avitoUpdateAd } from '@/shared/api/avito';
 import { useAvitoAccountsStore } from '@/entities/avito-accounts';
 import { getOrderedFields } from '@/shared/lib/field-ordering';
 
@@ -177,7 +177,7 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
       return isValid;
     },
 
-    async submitForm() {
+    async submitForm(ad_id?: string, feed_id?: string) {
       if (!this.validateForm()) {
         throw new Error('Form validation failed');
       }
@@ -190,8 +190,64 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
         throw new Error('No account selected. Please select an Avito account first.');
       }
 
-      // Send the formData to the new API endpoint with account_id and avito_token if available
-      return await avitoCreateAd(this.formData, accountId);
+      // Check if we're updating an existing ad or creating a new one
+      if (ad_id && feed_id) {
+        // Update existing ad
+        return await avitoUpdateAd(ad_id, feed_id, this.formData, accountId);
+      } else {
+        // Create new ad
+        return await avitoCreateAd(this.formData, accountId);
+      }
+    },
+
+    async loadAdData(feed_id: string, ad_id: string) {
+      try {
+        // Get the selected account ID from the avito accounts store
+        const avitoAccountsStore = useAvitoAccountsStore();
+        const accountId = avitoAccountsStore.selectedAccountId;
+
+        if (!accountId) {
+          throw new Error('No account selected. Please select an Avito account first.');
+        }
+
+        // Fetch the ad data from the backend
+        const response = await getAvitoAdById(feed_id, ad_id, accountId);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ad data: ${data.message || 'Unknown error'}`);
+        }
+
+        // Assuming the response contains the ad fields data
+        // Map the response data to the form fields
+        if (data && data.data && data.data.ad && data.data.ad.fields) {
+          // Clear existing form data
+          this.formData = {};
+          
+          // Map the ad fields to the form data structure
+          const adFields = data.data.ad.fields;
+          adFields.forEach((field: any) => {
+            if (field.values && field.values.length > 0) {
+              // Get the value from the first field value (there might be multiple values for array fields)
+              const value = field.values[0].value;
+              
+              // Handle different data types appropriately
+              if (field.data_type === 'array' || field.field_type === 'checkbox') {
+                // For array/checkbox fields, we need to split the value if it's comma-separated
+                this.formData[field.tag] = value.split(',').map((v: string) => v.trim());
+              } else {
+                this.formData[field.tag] = value;
+              }
+            }
+          });
+        }
+
+        // Return the full response data, including category info if available
+        return data;
+      } catch (error) {
+        console.error('Error loading ad data:', error);
+        throw error;
+      }
     },
 
     getOrderedFields(): CategoryField[] {
