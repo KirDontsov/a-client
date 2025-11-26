@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { checkAuth, logout as apiLogout } from '@/shared/api/auth/auth';
+import { getFirmByUrl } from '@/shared';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -11,6 +12,7 @@ export const useAuthStore = defineStore('auth', {
     async checkAuth() {
       try {
         const res = await checkAuth();
+        const res2 = await getFirmByUrl('shkola-№1158-mikroraion-severnoe-chertanovo');
 
         if (res?.status === 'success' && res?.data?.user) {
           // Check if user data exists and if there are differences
@@ -53,7 +55,7 @@ export const useAuthStore = defineStore('auth', {
         this.checkAuthLoading = false;
       }
     },
-    
+
     async logout() {
       try {
         // Call the backend logout endpoint
@@ -64,12 +66,12 @@ export const useAuthStore = defineStore('auth', {
         // Clear user data from the store regardless of API call success
         this.isAuthenticated = false;
         this.user = null;
-        
+
         // Clear authentication-related cookies
         try {
           const Cookies = await import('js-cookie');
           // Remove common auth-related cookies
-          ['token', 'auth_token', 'session', 'refresh_token', 'access_token'].forEach(cookieName => {
+          ['token', 'auth_token', 'session', 'refresh_token', 'access_token'].forEach((cookieName) => {
             if (Cookies.default.get(cookieName)) {
               Cookies.default.remove(cookieName);
             }
@@ -78,6 +80,6 @@ export const useAuthStore = defineStore('auth', {
           console.log('Error clearing cookies:', cookieError);
         }
       }
-    }
- },
+    },
+  },
 });
