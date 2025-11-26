@@ -6,7 +6,6 @@ export const login = async (email: string, password: string) => {
     const res = await fetch(`${BACKEND_PORT}/api/auth/login`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
 
@@ -34,7 +33,6 @@ export const register = async (userData: { name: string; email: string; password
     const res = await fetch(`${BACKEND_PORT}/api/auth/register`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify(userData),
     });
 
@@ -60,7 +58,6 @@ export const logout = async () => {
   try {
     const res = await fetch(`${BACKEND_PORT}/api/auth/logout`, {
       method: 'GET',
-      credentials: 'include',
     });
 
     // Clear token from sessionStorage after logout
@@ -79,7 +76,6 @@ export const checkAuth = async () => {
   try {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/users/me`, {
       method: 'GET',
-      credentials: 'include',
     })
       .then((res) => res.json())
       .catch(() => {
