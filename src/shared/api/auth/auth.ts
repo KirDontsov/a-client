@@ -17,6 +17,7 @@ export const login = async (email: string, password: string) => {
       if (data && data.token) {
         // Store token in sessionStorage for cross-domain access
         if (typeof window !== 'undefined') {
+          console.log('auth_token', data.token);
           sessionStorage.setItem('auth_token', data.token);
         }
       }
@@ -52,7 +53,7 @@ export const register = async (userData: { name: string; email: string; password
     return res;
   } catch (e) {
     console.log(e);
- }
+  }
 };
 
 export const logout = async () => {
