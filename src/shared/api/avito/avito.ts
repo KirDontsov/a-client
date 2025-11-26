@@ -24,7 +24,6 @@ export const getAvitoToken = async (client_id?: string, client_secret?: string) 
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/get_token`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify(requestBody),
     })
       .then((res) => res.json())
@@ -44,7 +43,6 @@ export const getAvitoBalance = async ({ avito_token }: AvitoTokenParams) => {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/get_balance`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({
         avito_token,
       }),
@@ -65,7 +63,6 @@ export const getAvitoProfile = async ({ avito_token }: AvitoTokenParams) => {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/get_user_profile`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({
         avito_token,
       }),
@@ -89,7 +86,6 @@ export const getAvitoItems = async ({ page, limit }) => {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/get_feed`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({
         page,
         limit,
@@ -112,7 +108,6 @@ export const getAvitoItemsFromAvitoApi = async ({ avito_token, page }: AvitoToke
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/get_items`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({
         avito_token,
         page,
@@ -138,7 +133,6 @@ export const getAvitoItemAnalytics = async (params: AvitoItemAnalyticsParams, re
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/get_item_analytics`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify(params),
     });
 
@@ -194,7 +188,6 @@ export const getAvitoCategories = async ({ avito_token }: AvitoTokenParams) => {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/get_categories_tree`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({
         avito_token,
       }),
@@ -215,7 +208,6 @@ export const getAvitoCategoryFields = async ({ avito_token, avito_slug }: AvitoC
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/get_category_fields`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({
         avito_token,
         avito_slug,
@@ -244,7 +236,6 @@ export async function createAvitoAnalyticsRequest(data) {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito_requests/${userId}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({
         request: data.request,
         city: data.city,
@@ -268,7 +259,6 @@ export async function getAvitoAnalyticsAds(avitoRequestId: string) {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito_requests/${avitoRequestId}/ads`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
-      credentials: 'include',
     });
     return res;
   } catch (e) {
@@ -320,7 +310,6 @@ export async function downloadAvitoRequestCsv(avitoRequestId: string) {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito_requests/${avitoRequestId}/ads/csv`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
-      credentials: 'include',
     });
     return res;
   } catch (e) {
@@ -339,7 +328,6 @@ export async function avitoCreateAd(formData: Record<string, any>, account_id?: 
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/create-ad`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify(requestBody),
     });
 
@@ -363,7 +351,6 @@ export async function createAvitoAccount(accountData: {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/accounts`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify(accountData),
     });
     return res;
@@ -377,7 +364,6 @@ export async function getAvitoAccounts(page: number = 1, limit: number = 10) {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/accounts?page=${page}&limit=${limit}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
-      credentials: 'include',
     });
     return res;
   } catch (e) {
@@ -390,7 +376,6 @@ export async function getAvitoAccountById(accountId: string) {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/accounts/${accountId}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
-      credentials: 'include',
     });
     return res;
   } catch (e) {
@@ -409,7 +394,6 @@ export async function updateAvitoAccount(
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/accounts/${accountId}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'PUT', // or 'PATCH' depending on your backend implementation
-      credentials: 'include',
       body: JSON.stringify(accountData),
     });
     return res;
@@ -423,7 +407,6 @@ export async function deleteAvitoAccount(accountId: string) {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/accounts/${accountId}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'DELETE',
-      credentials: 'include',
     });
     return res;
   } catch (e) {
@@ -436,7 +419,6 @@ export async function getAvitoFeeds(account_id: string) {
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/feeds`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({ account_id }),
     });
     return res;
@@ -450,7 +432,6 @@ export async function getAvitoFeedById(feed_id: string, page: number = 1, limit:
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/feeds/${feed_id}?page=${page}&limit=${limit}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
-      credentials: 'include',
     });
     return res;
   } catch (e) {
@@ -463,7 +444,6 @@ export async function importAvitoXml(data: { account_id: string; xml_url: string
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/import-xml`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify(data),
     });
     return res;
@@ -477,7 +457,6 @@ export async function getAvitoAdById(feed_id: string, ad_id: string, account_id:
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/feed/${feed_id}/ad/${ad_id}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify({ account_id }),
     });
     return res;
@@ -503,7 +482,6 @@ export async function avitoUpdateAd(
     const res = await authenticatedFetch(`${BACKEND_PORT}/api/avito/feed/${feed_id}/ad/${ad_id}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'POST',
-      credentials: 'include',
       body: JSON.stringify(requestBody),
     });
 

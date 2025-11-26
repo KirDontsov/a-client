@@ -12,7 +12,6 @@ export const useAuthStore = defineStore('auth', {
     async checkAuth() {
       try {
         const res = await checkAuth();
-        const res2 = await getFirmByUrl('shkola-№1158-mikroraion-severnoe-chertanovo');
 
         if (res?.status === 'success' && res?.data?.user) {
           // Check if user data exists and if there are differences
