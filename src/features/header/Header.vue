@@ -80,7 +80,7 @@ import router from "@/router";
 import Cookies from 'js-cookie';
 import { Button } from '@/shared/components';
 
-const { set: setToken } = useCookies("token");
+const { value: token, set: setToken } = useCookies("token");
 const { value: accountId } = useCookies('account_id', null);
 const { value: avito_token, set: setAvitoToken } = useCookies("avito_token");
 

@@ -1,8 +1,8 @@
-import { BACKEND_PORT } from '@/shared';
+import { BACKEND_PORT, authenticatedFetch } from '@/shared';
 
 export async function updateFirm(id, firm) {
   try {
-    const res = await fetch(`${BACKEND_PORT}/api/firm_by_url/${id}`, {
+    const res = await authenticatedFetch(`${BACKEND_PORT}/api/firm_by_url/${id}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'PUT',
       credentials: 'include',
@@ -14,14 +14,14 @@ export async function updateFirm(id, firm) {
       }),
     });
     return res;
-  } catch (e) {
+ } catch (e) {
     throw e;
-  }
+ }
 }
 
 export async function getFirmByUrl(id) {
   try {
-    const res = await fetch(`${BACKEND_PORT}/api/firm_by_url/${id}`, {
+    const res = await authenticatedFetch(`${BACKEND_PORT}/api/firm_by_url/${id}`, {
       headers: { 'Content-Type': 'application/json' },
       method: 'GET',
     })

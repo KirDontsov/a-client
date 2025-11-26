@@ -27,6 +27,7 @@ export function useCookies<T>(name: string, defaultValue?: T) {
     }
   };
 
+  console.log('value', value);
   return {
     value,
     set,
