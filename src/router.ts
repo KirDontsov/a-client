@@ -10,8 +10,7 @@ const isAuthenticated = async (to, from, next) => {
     if (!!res?.data?.user?.id) {
       next();
     } else {
-      // There was an error so redirect
-      // window.location.href = '/login';
+      window.location.href = '/login';
     }
   } catch (e) {
     console.log('e', e);
