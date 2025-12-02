@@ -18,6 +18,9 @@ const name = computed(
 );
 
 const dynamicComponent = defineAsyncComponent(
-  () => import(`../${props.name}/${name.value}.vue`)
+  () => import(`../${props.name}/${name.value}.vue`).catch(() => {
+    console.warn(`Icon component not found: ${props.name}`);
+    return null;
+  })
 );
 </script>

@@ -2,23 +2,38 @@
   <PageContainer :loading="avitoCategoryFieldsStore.categoryFieldsLoading">
     <template #body>
       <div class="w-full flex flex-col gap-8 text-gray-50 dark:text-gray-40 px-4 py-2 sm:px-8 sm:py-4">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Редактирование объявления</h2>
-        <SelectedCategoryPath />
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Редактирование объявления</h2>
+          <Button type="button" color="default" variant="dark" size="md" @click="handleDelete">
+            <svg
+              class="w-6 h-6 text-gray-800 dark:text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </Button>
+        </div>
 
         <!-- Item Form Section -->
         <div
-          ref="itemFormSectionRef"
           v-if="avitoCategoryFieldsStore.categoryFields && avitoCategoryFieldsStore.categoryFields.length > 0"
           class="w-full flex flex-col gap-8"
         >
           <div
-            ref="formFieldsSectionRef"
             class="relative overflow-x-auto shadow-md sm:rounded-lg w-full p-4 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
           >
-            <!-- Form -->
             <form class="space-y-6 max-w-[688px] w-full mx-auto">
-              <!-- Render all fields without stepper -->
-              <div v-for="field in getAllFields()" :key="field.tag" class="p-4">
+              <!-- Render all fields -->
+              <div v-for="field in avitoCategoryFieldsStore.categoryFields" :key="field.tag" class="p-4">
                 <div class="mb-3">
                   <!-- Dependencies info -->
                   <div
@@ -44,14 +59,14 @@
                     <!-- Tooltip for field description -->
                     <div v-if="field.descriptions" class="relative flex flex-col items-center group">
                       <svg
-                        class="w-4 h-4 text-gray-400 hover:text-gray-500 cursor-pointer"
+                        class="w-4 h-4 text-gray-400 hover:text-gray-50 cursor-pointer"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
                           fill-rule="evenodd"
-                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 000 2z"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
                           clip-rule="evenodd"
                         ></path>
                       </svg>
@@ -69,7 +84,7 @@
                   <!-- Warnings -->
                   <div
                     v-if="field.content[0]?.warnings && field.content[0].warnings.length > 0"
-                    class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 mb-3"
+                    class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-80 rounded-md p-3 mb-3"
                   >
                     <div
                       v-for="(warning, idx) in field.content[0].warnings"
@@ -169,11 +184,11 @@
                           type="checkbox"
                           :value="option.value"
                           v-model="trimmedFieldValues[field.tag]"
-                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-60"
                         />
                         <label
                           :for="`${field.tag}-${option.value}`"
-                          class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                          class="ml-2 block text-sm text-gray-70 dark:text-gray-300"
                         >
                           {{ option.value }}
                         </label>
@@ -187,7 +202,7 @@
                           type="checkbox"
                           :value="option.value"
                           v-model="trimmedFieldValues[field.tag]"
-                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
                         />
                         <label
                           :for="`${field.tag}-${option.value}`"
@@ -204,7 +219,7 @@
                     v-if="field.children && field.children.length > 0"
                     class="mt-4 pl-4 border-l-2 border-gray-200 dark:border-gray-600"
                   >
-                    <div v-for="child in field.children" :key="child.tag" class="mb-4">
+                    <div v-for="child in field.children.filter((c) => c.tag !== 'Id')" :key="child.tag" class="mb-4">
                       <div class="flex items-center gap-2 mb-1">
                         <label :for="child.tag" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           {{ child.label }}
@@ -220,7 +235,7 @@
                           >
                             <path
                               fill-rule="evenodd"
-                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 0 100-2zm0 8a1 0 100-2 1 1 0 000 2z"
+                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
                               clip-rule="evenodd"
                             ></path>
                           </svg>
@@ -268,6 +283,24 @@
                               type="checkbox"
                               :value="option.value"
                               v-model="trimmedFieldValues[child.tag]"
+                              class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                            />
+                            <label
+                              :for="`${child.tag}-${option.value}`"
+                              class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
+                            >
+                              {{ option.value }}
+                            </label>
+                          </div>
+                        </div>
+                        <!-- Regular child checkbox field -->
+                        <div v-else class="space-y-2">
+                          <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
+                            <input
+                              :id="`${child.tag}-${option.value}`"
+                              type="checkbox"
+                              :value="option.value"
+                              v-model="trimmedFieldValues[child.tag]"
                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
                             />
                             <label
@@ -278,86 +311,68 @@
                             </label>
                           </div>
                         </div>
-                      <!-- Regular child checkbox field -->
-                      <div v-else class="space-y-2">
-                        <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
-                          <input
-                            :id="`${child.tag}-${option.value}`"
-                            type="checkbox"
+                      </div>
+
+                      <!-- Child select field -->
+                      <div
+                        v-else-if="child.content[0].field_type === 'select' || child.tag === 'Make'"
+                        class="relative"
+                      >
+                        <select
+                          :id="child.tag"
+                          v-model="trimmedFieldValues[child.tag]"
+                          :required="child.content[0].required"
+                          :class="[
+                            'w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-200',
+                            avitoCategoryFieldsStore.getFieldError(child.tag)
+                              ? 'border-red-500 focus:ring-red-500 focus:border-red-50'
+                              : 'border-gray-300 dark:border-gray-600',
+                          ]"
+                        >
+                          <option value="" disabled>Выберите значение</option>
+                          <!-- Special handling for Make field with new structure -->
+                          <option
+                            v-if="child.tag === 'Make' && isMakeFieldWithNewStructure(child)"
+                            v-for="option in child.content[0].values.values"
+                            :key="option.value"
                             :value="option.value"
-                            v-model="trimmedFieldValues[child.tag]"
-                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-60"
-                          />
-                          <label
-                            :for="`${child.tag}-${option.value}`"
-                            class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
                           >
                             {{ option.value }}
-                          </label>
-                        </div>
+                          </option>
+                          <!-- Regular Make field with old structure -->
+                          <option
+                            v-else-if="child.tag === 'Make'"
+                            v-for="option in getSelectOptions(child.content[0].values)"
+                            :key="option.value"
+                            :value="option.value"
+                          >
+                            {{ option.value }}
+                          </option>
+                          <!-- Regular select field -->
+                          <option
+                            v-else
+                            v-for="option in getSelectOptions(child.content[0].values)"
+                            :key="option.value"
+                            :value="option.value"
+                          >
+                            {{ option.value }}
+                          </option>
+                        </select>
+                        <!-- Error message for child select field -->
+                        <p
+                          v-if="avitoCategoryFieldsStore.getFieldError(child.tag)"
+                          class="mt-1 text-sm text-red-600 dark:text-red-500"
+                        >
+                          {{ avitoCategoryFieldsStore.getFieldError(child.tag) }}
+                        </p>
                       </div>
-                    </div>
-
-                    <!-- Child select field -->
-                    <div
-                      v-else-if="child.content[0].field_type === 'select' || child.tag === 'Make'"
-                      class="relative"
-                    >
-                      <select
-                        :id="child.tag"
-                        v-model="trimmedFieldValues[child.tag]"
-                        :required="child.content[0].required"
-                        :class="[
-                          'w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-50 dark:bg-gray-700 dark:text-white transition-colors duration-200',
-                          avitoCategoryFieldsStore.getFieldError(child.tag)
-                            ? 'border-red-500 focus:ring-red-500 focus:border-red-50'
-                            : 'border-gray-300 dark:border-gray-600',
-                        ]"
-                      >
-                        <option value="" disabled>Выберите значение</option>
-                        <!-- Special handling for Make field with new structure -->
-                        <option
-                          v-if="child.tag === 'Make' && isMakeFieldWithNewStructure(child)"
-                          v-for="option in child.content[0].values.values"
-                          :key="option.value"
-                          :value="option.value"
-                        >
-                          {{ option.value }}
-                        </option>
-                        <!-- Regular Make field with old structure -->
-                        <option
-                          v-else-if="child.tag === 'Make'"
-                          v-for="option in getSelectOptions(child.content[0].values)"
-                          :key="option.value"
-                          :value="option.value"
-                        >
-                          {{ option.value }}
-                        </option>
-                        <!-- Regular select field -->
-                        <option
-                          v-else
-                          v-for="option in getSelectOptions(child.content[0].values)"
-                          :key="option.value"
-                          :value="option.value"
-                        >
-                          {{ option.value }}
-                        </option>
-                      </select>
-                      <!-- Error message for child select field -->
-                      <p
-                        v-if="avitoCategoryFieldsStore.getFieldError(child.tag)"
-                        class="mt-1 text-sm text-red-600 dark:text-red-50"
-                      >
-                        {{ avitoCategoryFieldsStore.getFieldError(child.tag) }}
-                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
             </form>
           </div>
-          <!-- Submit Button -->
+          <!-- Submit button -->
           <div class="flex justify-end pt-4">
             <Button
               type="button"
@@ -366,13 +381,13 @@
               variant="dark"
               @click="handleSubmit"
             >
-              {{ avitoCategoryFieldsStore.categoryFieldsLoading ? 'Загрузка...' : 'Сохранить изменения' }}
+              {{ avitoCategoryFieldsStore.categoryFieldsLoading ? 'Загрузка...' : 'Обновить объявление' }}
             </Button>
           </div>
         </div>
 
-        <!-- Empty state when no category selected -->
-        <div v-else-if="!avitoCategoriesStore.selectedCategories.length" class="text-center py-12">
+        <!-- Empty state when no fields available -->
+        <div v-else class="text-center py-12">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-12 w-12 mx-auto text-gray-400"
@@ -387,9 +402,9 @@
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 0 012-2h2a2 2 0 012 2"
             />
           </svg>
-          <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">Выберите категорию</h3>
+          <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">Загрузка полей</h3>
           <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            Пожалуйста, выберите категорию для редактирования объявления.
+            Пожалуйста, подождите, идет загрузка полей для редактирования объявления.
           </p>
         </div>
       </div>
@@ -398,23 +413,26 @@
 </template>
 
 <script setup lang="ts">
-import { useCookies, useAvitoCategoriesStore, useAvitoCategoryFieldsStore } from '@/entities';
-import { onMounted, ref, computed, nextTick, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useCookies, useAvitoCategoryFieldsStore } from '@/entities';
+import { onMounted, ref, nextTick, watch } from 'vue';
 import { PageContainer } from '@/features/page-container';
-import { SelectedCategoryPath } from '@/features';
 import { DatePicker } from '@/shared/components/date-picker';
 import { InputField } from '@/shared/components/input-field';
 import { Button } from '@/shared/components';
 import { isDateField, getSelectOptions, isMakeFieldWithNewStructure } from '@/shared/lib/field-helpers';
+import { getAvitoAdById, getAvitoCategories } from '@/shared';
+import { findMatchingCategory } from '@/shared/lib/field-helpers';
+import { useRoute, useRouter } from 'vue-router';
+import { useAvitoAccountsStore } from '@/entities/avito-accounts/model';
+import { avitoDeleteAd } from '@/shared/api/avito';
 
 const route = useRoute();
-const { value: avito_token } = useCookies('avito_token');
+const router = useRouter();
+const { feedId, adId } = route.params;
 
-const avitoCategoriesStore = useAvitoCategoriesStore();
+const avitoAccountsStore = useAvitoAccountsStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
-const itemFormSectionRef = ref(null);
-const formFieldsSectionRef = ref(null);
+const { value: avitoToken } = useCookies('avito_token');
 
 // Reactive object to store trimmed values for fields that need trimming
 const trimmedFieldValues = ref({});
@@ -429,16 +447,39 @@ const getInputType = (dataType: string) => {
   }
 };
 
+const handleDelete = async () => {
+  if (!confirm('Вы уверены, что хотите удалить это объявление?')) {
+    return;
+  }
+
+  try {
+    // Get the account ID
+    const accountId = avitoAccountsStore.selectedAccountId;
+
+    // Call the delete API
+    await avitoDeleteAd(adId, accountId);
+
+    // Show success message
+    alert('Объявление успешно удалено!');
+
+    // Navigate back to the feed details page
+    router.push(`/feeds/${feedId}`);
+  } catch (error) {
+    console.error('Error deleting ad:', error);
+    alert('Произошла ошибка при удалении объявления. Пожалуйста, попробуйте еще раз.');
+  }
+};
+
 const handleSubmit = async () => {
   // Sync trimmed values back to store before submitting
   syncTrimmedValuesToStore();
 
   // Validate using store's validation
- const isValid = avitoCategoryFieldsStore.validateForm();
+  const isValid = avitoCategoryFieldsStore.validateForm();
 
   if (!isValid) {
     // Find the first field with an error to scroll to
-    const orderedFields = getAllFields();
+    const orderedFields = avitoCategoryFieldsStore.getOrderedFields();
     for (const field of orderedFields) {
       if (avitoCategoryFieldsStore.getFieldError(field.tag)) {
         const fieldElement = document.getElementById(field.tag);
@@ -450,7 +491,7 @@ const handleSubmit = async () => {
 
       // Also check child fields if they exist
       if (field.children && field.children.length > 0) {
-        for (const child of field.children) {
+        for (const child of field.children.filter((c) => c.tag !== 'Id')) {
           if (avitoCategoryFieldsStore.getFieldError(child.tag)) {
             const childElement = document.getElementById(child.tag);
             if (childElement) {
@@ -465,29 +506,19 @@ const handleSubmit = async () => {
   }
 
   try {
-    const { feedId, adId } = route.params;
-    await avitoCategoryFieldsStore.submitForm(adId as string, feedId as string);
+    // Update the ad with the new form data
+    await avitoCategoryFieldsStore.submitForm(adId, feedId);
     // Show success message
-    alert('Объявление успешно сохранено!');
+    alert('Объявление успешно обновлено!');
   } catch (error) {
-    console.error('Error submitting form:', error);
-    alert('Произошла ошибка при сохранении объявления. Пожалуйста, проверьте заполнение полей.');
+    console.error('Error updating form:', error);
+    alert('Произошла ошибка при обновлении объявления. Пожалуйста, проверьте заполнение полей.');
   }
-};
-
-const handleReset = () => {
-  avitoCategoryFieldsStore.initializeFormData();
-};
-
-// Get all fields without filtering - including those that were filtered out in create
-const getAllFields = () => {
-  // Return all category fields without any filtering
-  return avitoCategoryFieldsStore.categoryFields || [];
 };
 
 // Function to sync trimmed values to the store
 const syncTrimmedValuesToStore = () => {
- Object.keys(trimmedFieldValues.value).forEach((key) => {
+  Object.keys(trimmedFieldValues.value).forEach((key) => {
     if (key === 'ImageUrls') {
       // For ImageUrls, apply trim to each URL in the comma-separated list
       const urls = trimmedFieldValues.value[key] || '';
@@ -511,9 +542,12 @@ watch(
     Object.keys(newFormData).forEach((key) => {
       // Check if this is a date or checkbox field to determine if it should be in trimmedFieldValues
       // Find the field definition to check if it's a date or checkbox field
-      const field = avitoCategoryFieldsStore.categoryFields?.find((f) => f.tag === key);
-      const isDateFld = field ? isDateField(field) : false;
-      const isCheckboxFld = field ? field.content[0]?.field_type === 'checkbox' : false;
+      const isDateFld =
+        avitoCategoryFieldsStore.categoryFields?.some((field) => field.tag === key && isDateField(field)) || false;
+      const isCheckboxFld =
+        avitoCategoryFieldsStore.categoryFields?.some(
+          (field) => field.tag === key && field.content[0]?.field_type === 'checkbox',
+        ) || false;
 
       // Only update if the value doesn't exist in trimmedFieldValues (initialization)
       if (!(key in trimmedFieldValues.value)) {
@@ -560,116 +594,110 @@ watch(
 
 // Function to scroll to the invalid field
 const scrollToInvalidField = (fieldElement: HTMLElement) => {
-  if (itemFormSectionRef.value && fieldElement) {
+  if (fieldElement) {
     // Scroll the container to bring the field into view
-    itemFormSectionRef.value.scrollTo({
-      top: fieldElement.offsetTop - itemFormSectionRef.value.offsetTop - 100,
-      behavior: 'smooth',
-    });
+    fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     // Add visual indication to the field
     fieldElement.focus();
- }
+  }
 };
 
 onMounted(async () => {
-  const { feedId, adId } = route.params;
-  
-  if (avito_token.value && feedId && adId) {
-    try {
-      // First, fetch the ad data
-      console.log('Fetching ad data...');
-      const adData = await avitoCategoryFieldsStore.loadAdData(feedId as string, adId as string);
-      console.log('Ad data received:', adData);
-      
-      // Extract the ServiceSubType value from the ad data
-      let serviceSubTypeValue = null;
-      if (adData && adData.data && adData.data.fields) {
-        // Find the field with tag 'ServiceSubType' in the fields array
-        const serviceSubTypeField = adData.data.fields.find(field => field.tag === 'ServiceSubType');
-        if (serviceSubTypeField && serviceSubTypeField.values && serviceSubTypeField.values.length > 0) {
-          serviceSubTypeValue = serviceSubTypeField.values[0].value;
-          console.log('ServiceSubType value found:', serviceSubTypeValue);
-        }
-      }
-      
-      if (!serviceSubTypeValue) {
-        throw new Error('ServiceSubType value not found in ad data');
-      }
-      
-      // Fetch all Avito categories
-      console.log('Fetching Avito categories...');
-      const categoriesResponse = await avitoCategoriesStore.getAvitoCategories({ avito_token: avito_token.value });
-      console.log('Avito categories received:', categoriesResponse);
-      
-      // Find the slug by ServiceSubType value in categories response
-      console.log('Searching for category slug by ServiceSubType value:', serviceSubTypeValue);
-      const foundSlug = findCategorySlugByName(categoriesResponse.data.categories, serviceSubTypeValue);
-      
-      if (!foundSlug) {
-        throw new Error(`Category slug not found for ServiceSubType value: ${serviceSubTypeValue}`);
-      }
-      
-      console.log('Found category slug:', foundSlug);
-      
-      // Fetch category fields using the found slug
-      console.log('Fetching category fields for slug:', foundSlug);
-      await avitoCategoryFieldsStore.getAvitoCategoryFields({
-        avito_token: avito_token.value,
-        avito_slug: foundSlug,
-      });
-      
-      // After getting the fields and ad data, ensure all store values are in trimmedFieldValues
-      if (avitoCategoryFieldsStore.formData) {
-        Object.keys(avitoCategoryFieldsStore.formData).forEach((key) => {
-          // Only update if the value doesn't exist in trimmedFieldValues (initialization)
-          if (!(key in trimmedFieldValues.value)) {
-            const value = avitoCategoryFieldsStore.formData[key];
-            trimmedFieldValues.value[key] = value;
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error in new ad loading logic:', error);
-      alert('Ошибка при загрузке данных объявления. Пожалуйста, попробуйте снова.');
-    }
-  } else if (avito_token.value) {
-    // Fallback for when we don't have feedId and adId (shouldn't happen in edit mode)
-    await avitoCategoryFieldsStore.getAvitoCategoryFields({
-      avito_token: avito_token.value,
-      avito_slug: avitoCategoriesStore.selectedFinalCategory,
-    });
+  try {
+    // Get the ad data by ID
+    const adDataResponse = await getAvitoAdById(feedId, adId, avitoAccountsStore.selectedAccountId);
+    const adData = adDataResponse.data || adDataResponse; // Handle different response formats
 
-    // After getting the fields, ensure all store values are in trimmedFieldValues
-    if (avitoCategoryFieldsStore.formData) {
-      Object.keys(avitoCategoryFieldsStore.formData).forEach((key) => {
-        if (!(key in trimmedFieldValues.value)) {
-          const value = avitoCategoryFieldsStore.formData[key];
-          trimmedFieldValues.value[key] = value;
+    if (avitoToken.value) {
+      // Get Avito categories
+      const categoriesResponse = await getAvitoCategories({ avito_token: avitoToken.value });
+      const categoriesData = categoriesResponse.data || categoriesResponse; // Handle different response formats
+
+      // Find matching category based on field tags
+      const matchingCategorySlug = findMatchingCategory(adData.fields, categoriesData.categories);
+      console.log('matching category slug', matchingCategorySlug);
+
+      if (matchingCategorySlug) {
+        // Get the category fields based on the matching category slug
+        const res = await avitoCategoryFieldsStore.getAvitoCategoryFields({
+          avito_token: avitoToken.value,
+          avito_slug: matchingCategorySlug,
+        });
+
+        console.log('category fields res', res);
+
+        // After getting the fields, initialize form data with the ad values
+        if (avitoCategoryFieldsStore.categoryFields && adData && adData.fields) {
+          console.log('Ad data fields:', adData.fields); // Debug log
+
+          // Map the ad data fields to the form data based on matching tags
+          const fieldValues = {};
+
+          // Process each field from the ad data
+          for (const adField of adData.fields) {
+            const tag = adField.tag;
+            // Only use the value from the first element in the values array
+            let value = adField.values && adField.values.length > 0 ? adField.values[0].value : '';
+
+            // For the Title field, make sure to only take the actual title without any appended text
+            if (tag === 'Title' && typeof value === 'string') {
+              // If the value contains "оплата при получении", we need to remove it
+              // This might be a specific issue with how the data is stored
+              // if (value.includes('оплата при получении')) {
+              //   // Extract just the original title part (before the extra text)
+              //   const originalTitle = value.split(' оплата при получении')[0];
+              //   value = originalTitle;
+              //   console.log('Cleaned Title value:', value);
+              // }
+              console.log('Cleaned Title value:', value);
+            }
+
+            console.log(`Processing field: ${tag}, value: ${value}`); // Debug log
+
+            // Find the corresponding field in category fields
+            const correspondingField = avitoCategoryFieldsStore.categoryFields.find((field) => field.tag === tag);
+
+            if (correspondingField) {
+              // Handle different field types appropriately
+              if (correspondingField.content[0]?.field_type === 'checkbox' && correspondingField.tag !== 'Make') {
+                // For checkboxes, the value might be a comma-separated string that needs to be split into an array
+                fieldValues[tag] = value ? value.split(',').map((item) => item.trim()) : [];
+              } else {
+                fieldValues[tag] = value;
+              }
+            } else {
+              // If there's no corresponding field, still add it to formData in case it's needed
+              console.log(`No corresponding field found for tag: ${tag}, value: ${value}`);
+            }
+          }
+
+          // Log the Title field value before setting it
+          if (fieldValues['Title']) {
+            console.log('Setting Title field value:', fieldValues['Title']);
+          }
+
+          // Initialize the form data with the mapped values
+          avitoCategoryFieldsStore.initializeFormDataWithValues(fieldValues);
+
+          // Also update the trimmedFieldValues to reflect the initial values
+          Object.keys(fieldValues).forEach((key) => {
+            if (key === 'Title') {
+              console.log('Setting trimmedFieldValues for Title:', fieldValues[key]);
+            }
+            trimmedFieldValues.value[key] = fieldValues[key];
+          });
         }
-      });
+      } else {
+        console.warn('Could not find matching category for the ad');
+      }
+    } else {
+      console.warn('Avito token not found in cookies');
     }
+  } catch (error) {
+    console.error('Error during initialization:', error);
   }
 });
-
-// Helper function to find category slug by name in nested categories structure
-const findCategorySlugByName = (categories, targetName) => {
-  for (const category of categories) {
-    if (category.name === targetName) {
-      return category.slug;
-    }
-    
-    // If this category has nested categories, search recursively
-    if (category.nested && category.nested.length > 0) {
-      const foundInNested = findCategorySlugByName(category.nested, targetName);
-      if (foundInNested) {
-        return foundInNested;
-      }
-    }
-  }
-  
-  return null; // Not found
-};
 </script>
 
 <style scoped>

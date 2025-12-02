@@ -151,7 +151,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { PageContainer } from '@/features/page-container';
 import { Button } from '@/shared/components';
-import { importAvitoXml } from '@/shared/api/avito/avito';
+import { importAvitoXml } from '@/shared/api/avito';
 import { useAvitoAccountsStore } from '@/entities/avito-accounts/model';
 
 const router = useRouter();

@@ -83,6 +83,13 @@ export const useAvitoCategoryFieldsStore = defineStore('avito-category-fields', 
       });
     },
 
+    initializeFormDataWithValues(values: Record<string, any>) {
+      if (!this.categoryFields) return;
+
+      this.formData = { ...this.formData, ...values };
+      this.errors = {}; // Clear errors when initializing form data
+    },
+
     updateFormField(fieldTag: string, value: any) {
       this.formData[fieldTag] = value;
     },

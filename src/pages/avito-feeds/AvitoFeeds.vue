@@ -133,7 +133,7 @@ import { onMounted, ref, computed } from 'vue';
 import { useAvitoAccountsStore } from '@/entities/avito-accounts';
 import { PageContainer } from '@/features/page-container';
 import { Button } from '@/shared/components';
-import { getAvitoFeeds } from '@/shared/api/avito/avito';
+import { getAvitoFeeds } from '@/shared/api/avito';
 import { useRouter } from 'vue-router';
 import { onAccountChange } from '@/shared/lib';
 
@@ -297,9 +297,9 @@ onMounted(async () => {
   await fetchFeeds();
 
   // Subscribe to account changes and refetch feeds when account changes
-  onAccountChange(() => {
+  onAccountChange(async () => {
     console.log('Account changed in AvitoFeeds.vue, refetching feeds...');
-    fetchFeeds();
+    await fetchFeeds();
   });
 });
 </script>

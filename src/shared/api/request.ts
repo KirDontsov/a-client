@@ -8,25 +8,23 @@ export const getAuthToken = (): string | null => {
   try {
     // First, try to get token from sessionStorage (primary method for cross-domain)
     if (typeof window !== 'undefined') {
-      const tokenFromSession = sessionStorage.getItem('auth_token') ||
-                              sessionStorage.getItem('token');
+      const tokenFromSession = sessionStorage.getItem('auth_token') || sessionStorage.getItem('token');
       if (tokenFromSession) {
         return tokenFromSession;
       }
-      
+
       // Fallback to localStorage
-      const tokenFromLocal = localStorage.getItem('auth_token') ||
-                            localStorage.getItem('token');
+      const tokenFromLocal = localStorage.getItem('auth_token') || localStorage.getItem('token');
       if (tokenFromLocal) {
         return tokenFromLocal;
       }
     }
-    
+
     // Then, check if document.cookie is accessible (fallback for same-domain)
     if (typeof document !== 'undefined' && document.cookie) {
       // Try different possible cookie names for the token using js-cookie
       const possibleCookieNames = ['token', 'auth_token', 'access_token', 'authorization'];
-      
+
       for (const cookieName of possibleCookieNames) {
         try {
           const token = Cookies.get(cookieName);
@@ -38,13 +36,13 @@ export const getAuthToken = (): string | null => {
           continue;
         }
       }
-      
+
       // Fallback: Try to get token directly from document.cookie
       for (const cookieName of possibleCookieNames) {
         const name = cookieName + '=';
         const decodedCookie = decodeURIComponent(document.cookie);
         const ca = decodedCookie.split(';');
-        
+
         for (let i = 0; i < ca.length; i++) {
           let c = ca[i];
           while (c.charAt(0) === ' ') {
@@ -59,7 +57,7 @@ export const getAuthToken = (): string | null => {
         }
       }
     }
-    
+
     return null;
   } catch (error) {
     console.error('Error getting auth token:', error);
@@ -78,7 +76,7 @@ export const createAuthHeaders = (additionalHeaders: Record<string, string> = {}
   };
 
   const token = getAuthToken();
-  console.log('token', token);
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }

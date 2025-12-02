@@ -52,12 +52,30 @@ const { expanded, initialize } = useSidebarState();
 const currentPath = computed(() => window.location.pathname);
 
 const isLinkActive = (url) => {
+  // Find the link object that matches the URL
+  const link = links.find(l => l.url === url);
+  
   // For the home route, we only want it active when the path is exactly "/"
   if (url === '/') {
     return currentPath.value === url;
   }
-  // For other routes, check if the current path starts with the link url
-  return currentPath.value.startsWith(url);
+
+  // Check if the current path starts with the link URL
+  if (currentPath.value.startsWith(url)) {
+    return true;
+  }
+
+  // If the link has children routes defined, check if current path matches any of them
+  if (link && link.children) {
+    return link.children.some(child => {
+      if (typeof child === 'string') {
+        return currentPath.value.startsWith(child);
+      }
+      return false;
+    });
+  }
+
+  return false;
 };
 
 onMounted(() => {

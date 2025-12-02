@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia';
-import {
-  getAvitoAccounts,
-  getAvitoAccountById,
-  updateAvitoAccount,
-  deleteAvitoAccount,
-} from '@/shared/api/avito/avito';
+import { getAvitoAccounts, getAvitoAccountById, updateAvitoAccount, deleteAvitoAccount } from '@/shared/api/avito';
 import Cookies from 'js-cookie';
 import { useCookies } from '@/entities';
 
@@ -33,7 +28,7 @@ export interface AvitoAccountsState {
 export const useAvitoAccountsStore = defineStore('avitoAccounts', {
   state: (): AvitoAccountsState => {
     const { value: selectedAccountId } = useCookies('account_id', null);
-    console.log('selectedAccountId', selectedAccountId);
+
     return {
       accounts: [],
       loading: false,
@@ -129,8 +124,8 @@ export const useAvitoAccountsStore = defineStore('avitoAccounts', {
       this.error = null;
 
       try {
-        const { createAvitoAccount } = await import('@/shared/api/avito/avito');
-        const authStore = await import('@/entities/auth/model').then((m) => m.useAuthStore());
+        const { createAvitoAccount } = await import('@/shared/api/avito');
+                 const authStore = await import('@/entities/auth/model').then(m => m.useAuthStore());
         const userId = authStore.user?.id;
 
         if (!userId) {

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
-import { checkAuth, logout as apiLogout } from '@/shared/api/auth/auth';
+import { checkAuth, logout as apiLogout } from '@/shared/api/auth';
 import { getFirmByUrl } from '@/shared';
+import Cookies from 'js-cookie';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -68,13 +69,12 @@ export const useAuthStore = defineStore('auth', {
 
         // Clear authentication-related cookies
         try {
-          const Cookies = await import('js-cookie');
           // Remove common auth-related cookies
-          ['token', 'auth_token', 'session', 'refresh_token', 'access_token'].forEach((cookieName) => {
-            if (Cookies.default.get(cookieName)) {
-              Cookies.default.remove(cookieName);
-            }
-          });
+                     ['token', 'auth_token', 'session', 'refresh_token', 'access_token'].forEach((cookieName) => {
+                       if (Cookies.get(cookieName)) {
+                         Cookies.remove(cookieName);
+                       }
+                     });
         } catch (cookieError) {
           console.log('Error clearing cookies:', cookieError);
         }

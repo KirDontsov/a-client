@@ -91,8 +91,6 @@ const avitoAccountsStore = useAvitoAccountsStore();
 
 // Fetch avito accounts when component mounts
 onMounted(async () => {
-	console.log('mounted');
-
 	// Fetch accounts only if user is authenticated
 	if (authStore.isAuthenticated) {
 		await avitoAccountsStore.fetchAccounts();

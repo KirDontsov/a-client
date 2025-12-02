@@ -191,7 +191,7 @@ import { useAvitoAnalyticsAdsStore } from '@/entities/avito-analytics-ads';
 import { CsvDownloadButton } from '@/features';
 import { PageContainer } from '@/features/page-container';
 import { TextPopup } from '@/shared/components/text-popup';
-import { PromotionDisplay } from '@/shared/components/promotion-display';
+import PromotionDisplay from '@/shared/components/promotion-display/PromotionDisplay.vue';
 import { Pagination } from '@/features/pagination';
 
 const ProgressDisplay = defineAsyncComponent(() => import('@/features/progress-display/ProgressDisplay.vue'));

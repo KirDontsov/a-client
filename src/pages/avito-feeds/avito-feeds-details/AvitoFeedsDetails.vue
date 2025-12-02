@@ -191,10 +191,10 @@ import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { PageContainer } from '@/features/page-container';
 import { TextPopup } from '@/shared/components/text-popup';
-import { PromotionDisplay } from '@/shared/components/promotion-display';
+import PromotionDisplay from '@/shared/components/promotion-display/PromotionDisplay.vue';
 import { Pagination } from '@/features/pagination';
 import { ItemCard } from '@/features/item-card';
-import { getAvitoFeedById, getAvitoItemAnalytics } from '@/shared/api/avito/avito';
+import { getAvitoFeedById, getAvitoItemAnalytics } from '@/shared/api/avito';
 import type { AvitoItemAnalytics } from '@/shared/interfaces/avito';
 import { useCookies } from '@/entities/cookies/model';
 
