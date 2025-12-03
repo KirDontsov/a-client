@@ -1,5 +1,5 @@
 <template>
-  <component :is="dynamicComponent" :isSelected="isSelected" />
+  <component :is="dynamicComponent" :isSelected="isSelected" v-bind="$attrs" />
 </template>
 
 <script setup lang="ts">
@@ -11,6 +11,11 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   isSelected: false
+});
+
+// Use defineOptions to inherit attrs
+defineOptions({
+  inheritAttrs: false
 });
 
 const name = computed(
