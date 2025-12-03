@@ -16,6 +16,25 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://sunseven.ru" />
     <link href="/src/style.css" rel="stylesheet">
+    <script>
+      // Apply theme before app loads to prevent FOUC
+      (function() {
+        const savedTheme = localStorage.getItem('theme');
+        let isDark = false;
+        
+        if (savedTheme) {
+          isDark = savedTheme === 'dark';
+        } else {
+          isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
     <title>Sun7 - Сервис аналитики и конструктора объявлений Авито</title>
   </head>
   <body>

@@ -8,23 +8,25 @@
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
-    fill="currentColor"
+    fill="none"
     viewBox="0 0 24 24"
   >
     <path
-      :fill="isSelected ? 'currentColor' : 'currentColor'"
-      fill-rule="evenodd"
-      d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
-      clip-rule="evenodd"
+      :stroke="isSelected ? 'currentColor' : 'currentColor'"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M13 10V3L4 14h7v7l9-11h-7z"
     />
   </svg>
 </template>
 
 <script setup lang="ts">
-defineProps({
-  isSelected: {
-    type: Boolean,
-    default: false,
-  },
-});
+interface Props {
+  isSelected: boolean;
+}
+
+defineProps<Props>();
 </script>
+
+<style></style>

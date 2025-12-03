@@ -1,8 +1,8 @@
 <template>
   <svg
     :class="{
-      'w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white': !isSelected,
-      'w-5 h-5 text-gray-900 dark:text-white': isSelected
+      'text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white': !isSelected,
+      'text-gray-900 dark:text-white': isSelected
     }"
     aria-hidden="true"
     xmlns="http://www.w3.org/2000/svg"
@@ -16,7 +16,7 @@
       stroke-linecap="round"
       stroke-linejoin="round"
       stroke-width="2"
-      d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"
+      d="M11 5H6a2 2 0 0-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
     />
   </svg>
 </template>

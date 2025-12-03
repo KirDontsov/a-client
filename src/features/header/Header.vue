@@ -7,17 +7,19 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center justify-start rtl:justify-end">
           <a href="#" class="flex ms-2 md:me-24">
-            <span
-              class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
-            >SUN7</span
-            >
+	          <div class="flex items-center space-x-2">
+		          <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+			          <span class="text-white font-bold text-xl">A</span>
+		          </div>
+		          <span class="text-xl font-bold text-gray-800 dark:text-white text-nowrap">Avito Manager</span>
+	          </div>
           </a>
         </div>
         <div class="flex items-center justify-between w-full">
           <div/>
-          <div class="flex items-center gap-4 ms-3">
+          <div class="flex items-center gap-4">
 
-	          <div class="flex items-center flex-nowrap text-nowrap gap-2">
+	          <div class="flex items-center flex-nowrap text-nowrap gap-2 text-gray-900 dark:text-white">
 		          Аккаунт ID:
 		          <select
 		            id="avito-accounts-select"
@@ -35,14 +37,14 @@
 		           </option>
 		          </select>
 	          </div>
-            <div v-if="!!avitoAccountsStore.selectedAccountId" class="text-nowrap">Баланс: {{ balance ?? '' }} &#8381</div>
-            <div class="w-full flex items-center">
+            <div v-if="!!avitoAccountsStore.selectedAccountId" class="text-nowrap text-gray-900 dark:text-white">Баланс: {{ balance ?? '' }} &#8381</div>
+            <div class="flex items-center gap-4">
+              <ThemeToggle />
               <Button
                 v-if="authStore.isAuthenticated && authStore.user"
                 type="button"
                 variant="dark"
-                color="default"
-                class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                class="flex text-sm bg-gray-200 dark:bg-gray-600 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                 aria-expanded="false"
                 data-dropdown-toggle="dropdown-user"
               >
@@ -56,9 +58,8 @@
                 v-if="authStore.isAuthenticated"
                 @click="handleLogout"
                 type="button"
-                color="default"
                 variant="dark"
-                class="ml-4"
+                class="ml-4 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-700"
               >
                 Выйти
               </Button>
@@ -69,7 +70,6 @@
     </div>
   </nav>
 </template>
-
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { getAvitoBalance, getAvitoProfile, getAvitoToken } from "@/shared";
@@ -79,6 +79,8 @@ import { useAvitoAccountsStore } from "@/entities/avito-accounts/model";
 import router from "@/router";
 import Cookies from 'js-cookie';
 import { Button } from '@/shared/components';
+import ThemeToggle from '@/shared/components/theme-toggle/ThemeToggle.vue';
+
 
 const { value: token, set: setToken } = useCookies("token");
 const { value: accountId } = useCookies('account_id', null);

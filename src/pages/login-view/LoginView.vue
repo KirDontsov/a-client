@@ -102,7 +102,7 @@ const handleSubmit = async () => {
   const res = await login(email.value, password.value);
 
   if (res?.ok) {
-    await router.push('/');
+    await router.push('/accounts');
   } else {
     console.warn('Ошибка HTTP: ' + res.status);
   }

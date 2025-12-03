@@ -20,6 +20,10 @@ const isAuthenticated = async (to, from, next) => {
 const routes = [
   {
     path: '/',
+    component: () => import('@/pages/landing/Landing.vue'),
+  },
+  {
+    path: '/accounts',
     component: () => import('@/pages/avito-accounts/AvitoAccounts.vue'),
     beforeEnter: (to, from, next) => {
       isAuthenticated(to, from, next);
@@ -54,7 +58,7 @@ const routes = [
     },
   },
   {
-    path: '/avito/accounts/:id',
+    path: '/accounts/:id',
     component: () => import('@/pages/avito-accounts/edit-avito-account/EditAvitoAccount.vue'),
     props: true,
     beforeEnter: (to, from, next) => {
@@ -62,7 +66,7 @@ const routes = [
     },
   },
   {
-    path: '/avito/feeds',
+    path: '/feeds',
     component: () => import('@/pages/avito-feeds/AvitoFeeds.vue'),
     beforeEnter: (to, from, next) => {
       isAuthenticated(to, from, next);
@@ -92,21 +96,21 @@ const routes = [
     },
   },
   {
-    path: '/avito-analytics',
+    path: '/analytics',
     component: () => import('@/pages/avito-analytics/AvitoAnalytics.vue'),
     beforeEnter: (to, from, next) => {
       isAuthenticated(to, from, next);
     },
   },
   {
-    path: '/avito-analytics/create',
+    path: '/analytics/create',
     component: () => import('@/pages/avito-analytics/create-avito-analytics-request/CreateAvitoAnalyticsRequest.vue'),
     beforeEnter: (to, from, next) => {
       isAuthenticated(to, from, next);
     },
   },
   {
-    path: '/avito-analytics/:id',
+    path: '/analytics/:id',
     component: () => import('@/pages/avito-analytics/avito-analytics-details/AvitoAnalyticsDetails.vue'),
     props: true,
     beforeEnter: (to, from, next) => {
