@@ -69,8 +69,10 @@ import { createAvitoAnalyticsRequest } from '@/shared/api/avito';
 import { useRouter } from 'vue-router';
 import { InputField } from '@/shared/components/input-field';
 import { Button } from '@/shared/components';
+import { useToast } from '@/shared/composables/useToast';
 
 const router = useRouter();
+const { error: toastError } = useToast();
 
 interface FormData {
   request: string;
@@ -100,11 +102,11 @@ const handleSubmit = async () => {
     if (response && response.status === 'success') {
       await router.push(`/avito-analytics/${response?.data?.avito_request?.request_id}`);
     } else {
-      alert('Произошла ошибка при отправке запроса');
+      toastError('Произошла ошибка при отправке запроса');
     }
   } catch (error) {
     console.error('Error submitting form:', error);
-    alert('Произошла ошибка при отправке запроса. Пожалуйста, попробуйте еще раз.');
+    toastError('Произошла ошибка при отправке запроса. Пожалуйста, попробуйте еще раз.');
     loading.value = false;
   }
 };

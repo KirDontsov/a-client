@@ -70,7 +70,7 @@
                           clip-rule="evenodd"
                         ></path>
                       </svg>
-                      <div class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex">
+                      <div class="absolute bottom-0 left-0 flex flex-col items-center mb-6 group-hover:flex">
                         <span
                           class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md min-w-[300px] w-fit max-w-[752px] text-center"
                         >
@@ -125,53 +125,14 @@
                   </div>
                   <!-- Select field -->
                   <div v-else-if="field.content[0].field_type === 'select' || field.tag === 'Make'" class="relative">
-                    <select
+                    <SelectField
                       :id="field.tag"
                       v-model="trimmedFieldValues[field.tag]"
                       :required="field.content[0].required"
-                      :class="[
-                        'w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-200',
-                        avitoCategoryFieldsStore.getFieldError(field.tag)
-                          ? 'border-red-500 focus:ring-red-500 focus:border-red-50'
-                          : 'border-gray-300 dark:border-gray-600',
-                      ]"
-                    >
-                      <option value="" disabled>Выберите значение</option>
-                      <!-- Special handling for Make field with new structure -->
-                      <option
-                        v-if="field.tag === 'Make' && isMakeFieldWithNewStructure(field)"
-                        v-for="option in field.content[0].values.values"
-                        :key="option.value"
-                        :value="option.value"
-                      >
-                        {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
-                      </option>
-                      <!-- Regular Make field with old structure -->
-                      <option
-                        v-else-if="field.tag === 'Make'"
-                        v-for="option in getSelectOptions(field.content[0].values)"
-                        :key="option.value"
-                        :value="option.value"
-                      >
-                        {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
-                      </option>
-                      <!-- Regular select field -->
-                      <option
-                        v-else
-                        v-for="option in getSelectOptions(field.content[0].values)"
-                        :key="option.value"
-                        :value="option.value"
-                      >
-                        {{ option.value }} <span v-if="option.description">- {{ option.description }}</span>
-                      </option>
-                    </select>
-                    <!-- Error message for select field -->
-                    <p
-                      v-if="avitoCategoryFieldsStore.getFieldError(field.tag)"
-                      class="mt-1 text-sm text-red-600 dark:text-red-50"
-                    >
-                      {{ avitoCategoryFieldsStore.getFieldError(field.tag) }}
-                    </p>
+                      :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
+                      :placeholder="'Выберите значение'"
+                      :options="getSelectOptionsForField(field)"
+                    />
                   </div>
 
                   <!-- Checkbox field -->
@@ -179,37 +140,25 @@
                     <!-- Special handling for fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
                     <div v-if="field.tag.includes('Days')" class="flex flex-wrap gap-4">
                       <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                        <input
+                        <Checkbox
                           :id="`${field.tag}-${option.value}`"
-                          type="checkbox"
+                          :name="`${field.tag}-${option.value}`"
                           :value="option.value"
                           v-model="trimmedFieldValues[field.tag]"
-                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-60"
+                          :label="option.value"
                         />
-                        <label
-                          :for="`${field.tag}-${option.value}`"
-                          class="ml-2 block text-sm text-gray-70 dark:text-gray-300"
-                        >
-                          {{ option.value }}
-                        </label>
                       </div>
                     </div>
                     <!-- Regular checkbox field -->
                     <div v-else class="space-y-2">
                       <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                        <input
+                        <Checkbox
                           :id="`${field.tag}-${option.value}`"
-                          type="checkbox"
+                          :name="`${field.tag}-${option.value}`"
                           :value="option.value"
                           v-model="trimmedFieldValues[field.tag]"
-                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                          :label="option.value"
                         />
-                        <label
-                          :for="`${field.tag}-${option.value}`"
-                          class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                        >
-                          {{ option.value }}
-                        </label>
                       </div>
                     </div>
                   </div>
@@ -239,7 +188,7 @@
                               clip-rule="evenodd"
                             ></path>
                           </svg>
-                          <div class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex">
+                          <div class="absolute bottom-0 left-0 flex flex-col items-center mb-6 group-hover:flex">
                             <span
                               class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md w-fit max-w-[752px] text-center"
                             >
@@ -278,37 +227,25 @@
                         <!-- Special handling for child fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
                         <div v-if="child.tag.includes('Days')" class="flex flex-wrap gap-4">
                           <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
-                            <input
+                            <Checkbox
                               :id="`${child.tag}-${option.value}`"
-                              type="checkbox"
+                              :name="`${child.tag}-${option.value}`"
                               :value="option.value"
                               v-model="trimmedFieldValues[child.tag]"
-                              class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                              :label="option.value"
                             />
-                            <label
-                              :for="`${child.tag}-${option.value}`"
-                              class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                            >
-                              {{ option.value }}
-                            </label>
                           </div>
                         </div>
                         <!-- Regular child checkbox field -->
                         <div v-else class="space-y-2">
                           <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
-                            <input
+                            <Checkbox
                               :id="`${child.tag}-${option.value}`"
-                              type="checkbox"
+                              :name="`${child.tag}-${option.value}`"
                               :value="option.value"
                               v-model="trimmedFieldValues[child.tag]"
-                              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                              :label="option.value"
                             />
-                            <label
-                              :for="`${child.tag}-${option.value}`"
-                              class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                            >
-                              {{ option.value }}
-                            </label>
                           </div>
                         </div>
                       </div>
@@ -318,53 +255,14 @@
                         v-else-if="child.content[0].field_type === 'select' || child.tag === 'Make'"
                         class="relative"
                       >
-                        <select
+                        <SelectField
                           :id="child.tag"
                           v-model="trimmedFieldValues[child.tag]"
                           :required="child.content[0].required"
-                          :class="[
-                            'w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-colors duration-200',
-                            avitoCategoryFieldsStore.getFieldError(child.tag)
-                              ? 'border-red-500 focus:ring-red-500 focus:border-red-50'
-                              : 'border-gray-300 dark:border-gray-600',
-                          ]"
-                        >
-                          <option value="" disabled>Выберите значение</option>
-                          <!-- Special handling for Make field with new structure -->
-                          <option
-                            v-if="child.tag === 'Make' && isMakeFieldWithNewStructure(child)"
-                            v-for="option in child.content[0].values.values"
-                            :key="option.value"
-                            :value="option.value"
-                          >
-                            {{ option.value }}
-                          </option>
-                          <!-- Regular Make field with old structure -->
-                          <option
-                            v-else-if="child.tag === 'Make'"
-                            v-for="option in getSelectOptions(child.content[0].values)"
-                            :key="option.value"
-                            :value="option.value"
-                          >
-                            {{ option.value }}
-                          </option>
-                          <!-- Regular select field -->
-                          <option
-                            v-else
-                            v-for="option in getSelectOptions(child.content[0].values)"
-                            :key="option.value"
-                            :value="option.value"
-                          >
-                            {{ option.value }}
-                          </option>
-                        </select>
-                        <!-- Error message for child select field -->
-                        <p
-                          v-if="avitoCategoryFieldsStore.getFieldError(child.tag)"
-                          class="mt-1 text-sm text-red-600 dark:text-red-500"
-                        >
-                          {{ avitoCategoryFieldsStore.getFieldError(child.tag) }}
-                        </p>
+                          :error="avitoCategoryFieldsStore.getFieldError(child.tag)"
+                          :placeholder="'Выберите значение'"
+                          :options="getSelectOptionsForField(child)"
+                        />
                       </div>
                     </div>
                   </div>
@@ -414,21 +312,23 @@
 
 <script setup lang="ts">
 import { useCookies, useAvitoCategoryFieldsStore } from '@/entities';
-import { onMounted, ref, nextTick, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { PageContainer } from '@/features/page-container';
 import { DatePicker } from '@/shared/components/date-picker';
-import { InputField } from '@/shared/components/input-field';
-import { Button } from '@/shared/components';
+import { InputField, SelectField } from '@/shared/components';
+import { Button, Checkbox } from '@/shared/components';
 import { isDateField, getSelectOptions, isMakeFieldWithNewStructure } from '@/shared/lib/field-helpers';
 import { getAvitoAdById, getAvitoCategories } from '@/shared';
 import { findMatchingCategory } from '@/shared/lib/field-helpers';
 import { useRoute, useRouter } from 'vue-router';
 import { useAvitoAccountsStore } from '@/entities/avito-accounts/model';
 import { avitoDeleteAd } from '@/shared/api/avito';
+import { useToast } from '@/shared/composables/useToast';
 
 const route = useRoute();
 const router = useRouter();
 const { feedId, adId } = route.params;
+const { success: toastSuccess, error: toastError } = useToast();
 
 const avitoAccountsStore = useAvitoAccountsStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
@@ -447,6 +347,26 @@ const getInputType = (dataType: string) => {
   }
 };
 
+// Function to get select options for the SelectField component
+const getSelectOptionsForField = (field: any) => {
+  if (field.tag === 'Make' && isMakeFieldWithNewStructure(field)) {
+    return field.content[0].values.values.map((option: any) => ({
+      value: option.value,
+      label: option.description ? `${option.value} - ${option.description}` : option.value
+    }));
+ } else if (field.tag === 'Make') {
+    return getSelectOptions(field.content[0].values).map((option: any) => ({
+      value: option.value,
+      label: option.description ? `${option.value} - ${option.description}` : option.value
+    }));
+  } else {
+    return getSelectOptions(field.content[0].values).map((option: any) => ({
+      value: option.value,
+      label: option.description ? `${option.value} - ${option.description}` : option.value
+    }));
+  }
+};
+
 const handleDelete = async () => {
   if (!confirm('Вы уверены, что хотите удалить это объявление?')) {
     return;
@@ -460,13 +380,13 @@ const handleDelete = async () => {
     await avitoDeleteAd(adId, accountId);
 
     // Show success message
-    alert('Объявление успешно удалено!');
+    toastSuccess('Объявление успешно удалено!');
 
     // Navigate back to the feed details page
     router.push(`/feeds/${feedId}`);
   } catch (error) {
     console.error('Error deleting ad:', error);
-    alert('Произошла ошибка при удалении объявления. Пожалуйста, попробуйте еще раз.');
+    toastError('Произошла ошибка при удалении объявления. Пожалуйста, попробуйте еще раз.');
   }
 };
 
@@ -509,10 +429,10 @@ const handleSubmit = async () => {
     // Update the ad with the new form data
     await avitoCategoryFieldsStore.submitForm(adId, feedId);
     // Show success message
-    alert('Объявление успешно обновлено!');
+    toastSuccess('Объявление успешно обновлено!');
   } catch (error) {
     console.error('Error updating form:', error);
-    alert('Произошла ошибка при обновлении объявления. Пожалуйста, проверьте заполнение полей.');
+    toastError('Произошла ошибка при обновлении объявления. Пожалуйста, проверьте заполнение полей.');
   }
 };
 

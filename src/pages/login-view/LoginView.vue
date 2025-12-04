@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen w-full overflow-hidden relative bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+    class="min-h-screen w-full overflow-hidden relative bg-gray-100 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
   >
     <!-- Orb background element -->
     <div class="absolute inset-0 w-full h-full z-0">
@@ -8,8 +8,8 @@
     </div>
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md z-10">
-      <h2 class="mt-6 text-center text-3xl font-extrabold text-white">Вход в аккаунт</h2>
-      <p class="mt-2 text-center text-sm text-gray-400">
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">Вход в аккаунт</h2>
+      <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
         Или
         <router-link
           to="/register"
@@ -23,45 +23,34 @@
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md z-10">
       <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <form class="space-y-6" @submit.prevent="handleSubmit">
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email адрес</label>
-            <div class="mt-1">
-              <input
-                id="email"
-                v-model="email"
-                type="email"
-                autocomplete="email"
-                required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-              />
-            </div>
-          </div>
+          <InputField
+            id="email"
+            v-model="email"
+            type="email"
+            label="Email адрес"
+            placeholder="Введите ваш email"
+            required
+            autocomplete="email"
+          />
 
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Пароль</label>
-            <div class="mt-1">
-              <input
-                id="password"
-                v-model="password"
-                type="password"
-                autocomplete="current-password"
-                required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-              />
-            </div>
-          </div>
+          <InputField
+            id="password"
+            v-model="password"
+            type="password"
+            label="Пароль"
+            placeholder="Введите ваш пароль"
+            required
+            autocomplete="current-password"
+          />
 
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <input
+              <Checkbox
                 id="remember-me"
                 name="remember-me"
-                type="checkbox"
-                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+                v-model="rememberMe"
+                label="Запомнить меня"
               />
-              <label for="remember-me" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
-                Запомнить меня
-              </label>
             </div>
 
             <div class="text-sm">
@@ -93,10 +82,13 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { login } from '@/shared/api';
 import Orb from '@/features/orb/Orb.vue';
+import { Checkbox } from '@/shared/components';
+import InputField from '@/shared/components/input-field/InputField.vue';
 
 const router = useRouter();
 const email = ref();
 const password = ref();
+const rememberMe = ref(false);
 
 const handleSubmit = async () => {
   const res = await login(email.value, password.value);
@@ -113,6 +105,23 @@ const handleSubmit = async () => {
 /* Add some additional styling to ensure the orbs don't interfere with content */
 .min-h-screen {
   min-height: 100vh;
-  position: relative;
+ position: relative;
+}
+
+/* Custom checkbox styling to show checkmark */
+input[type="checkbox"] {
+  @apply relative;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 5px;
+  height: 10px;
+  border: solid white;
+ border-width: 0 2px 2px 0;
 }
 </style>
