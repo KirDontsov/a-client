@@ -179,37 +179,25 @@
                     <!-- Special handling for fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
                     <div v-if="field.tag.includes('Days')" class="flex flex-wrap gap-4">
                       <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                        <input
+                        <Checkbox
                           :id="`${field.tag}-${option.value}`"
-                          type="checkbox"
+                          :name="`${field.tag}-${option.value}`"
                           :value="option.value"
                           v-model="trimmedFieldValues[field.tag]"
-                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-60"
+                          :label="option.value"
                         />
-                        <label
-                          :for="`${field.tag}-${option.value}`"
-                          class="ml-2 block text-sm text-gray-70 dark:text-gray-300"
-                        >
-                          {{ option.value }}
-                        </label>
                       </div>
                     </div>
                     <!-- Regular checkbox field -->
                     <div v-else class="space-y-2">
                       <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                        <input
+                        <Checkbox
                           :id="`${field.tag}-${option.value}`"
-                          type="checkbox"
+                          :name="`${field.tag}-${option.value}`"
                           :value="option.value"
                           v-model="trimmedFieldValues[field.tag]"
-                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                          :label="option.value"
                         />
-                        <label
-                          :for="`${field.tag}-${option.value}`"
-                          class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                        >
-                          {{ option.value }}
-                        </label>
                       </div>
                     </div>
                   </div>
@@ -278,37 +266,25 @@
                         <!-- Special handling for child fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
                         <div v-if="child.tag.includes('Days')" class="flex flex-wrap gap-4">
                           <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
-                            <input
+                            <Checkbox
                               :id="`${child.tag}-${option.value}`"
-                              type="checkbox"
+                              :name="`${child.tag}-${option.value}`"
                               :value="option.value"
                               v-model="trimmedFieldValues[child.tag]"
-                              class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                              :label="option.value"
                             />
-                            <label
-                              :for="`${child.tag}-${option.value}`"
-                              class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                            >
-                              {{ option.value }}
-                            </label>
                           </div>
                         </div>
                         <!-- Regular child checkbox field -->
                         <div v-else class="space-y-2">
                           <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
-                            <input
+                            <Checkbox
                               :id="`${child.tag}-${option.value}`"
-                              type="checkbox"
+                              :name="`${child.tag}-${option.value}`"
                               :value="option.value"
                               v-model="trimmedFieldValues[child.tag]"
-                              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                              :label="option.value"
                             />
-                            <label
-                              :for="`${child.tag}-${option.value}`"
-                              class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                            >
-                              {{ option.value }}
-                            </label>
                           </div>
                         </div>
                       </div>
@@ -418,17 +394,19 @@ import { onMounted, ref, nextTick, watch } from 'vue';
 import { PageContainer } from '@/features/page-container';
 import { DatePicker } from '@/shared/components/date-picker';
 import { InputField } from '@/shared/components/input-field';
-import { Button } from '@/shared/components';
+import { Button, Checkbox } from '@/shared/components';
 import { isDateField, getSelectOptions, isMakeFieldWithNewStructure } from '@/shared/lib/field-helpers';
 import { getAvitoAdById, getAvitoCategories } from '@/shared';
 import { findMatchingCategory } from '@/shared/lib/field-helpers';
 import { useRoute, useRouter } from 'vue-router';
 import { useAvitoAccountsStore } from '@/entities/avito-accounts/model';
 import { avitoDeleteAd } from '@/shared/api/avito';
+import { useToast } from '@/shared/composables/useToast';
 
 const route = useRoute();
 const router = useRouter();
 const { feedId, adId } = route.params;
+const { success: toastSuccess, error: toastError } = useToast();
 
 const avitoAccountsStore = useAvitoAccountsStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
@@ -460,13 +438,13 @@ const handleDelete = async () => {
     await avitoDeleteAd(adId, accountId);
 
     // Show success message
-    alert('Объявление успешно удалено!');
+    toastSuccess('Объявление успешно удалено!');
 
     // Navigate back to the feed details page
     router.push(`/feeds/${feedId}`);
   } catch (error) {
     console.error('Error deleting ad:', error);
-    alert('Произошла ошибка при удалении объявления. Пожалуйста, попробуйте еще раз.');
+    toastError('Произошла ошибка при удалении объявления. Пожалуйста, попробуйте еще раз.');
   }
 };
 
@@ -509,10 +487,10 @@ const handleSubmit = async () => {
     // Update the ad with the new form data
     await avitoCategoryFieldsStore.submitForm(adId, feedId);
     // Show success message
-    alert('Объявление успешно обновлено!');
+    toastSuccess('Объявление успешно обновлено!');
   } catch (error) {
     console.error('Error updating form:', error);
-    alert('Произошла ошибка при обновлении объявления. Пожалуйста, проверьте заполнение полей.');
+    toastError('Произошла ошибка при обновлении объявления. Пожалуйста, проверьте заполнение полей.');
   }
 };
 

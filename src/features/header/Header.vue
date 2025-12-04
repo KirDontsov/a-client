@@ -80,6 +80,7 @@ import router from "@/router";
 import Cookies from 'js-cookie';
 import { Button } from '@/shared/components';
 import ThemeToggle from '@/shared/components/theme-toggle/ThemeToggle.vue';
+import { useThemeStore } from '@/entities/theme/model';
 
 
 const { value: token, set: setToken } = useCookies("token");

@@ -1,6 +1,7 @@
-import { ref, onMounted, watch } from 'vue';
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
-export function useTheme() {
+export const useThemeStore = defineStore('theme', () => {
   const isDark = ref(false);
 
   function initializeTheme() {
@@ -31,7 +32,7 @@ export function useTheme() {
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }
+ }
 
   function toggleTheme() {
     isDark.value = !isDark.value;
@@ -45,27 +46,17 @@ export function useTheme() {
     updateHtmlClass(true);
   }
 
- function setLightTheme() {
+  function setLightTheme() {
     isDark.value = false;
     localStorage.setItem('theme', 'light');
     updateHtmlClass(false);
   }
 
-  // Watch for changes to isDark and update the HTML class accordingly
-  watch(isDark, (newVal) => {
-    updateHtmlClass(newVal);
-  });
-
-  // Initialize on mount
-  onMounted(() => {
-    initializeTheme();
-  });
-
   return {
     isDark,
+    initializeTheme,
     toggleTheme,
     setDarkTheme,
     setLightTheme,
-    initializeTheme,
   };
-}
+});

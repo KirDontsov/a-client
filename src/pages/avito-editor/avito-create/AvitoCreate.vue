@@ -165,37 +165,25 @@
                     <!-- Special handling for fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
                     <div v-if="field.tag.includes('Days')" class="flex flex-wrap gap-4">
                       <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                        <input
+                        <Checkbox
                           :id="`${field.tag}-${option.value}`"
-                          type="checkbox"
+                          :name="`${field.tag}-${option.value}`"
                           :value="option.value"
                           v-model="trimmedFieldValues[field.tag]"
-                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-60"
+                          :label="option.value"
                         />
-                        <label
-                          :for="`${field.tag}-${option.value}`"
-                          class="ml-2 block text-sm text-gray-70 dark:text-gray-300"
-                        >
-                          {{ option.value }}
-                        </label>
                       </div>
                     </div>
                     <!-- Regular checkbox field -->
                     <div v-else class="space-y-2">
                       <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                        <input
+                        <Checkbox
                           :id="`${field.tag}-${option.value}`"
-                          type="checkbox"
+                          :name="`${field.tag}-${option.value}`"
                           :value="option.value"
                           v-model="trimmedFieldValues[field.tag]"
-                          class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                          :label="option.value"
                         />
-                        <label
-                          :for="`${field.tag}-${option.value}`"
-                          class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                        >
-                          {{ option.value }}
-                        </label>
                       </div>
                     </div>
                   </div>
@@ -264,37 +252,25 @@
                         <!-- Special handling for child fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
                         <div v-if="child.tag.includes('Days')" class="flex flex-wrap gap-4">
                           <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
-                            <input
+                            <Checkbox
                               :id="`${child.tag}-${option.value}`"
-                              type="checkbox"
+                              :name="`${child.tag}-${option.value}`"
                               :value="option.value"
                               v-model="trimmedFieldValues[child.tag]"
-                              class="h-4 w-4 text-blue-60 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                              :label="option.value"
                             />
-                            <label
-                              :for="`${child.tag}-${option.value}`"
-                              class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                            >
-                              {{ option.value }}
-                            </label>
                           </div>
                         </div>
                         <!-- Regular child checkbox field -->
                         <div v-else class="space-y-2">
                           <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
-                            <input
+                            <Checkbox
                               :id="`${child.tag}-${option.value}`"
-                              type="checkbox"
+                              :name="`${child.tag}-${option.value}`"
                               :value="option.value"
                               v-model="trimmedFieldValues[child.tag]"
-                              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-30 rounded dark:focus:bg-gray-700 dark:focus:ring-gray-600"
+                              :label="option.value"
                             />
-                            <label
-                              :for="`${child.tag}-${option.value}`"
-                              class="ml-2 block text-sm text-gray-700 dark:text-gray-300"
-                            >
-                              {{ option.value }}
-                            </label>
                           </div>
                         </div>
                       </div>
@@ -426,10 +402,12 @@ import { PageContainer } from '@/features/page-container';
 import { SelectedCategoryPath, Stepper, useStepperStore } from '@/features';
 import { DatePicker } from '@/shared/components/date-picker';
 import { InputField } from '@/shared/components/input-field';
-import { Button } from '@/shared/components';
+import { Button, Checkbox } from '@/shared/components';
 import { isDateField, getSelectOptions, isMakeFieldWithNewStructure } from '@/shared/lib/field-helpers';
+import { useToast } from '@/shared/composables/useToast';
 
 const { value: avito_token } = useCookies('avito_token');
+const { success: toastSuccess, error: toastError } = useToast();
 
 const avitoCategoriesStore = useAvitoCategoriesStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
@@ -488,10 +466,10 @@ const handleSubmit = async () => {
   try {
     await avitoCategoryFieldsStore.submitForm();
     // Show success message
-    alert('Объявление успешно создано!');
+    toastSuccess('Объявление успешно создано!');
   } catch (error) {
     console.error('Error submitting form:', error);
-    alert('Произошла ошибка при создании объявления. Пожалуйста, проверьте заполнение полей.');
+    toastError('Произошла ошибка при создании объявления. Пожалуйста, проверьте заполнение полей.');
   }
 };
 

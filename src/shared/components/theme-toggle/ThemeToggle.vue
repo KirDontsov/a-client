@@ -38,7 +38,8 @@
 </template>
 
 <script setup lang="ts">
-import { useTheme } from '@/shared/composables/useTheme';
+import { useThemeStore } from '@/entities/theme/model';
 
-const { isDark, toggleTheme } = useTheme();
+const themeStore = useThemeStore();
+const { isDark, toggleTheme } = themeStore;
 </script>
