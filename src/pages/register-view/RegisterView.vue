@@ -2,6 +2,9 @@
   <div
     class="min-h-screen w-full overflow-hidden relative bg-gray-100 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
   >
+    <div class="fixed top-4 right-4 z-50">
+      <ThemeToggle />
+    </div>
     <!-- Orb background element -->
     <div class="absolute inset-0 w-full h-full z-0">
       <Orb :hoverIntensity="0.5" :rotateOnHover="true" :hue="0" :forceHoverState="false" />
@@ -66,13 +69,7 @@
           <div class="flex items-start">
             <div class="flex items-start">
               <div class="flex items-center h-5">
-                <Checkbox
-                  id="terms"
-                  name="terms"
-                  v-model="termsAccepted"
-                  :required="true"
-                  label="Я согласен с "
-                />
+                <Checkbox id="terms" name="terms" v-model="termsAccepted" :required="true" label="Я согласен с " />
                 <a href="#" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 ml-1">
                   условиями использования
                 </a>
@@ -107,6 +104,7 @@ import { register } from '@/shared/api/auth/auth';
 import Orb from '@/features/orb/Orb.vue';
 import InputField from '@/shared/components/input-field/InputField.vue';
 import { Checkbox } from '@/shared/components';
+import ThemeToggle from '@/shared/components/theme-toggle/ThemeToggle.vue';
 
 const router = useRouter();
 const name = ref('');
@@ -200,18 +198,18 @@ const handleSubmit = async () => {
 }
 
 /* Custom checkbox styling to show checkmark */
-input[type="checkbox"] {
+input[type='checkbox'] {
   @apply relative;
 }
 
-input[type="checkbox"]:checked::after {
+input[type='checkbox']:checked::after {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(45deg);
   width: 5px;
- height: 10px;
+  height: 10px;
   border: solid white;
   border-width: 0 2px 2px 0;
 }

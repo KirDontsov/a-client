@@ -1,48 +1,97 @@
-import { useTheme } from './useTheme';
-import toast, { type ToastOptions } from 'vue3-toastify';
+import { useThemeStore } from '@/entities/theme/model';
+import { toast as toastLib, type ToastOptions } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+
+// Alias toastLib to toast to maintain the existing interface
+const toast = toastLib;
 
 // Create the composable
 export function useToast() {
-  const { isDark } = useTheme();
-  
-  // Function to get toast options with theme support
- const getToastOptions = (customOptions: ToastOptions = {}): ToastOptions => {
-    return {
+ // Get the theme store to access reactive theme value
+  const themeStore = useThemeStore();
+
+  const success = (message: string, options: ToastOptions = {}) => {
+    // Access the reactive theme value at toast creation time
+    const currentTheme = themeStore.isDark ? 'dark' : 'light';
+    const toastOptions = {
       // Default options
       autoClose: 5000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      theme: isDark.value ? 'dark' : 'light',
+      theme: currentTheme,
       // Allow custom options to override defaults
-      ...customOptions,
+      ...options,
     };
-  };
-
-  const success = (message: string, options: ToastOptions = {}) => {
-    const toastOptions = getToastOptions(options);
     return toast.success(message, toastOptions);
   };
 
   const error = (message: string, options: ToastOptions = {}) => {
-    const toastOptions = getToastOptions(options);
+    // Access the reactive theme value at toast creation time
+    const currentTheme = themeStore.isDark ? 'dark' : 'light';
+    const toastOptions = {
+      // Default options
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: currentTheme,
+      // Allow custom options to override defaults
+      ...options,
+    };
     return toast.error(message, toastOptions);
   };
 
   const info = (message: string, options: ToastOptions = {}) => {
-    const toastOptions = getToastOptions(options);
+    // Access the reactive theme value at toast creation time
+    const currentTheme = themeStore.isDark ? 'dark' : 'light';
+    const toastOptions = {
+      // Default options
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: currentTheme,
+      // Allow custom options to override defaults
+      ...options,
+    };
     return toast.info(message, toastOptions);
   };
 
   const warning = (message: string, options: ToastOptions = {}) => {
-    const toastOptions = getToastOptions(options);
+    // Access the reactive theme value at toast creation time
+    const currentTheme = themeStore.isDark ? 'dark' : 'light';
+    const toastOptions = {
+      // Default options
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: currentTheme,
+      // Allow custom options to override defaults
+      ...options,
+    };
     return toast.warning(message, toastOptions);
   };
 
   const defaultToast = (message: string, options: ToastOptions = {}) => {
-    const toastOptions = getToastOptions(options);
+    // Access the reactive theme value at toast creation time
+    const currentTheme = themeStore.isDark ? 'dark' : 'light';
+    const toastOptions = {
+      // Default options
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: currentTheme,
+      // Allow custom options to override defaults
+      ...options,
+    };
     return toast(message, toastOptions);
   };
 
@@ -53,4 +102,4 @@ export function useToast() {
     warning,
     default: defaultToast,
   };
-}
+};
