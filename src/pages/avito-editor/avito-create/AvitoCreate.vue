@@ -10,7 +10,7 @@
         <div
           ref="itemFormSectionRef"
           v-if="avitoCategoryFieldsStore.categoryFields && avitoCategoryFieldsStore.categoryFields.length > 0"
-          class="w-full flex flex-col gap-8 h-[calc(100vh-500px)]"
+          class="w-full flex flex-col gap-8 h-[calc(100vh-360px)]"
         >
           <div
             ref="formFieldsSectionRef"
