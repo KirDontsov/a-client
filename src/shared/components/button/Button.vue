@@ -10,6 +10,7 @@
       variantClasses,
       iconClasses,
       buttonClass,
+      $attrs.class,
       { 'opacity-50 cursor-not-allowed': disabled },
     ]"
     @mouseenter="showTooltip = true"
@@ -38,6 +39,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+
+defineOptions({
+  inheritAttrs: true,
+});
 
 interface Props {
   type?: 'button' | 'submit' | 'reset';

@@ -3,7 +3,7 @@
     <template #body>
       <div class="w-full px-4 py-2 sm:px-8 sm:py-4 flex flex-col gap-8">
         <div class="flex justify-between items-center">
-          <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Редактировать аккаунт Avito</h2>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Редактировать аккаунт Avito</h2>
         </div>
 
         <form

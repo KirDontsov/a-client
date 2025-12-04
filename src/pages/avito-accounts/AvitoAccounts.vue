@@ -28,7 +28,7 @@
         <!-- Error message -->
         <div
           v-if="avitoAccountsStore.error"
-          class="mb-4 p-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-90 dark:text-red-100"
+          class="mb-4 p-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-900 dark:text-red-100"
         >
           {{ avitoAccountsStore.error }}
         </div>
@@ -91,7 +91,7 @@
                 @click="selectAccount(account.account_id)"
                 :class="{
                   'bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer': true,
-                  'bg-blue-100 dark:bg-blue-90': avitoAccountsStore.selectedAccountId === account.account_id,
+                  'bg-blue-100 dark:bg-blue-900': avitoAccountsStore.selectedAccountId === account.account_id,
                 }"
               >
                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
@@ -224,7 +224,7 @@ const sortDirection = ref<'asc' | 'desc'>('asc');
 const selectAccount = async (accountId: string) => {
   avitoAccountsStore.selectAccount(accountId);
   // Navigate to the edit account page
-  router.push(`/avito/accounts/${accountId}`);
+  router.push(`/accounts/${accountId}`);
 };
 
 const deleteAccount = async (accountId: string) => {

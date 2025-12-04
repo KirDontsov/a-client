@@ -14,8 +14,9 @@
           <span
             v-if="index < avitoCategoriesStore.selectedCategories.length - 1"
             class="mx-2 text-gray-400 dark:text-gray-500"
-            >/</span
           >
+            /
+          </span>
         </span>
       </div>
       <Button variant="dark" color="default" @click="handleClearCategories" class="mt-2 text-sm w-fit">

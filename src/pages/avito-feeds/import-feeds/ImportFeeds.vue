@@ -5,7 +5,7 @@
         class="w-full p-4 bg-white border-gray-200 rounded-lg shadow-sm sm:p-8 dark:bg-gray-700 dark:border-gray-600"
       >
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Загрузить новый фид</h2>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Загрузить новый фид</h2>
         </div>
 
         <!-- Tabs -->
@@ -35,7 +35,7 @@
                   'inline-block p-4 border-b-2 rounded-t-lg cursor-pointer',
                   activeTab === 'xls'
                     ? 'bg-white text-blue-600 border-blue-600 active dark:bg-gray-800 dark:text-blue-500 dark:border-blue-500'
-                    : 'bg-transparent text-gray-500 border-transparent hover:text-gray-60 hover:border-gray-300 dark:bg-transparent dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800',
+                    : 'bg-transparent text-gray-50 border-transparent hover:text-gray-60 hover:border-gray-300 dark:bg-transparent dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800',
                 ]"
                 type="button"
                 role="tab"
@@ -52,7 +52,7 @@
                   'inline-block p-4 border-b-2 rounded-t-lg cursor-pointer',
                   activeTab === 'text'
                     ? 'bg-white text-blue-60 border-blue-600 active dark:bg-gray-800 dark:text-blue-500 dark:border-blue-500'
-                    : 'bg-transparent text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-30 dark:bg-transparent dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800',
+                    : 'bg-transparent text-gray-500 border-transparent hover:text-gray-600 hover:border-gray-300 dark:bg-transparent dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800',
                 ]"
                 type="button"
                 role="tab"
@@ -138,7 +138,7 @@
         </form>
 
         <!-- Error message -->
-        <div v-if="error" class="mt-4 p-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-90 dark:text-red-100">
+        <div v-if="error" class="mt-4 p-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-900 dark:text-red-100">
           {{ error }}
         </div>
       </div>

@@ -1,12 +1,12 @@
 <template>
   <PageContainer :loading="avitoCategoryFieldsStore.categoryFieldsLoading">
     <template #body>
-      <div class="w-full flex flex-col gap-8 text-gray-50 dark:text-gray-40 px-4 py-2 sm:px-8 sm:py-4">
+      <div class="w-full flex flex-col gap-8 text-gray-50 dark:text-gray-400 px-4 py-2 sm:px-8 sm:py-4">
         <div class="flex justify-between items-center">
-          <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Редактирование объявления</h2>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Редактирование объявления</h2>
           <Button type="button" color="default" variant="dark" size="md" @click="handleDelete">
             <svg
-              class="w-6 h-6 text-gray-800 dark:text-white"
+              class="w-6 h-6 text-white"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -84,7 +84,7 @@
                   <!-- Warnings -->
                   <div
                     v-if="field.content[0]?.warnings && field.content[0].warnings.length > 0"
-                    class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-80 rounded-md p-3 mb-3"
+                    class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 mb-3"
                   >
                     <div
                       v-for="(warning, idx) in field.content[0].warnings"
@@ -352,17 +352,17 @@ const getSelectOptionsForField = (field: any) => {
   if (field.tag === 'Make' && isMakeFieldWithNewStructure(field)) {
     return field.content[0].values.values.map((option: any) => ({
       value: option.value,
-      label: option.description ? `${option.value} - ${option.description}` : option.value
+      label: option.description ? `${option.value} - ${option.description}` : option.value,
     }));
- } else if (field.tag === 'Make') {
+  } else if (field.tag === 'Make') {
     return getSelectOptions(field.content[0].values).map((option: any) => ({
       value: option.value,
-      label: option.description ? `${option.value} - ${option.description}` : option.value
+      label: option.description ? `${option.value} - ${option.description}` : option.value,
     }));
   } else {
     return getSelectOptions(field.content[0].values).map((option: any) => ({
       value: option.value,
-      label: option.description ? `${option.value} - ${option.description}` : option.value
+      label: option.description ? `${option.value} - ${option.description}` : option.value,
     }));
   }
 };

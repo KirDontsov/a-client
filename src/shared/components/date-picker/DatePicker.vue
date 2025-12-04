@@ -7,7 +7,7 @@
         type="text"
         :placeholder="placeholder"
         :required="required"
-        class="w-full px-3 py-2 border border-gray-300 text-gray-900 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:focus:bg-gray-700 transition-colors duration-200 pl-10"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors duration-200 pl-10"
         @focus="showCalendar = true"
         @blur="handleBlur"
       />
@@ -42,6 +42,7 @@
           class="rounded hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center justify-center w-fit overflow-visible p-0!"
           variant="dark"
           color="default"
+          size="sm"
         >
           <svg
             class="w-6 h-6 text-white"
@@ -70,6 +71,7 @@
           class="rounded hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center justify-center w-fit overflow-visible p-0!"
           variant="dark"
           color="default"
+          size="sm"
         >
           <svg
             class="w-6 h-6 text-white"
@@ -108,7 +110,7 @@
           :class="[
             'text-center text-sm py-1 rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600',
             {
-              'text-gray-400 dark:text-gray-500': day.isPrevMonth || day.isNextMonth,
+              'text-gray-400 dark:text-gray-50': day.isPrevMonth || day.isNextMonth,
               'text-gray-700 dark:text-white': !day.isPrevMonth && !day.isNextMonth,
               'bg-blue-500 text-white': isSameDay(day.date, selectedDate),
               'font-bold': isSameDay(day.date, new Date()) && !isSameDay(day.date, selectedDate),
@@ -121,24 +123,8 @@
       </div>
 
       <div class="flex justify-end mt-2 space-x-2">
-        <Button
-          type="button"
-          @click="today"
-          class="text-sm px-3 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded hover:bg-gray-200 dark:hover:bg-gray-500"
-          variant="dark"
-          color="default"
-        >
-          Сегодня
-        </Button>
-        <Button
-          type="button"
-          @click="clear"
-          class="text-sm px-3 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded hover:bg-gray-200 dark:hover:bg-gray-500"
-          variant="dark"
-          color="default"
-        >
-          Очистить
-        </Button>
+        <Button type="button" @click="today" variant="dark" color="default"> Сегодня </Button>
+        <Button type="button" @click="clear" variant="dark" color="default"> Очистить </Button>
       </div>
     </div>
   </div>
@@ -147,6 +133,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { Button } from '@/shared/components/button';
+import { InputField } from '@/shared/components/input-field';
 
 interface Props {
   id?: string;

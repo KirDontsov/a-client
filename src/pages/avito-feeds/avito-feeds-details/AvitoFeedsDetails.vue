@@ -2,13 +2,13 @@
 <template>
   <PageContainer>
     <template #body>
-      <div class="w-full flex flex-col gap-8 text-gray-500 dark:text-gray-40 px-4 py-2 sm:px-8 sm:py-4">
+      <div class="w-full flex flex-col gap-8 text-gray-500 dark:text-gray-400 px-4 py-2 sm:px-8 sm:py-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-4">
-            <h2 class="text-xl font-semibold text-gray-80 dark:text-white">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
               ID фида: {{ feedDetails?.feed_id || 'N/A' }}
             </h2>
-            <h2 class="text-xl font-semibold text-gray-80 dark:text-white">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
               Категория: {{ feedDetails?.category || 'N/A' }}
             </h2>
           </div>
@@ -68,7 +68,7 @@
             v-else
             class="relative overflow-x-auto shadow-md sm:rounded-lg max-w-full p-4 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
           >
-            <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <table class="min-w-full text-sm text-left text-gray-50 dark:text-gray-400">
               <thead class="text-xs text-gray-700 bg-gray-50 uppercase dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                   <th scope="col" class="px-3 py-3 font-medium">Ad ID</th>
@@ -106,7 +106,7 @@
                     <a
                       :href="ad.avito_ad_id ? 'https://www.avito.ru/' + ad.avito_ad_id : '#'"
                       target="_blank"
-                      class="text-blue-600 hover:underline dark:text-blue-50 truncate max-w-xs inline-block"
+                      class="text-blue-600 hover:underline dark:text-blue-500 truncate max-w-xs inline-block"
                       :title="ad.avito_ad_id || 'N/A'"
                     >
                       {{ ad.avito_ad_id || 'N/A' }}
@@ -163,7 +163,7 @@
                 id="itemsPerPage"
                 v-model="itemsPerPage"
                 @change="onItemsPerPageChange"
-                class="bg-gray-50 border-gray-30 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-40 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
                 <option value="5">5</option>
                 <option value="10">10</option>

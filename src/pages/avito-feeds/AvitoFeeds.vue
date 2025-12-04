@@ -3,7 +3,7 @@
     <template #body>
       <div class="px-4 py-2 sm:px-8 sm:py-4">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Фиды</h2>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Фиды</h2>
           <div class="flex items-center space-x-4">
             <Button @click="importFeed" variant="dark" color="default" class="flex items-center">
               <span class="mr-2"
@@ -117,7 +117,7 @@
 
         <div
           v-else-if="!loading && feeds && feeds.length === 0 && avitoAccountsStore.selectedAccountId"
-          class="text-center py-4 text-gray-500 dark:text-gray-400"
+          class="text-center py-4 text-gray-50 dark:text-gray-400"
         >
           Не выбран аккаунт. Пожалуйста выберите или зарегистрируйте авито аккаунт
         </div>

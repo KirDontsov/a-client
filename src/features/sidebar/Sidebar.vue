@@ -15,7 +15,7 @@
       <div
         id="dropdown-cta"
         :class="{ hidden: !expanded }"
-        class="p-4 mt-6 rounded-lg bg-blue-50 dark:bg-blue-90"
+        class="p-4 mt-6 rounded-lg bg-blue-50 dark:bg-blue-900"
         role="alert"
       >
         <div class="flex items-center mb-3">
@@ -25,7 +25,7 @@
             Beta
           </span>
         </div>
-        <p class="mb-3 text-sm text-blue-800 dark:text-blue-40">
+        <p class="mb-3 text-sm text-blue-800 dark:text-blue-400">
           Добро пожаловать в сервис! Вы можете пользоваться демо версией бесплатно 14 дней!
         </p>
       </div>

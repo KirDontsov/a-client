@@ -38,7 +38,7 @@
                     <svg
                       v-if="category?.nested && category?.nested?.length > 0"
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-500 dark:text-gray-400"
+                      class="h-4 w-4 text-gray-50 dark:text-gray-400"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -59,11 +59,9 @@
 <script setup>
 import { useCookies, useAvitoCategoriesStore, useAvitoAccountsStore } from '@/entities';
 import { onMounted } from 'vue';
-import { getAvitoToken } from '@/shared/api/avito';
 import { useRouter } from 'vue-router';
 import { PageContainer } from '@/features/page-container';
 import { SelectedCategoryPath } from '@/features';
-import { Button } from '@/shared/index.js';
 import { onAccountChange } from '@/shared/lib';
 
 const router = useRouter();

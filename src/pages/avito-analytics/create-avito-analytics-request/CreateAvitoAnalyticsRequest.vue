@@ -3,7 +3,7 @@
   <PageContainer :loading="loading">
     <template #body>
       <div class="w-full flex flex-col gap-8 px-4 py-2 sm:px-8 sm:py-4">
-        <h2 class="text-xl font-semibold text-gray-80 dark:text-white">Анализ конкурентов Avito</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Анализ конкурентов Avito</h2>
 
         <form
           class="space-y-6 relative overflow-x-auto bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
@@ -100,7 +100,7 @@ const handleSubmit = async () => {
     const response = await createAvitoAnalyticsRequest(formData.value);
 
     if (response && response.status === 'success') {
-      await router.push(`/avito-analytics/${response?.data?.avito_request?.request_id}`);
+      await router.push(`/analytics/${response?.data?.avito_request?.request_id}`);
     } else {
       toastError('Произошла ошибка при отправке запроса');
     }

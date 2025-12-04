@@ -5,13 +5,13 @@
       <div class="w-full flex flex-col gap-8 px-4 py-2 sm:px-8 sm:py-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex items-center gap-4">
-            <h2 class="text-xl font-semibold text-gray-80 dark:text-white">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
               {{ selectedRequest?.createdTs ? formatDate(selectedRequest.createdTs) : '' }}
             </h2>
-            <h2 class="text-xl font-semibold text-gray-80 dark:text-white">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
               {{ selectedRequest?.city }}
             </h2>
-            <h2 class="text-xl font-semibold text-gray-80 dark:text-white">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
               {{ selectedRequest?.request }}
             </h2>
           </div>
@@ -24,7 +24,7 @@
         <!-- Error message -->
         <div
           v-if="avitoAnalyticsAdsStore.error"
-          class="mb-4 p-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-90 dark:text-red-100"
+          class="mb-4 p-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-900 dark:text-red-100"
         >
           {{ avitoAnalyticsAdsStore.error }}
         </div>
@@ -34,7 +34,7 @@
           v-if="avitoAnalyticsAdsStore.ads && avitoAnalyticsAdsStore.ads.length > 0"
           class="relative overflow-x-auto bg-white border border-gray-200 rounded-lg shadow-sm p-4 sm:p-8 dark:bg-gray-700 dark:border-gray-600"
         >
-          <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <table class="min-w-full text-sm text-left text-gray-50 dark:text-gray-400">
             <thead class="text-xs text-gray-700 bg-gray-50 uppercase dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" class="px-3 py-3 font-medium">ID</th>
@@ -58,14 +58,14 @@
                 :key="ad.ad_id"
                 :class="[
                   'bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600',
-                  ad.my_ad === '*' ? 'bg-blue-50 dark:bg-green-900 dark:hover:bg-green-800' : '',
+                  ad.my_ad === '*' ? 'bg-blue-500 dark:bg-green-900 dark:hover:bg-green-800' : '',
                 ]"
               >
                 <td class="px-3 py-2 font-medium text-gray-900 dark:text-white max-w-xs truncate" :title="ad.ad_id">
                   <a
                     :href="ad.link"
                     target="_blank"
-                    class="text-blue-600 hover:underline dark:text-blue-50 truncate max-w-xs inline-block"
+                    class="text-blue-600 hover:underline dark:text-blue-500 truncate max-w-xs inline-block"
                     :title="ad.link"
                   >
                     {{ ad.avito_ad_id || 'N/A' }}
@@ -90,7 +90,7 @@
                   <a
                     :href="ad.seller_id"
                     target="_blank"
-                    class="text-blue-600 hover:underline dark:text-blue-50 truncate max-w-xs inline-block"
+                    class="text-blue-600 hover:underline dark:text-blue-500 truncate max-w-xs inline-block"
                     :title="ad.seller_id"
                   >
                     {{ ad.seller_name || 'N/A' }}
@@ -159,7 +159,7 @@
                 id="adsItemsPerPage"
                 v-model="adsItemsPerPage"
                 @change="onAdsItemsPerPageChange"
-                class="bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-40 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="bg-gray-50 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-20 p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
                 <option value="5">5</option>
                 <option value="10">10</option>

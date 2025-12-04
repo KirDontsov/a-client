@@ -10,7 +10,9 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div class="text-center">
-          <div class="w-16 h-16 bg-blue-100 dark:bg-blue-90/30 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div
+            class="w-16 h-16 bg-blue-100 dark:bg-blue-90/30 rounded-full flex items-center justify-center mx-auto mb-6"
+          >
             <Icon name="lightning" class="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
           <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Эффективность</h3>
@@ -18,23 +20,29 @@
         </div>
 
         <div class="text-center">
-          <div class="w-16 h-16 bg-green-100 dark:bg-green-90/30 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div
+            class="w-16 h-16 bg-green-100 dark:bg-green-90/30 rounded-full flex items-center justify-center mx-auto mb-6"
+          >
             <Icon name="chart" class="w-8 h-8 text-green-600 dark:text-green-40" />
           </div>
-          <h3 class="text-xl font-bold text-gray-90 dark:text-white mb-3">Аналитика</h3>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Аналитика</h3>
           <p class="text-gray-600 dark:text-gray-300">Доступ к комплексной аналитике для оптимизации объявлений</p>
         </div>
 
         <div class="text-center">
-          <div class="w-16 h-16 bg-purple-10 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div
+            class="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-6"
+          >
             <Icon name="grid" class="w-8 h-8 text-purple-600 dark:text-purple-400" />
           </div>
-          <h3 class="text-xl font-bold text-gray-90 dark:text-white mb-3">Гибкость</h3>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Гибкость</h3>
           <p class="text-gray-600 dark:text-gray-300">Поддержка нескольких аккаунтов и массовых операций</p>
         </div>
 
         <div class="text-center">
-          <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-90/30 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div
+            class="w-16 h-16 bg-yellow-100 dark:bg-yellow-90/30 rounded-full flex items-center justify-center mx-auto mb-6"
+          >
             <Icon name="chat" class="w-8 h-8 text-yellow-600 dark:text-yellow-40" />
           </div>
           <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Пользовательский опыт</h3>

@@ -355,17 +355,17 @@ const getSelectOptionsForField = (field: any) => {
   if (field.tag === 'Make' && isMakeFieldWithNewStructure(field)) {
     return field.content[0].values.values.map((option: any) => ({
       value: option.value,
-      label: option.description ? `${option.value} - ${option.description}` : option.value
+      label: option.description ? `${option.value} - ${option.description}` : option.value,
     }));
   } else if (field.tag === 'Make') {
     return getSelectOptions(field.content[0].values).map((option: any) => ({
       value: option.value,
-      label: option.description ? `${option.value} - ${option.description}` : option.value
+      label: option.description ? `${option.value} - ${option.description}` : option.value,
     }));
- } else {
+  } else {
     return getSelectOptions(field.content[0].values).map((option: any) => ({
       value: option.value,
-      label: option.description ? `${option.value} - ${option.description}` : option.value
+      label: option.description ? `${option.value} - ${option.description}` : option.value,
     }));
   }
 };
@@ -419,7 +419,6 @@ const handleReset = () => {
   avitoCategoryFieldsStore.initializeFormData();
 };
 
-
 // Get fields for the current step - MODIFIED: Show all fields from step 0 up to current step
 const getFieldsForCurrentStep = () => {
   return stepperStore.getFieldsForCurrentStep;
@@ -449,7 +448,6 @@ const prevStep = () => {
     }
   });
 };
-
 
 // The original onMounted function is now included in the watch section above
 
