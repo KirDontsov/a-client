@@ -70,7 +70,7 @@
                           clip-rule="evenodd"
                         ></path>
                       </svg>
-                      <div class="absolute bottom-0 left-0 flex flex-col items-center mb-6 group-hover:flex">
+                      <div class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex">
                         <span
                           class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md min-w-[300px] w-fit max-w-[752px] text-center"
                         >
@@ -188,7 +188,7 @@
                               clip-rule="evenodd"
                             ></path>
                           </svg>
-                          <div class="absolute bottom-0 left-0 flex flex-col items-center mb-6 group-hover:flex">
+                          <div class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex">
                             <span
                               class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md w-fit max-w-[752px] text-center"
                             >
