@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="avitoCategoriesStore.selectedCategories.length > 0"
-    class="p-8 bg-gray-50 dark:bg-gray-700 rounded-lg flex flex-col gap-4"
+    class="p-2 bg-gray-50 dark:bg-gray-700 rounded-lg flex flex-col gap-4"
   >
-    <div class="flex items-center justify-between mt-1 flex-wrap">
+    <div class="flex items-center justify-between flex-wrap">
       <div class="flex items-center flex-wrap">
         <span
           v-for="(category, index) in avitoCategoriesStore.selectedCategories"

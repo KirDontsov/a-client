@@ -1,5 +1,8 @@
 <template>
   <header class="bg-white dark:bg-gray-800 shadow-sm">
+    <div class="absolute top-4 right-4 z-50">
+      <ThemeToggle />
+    </div>
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -46,6 +49,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import ThemeToggle from '@/shared/components/theme-toggle/ThemeToggle.vue';
 
 const router = useRouter();
 

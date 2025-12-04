@@ -1,8 +1,5 @@
 <template>
   <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-    <div class="fixed top-4 right-4 z-50">
-      <ThemeToggle />
-    </div>
     <Header />
     <Hero />
     <Features />
@@ -39,7 +36,7 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         behavior: 'smooth',
       });
     }
- });
+  });
 });
 
 // Initialize FAQ accordion functionality

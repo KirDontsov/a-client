@@ -2,6 +2,9 @@
   <div
     class="min-h-screen w-full overflow-hidden relative bg-gray-100 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
   >
+    <div class="fixed top-4 right-4 z-50">
+      <ThemeToggle />
+    </div>
     <!-- Orb background element -->
     <div class="absolute inset-0 w-full h-full z-0">
       <Orb :hoverIntensity="0.5" :rotateOnHover="true" :hue="0" :forceHoverState="false" />
@@ -45,12 +48,7 @@
 
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <Checkbox
-                id="remember-me"
-                name="remember-me"
-                v-model="rememberMe"
-                label="Запомнить меня"
-              />
+              <Checkbox id="remember-me" name="remember-me" v-model="rememberMe" label="Запомнить меня" />
             </div>
 
             <div class="text-sm">
@@ -84,6 +82,7 @@ import { login } from '@/shared/api';
 import Orb from '@/features/orb/Orb.vue';
 import { Checkbox } from '@/shared/components';
 import InputField from '@/shared/components/input-field/InputField.vue';
+import ThemeToggle from '@/shared/components/theme-toggle/ThemeToggle.vue';
 
 const router = useRouter();
 const email = ref();
@@ -105,15 +104,15 @@ const handleSubmit = async () => {
 /* Add some additional styling to ensure the orbs don't interfere with content */
 .min-h-screen {
   min-height: 100vh;
- position: relative;
+  position: relative;
 }
 
 /* Custom checkbox styling to show checkmark */
-input[type="checkbox"] {
+input[type='checkbox'] {
   @apply relative;
 }
 
-input[type="checkbox"]:checked::after {
+input[type='checkbox']:checked::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -122,6 +121,6 @@ input[type="checkbox"]:checked::after {
   width: 5px;
   height: 10px;
   border: solid white;
- border-width: 0 2px 2px 0;
+  border-width: 0 2px 2px 0;
 }
 </style>

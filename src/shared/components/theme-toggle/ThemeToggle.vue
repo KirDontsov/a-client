@@ -1,11 +1,11 @@
 <template>
   <button
-    @click="toggleTheme"
-    class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-30 dark:hover:bg-gray-600 transition-colors"
+    @click="themeStore.toggleTheme()"
+    class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-30 dark:hover:bg-gray-600 transition-colors cursor-pointer"
     aria-label="Toggle dark mode"
   >
     <svg
-      v-if="isDark"
+      v-if="themeStore.isDark"
       class="w-5 h-5"
       fill="none"
       stroke="currentColor"
@@ -41,5 +41,4 @@
 import { useThemeStore } from '@/entities/theme/model';
 
 const themeStore = useThemeStore();
-const { isDark, toggleTheme } = themeStore;
 </script>

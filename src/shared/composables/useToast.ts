@@ -9,7 +9,7 @@ const toast = toastLib;
 export function useToast() {
  // Get the theme store to access reactive theme value
   const themeStore = useThemeStore();
-  
+
   const success = (message: string, options: ToastOptions = {}) => {
     // Access the reactive theme value at toast creation time
     const currentTheme = themeStore.isDark ? 'dark' : 'light';
