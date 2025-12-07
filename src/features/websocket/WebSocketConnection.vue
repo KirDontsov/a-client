@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
-import { BACKEND_PORT } from '@/shared';
+import { DOMAIN } from '@/shared';
 
 interface Props {
   userId: string;
@@ -34,8 +34,15 @@ const reconnectInterval = 3000; // 3 seconds
 const connect = () => {
   if (!props.enabled || !props.userId) return;
 
+  // Determine if we should use secure websocket protocol
+  // For production domains (not localhost or local IPs), use wss://
+  const isLocalhost = DOMAIN.startsWith('localhost') || DOMAIN.startsWith('127.');
+  const isLocalIP = DOMAIN.startsWith('192.') || DOMAIN.startsWith('10.') || DOMAIN.startsWith('172.');
+
+  const wsProtocol = !isLocalhost && !isLocalIP ? 'wss://' : 'ws://';
+
   try {
-    const wsUrl = `${BACKEND_PORT.replace('http', 'ws')}/ws?user_id=${props.userId}`;
+    const wsUrl = `${wsProtocol}${DOMAIN}/api/ws?user_id=${props.userId}`;
     wsConnection.value = new WebSocket(wsUrl);
 
     wsConnection.value.onopen = () => {
