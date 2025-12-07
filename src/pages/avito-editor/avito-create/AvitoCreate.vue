@@ -6,6 +6,13 @@
         <SelectedCategoryPath />
         <Stepper />
 
+        <!-- WebSocket connection component -->
+        <WebSocketConnection
+          :user-id="authStore.user?.id"
+          :enabled="!!authStore.user?.id"
+          @message="(data) => handleWebSocketMessage(data)"
+        />
+
         <!-- Item Form Section -->
         <div
           ref="itemFormSectionRef"
@@ -17,10 +24,10 @@
             class="relative overflow-x-auto shadow-md sm:rounded-lg w-full p-4 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600"
           >
             <!-- Form Steps -->
-            <form class="space-y-6 max-w-[688px] w-full mx-auto">
+            <form class="space-y-6 w-full">
               <!-- Render fields for current step -->
-              <div v-for="field in getFieldsForCurrentStep()" :key="field.tag" class="p-4">
-                <div class="mb-3">
+              <div v-for="field in getFieldsForCurrentStep()" :key="field.tag" class="p-4 w-full flex gap-4">
+                <div class="flex flex-col mb-3 max-w-1/2 w-full">
                   <!-- Dependencies info -->
                   <div
                     v-if="field.content[0]?.dependencies_text && field.content[0].dependencies_text.length > 0"
@@ -81,177 +88,252 @@
                       {{ warning.content }}
                     </div>
                   </div>
-                </div>
 
-                <!-- Field input based on type -->
-                <div v-if="field.content && field.content.length > 0">
-                  <!-- Input field -->
-                  <div v-if="field.content[0].field_type === 'input'">
-                    <!-- Date field -->
-                    <DatePicker
-                      v-if="isDateField(field)"
-                      :id="field.tag"
-                      v-model="trimmedFieldValues[field.tag]"
-                      :required="field.content[0].required"
-                      :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
-                      placeholder="Выберите дату"
-                    />
-                    <!-- Regular input field -->
-                    <InputField
-                      v-else
-                      :id="field.tag"
-                      v-model="trimmedFieldValues[field.tag]"
-                      :type="getInputType(field.content[0].data_type)"
-                      :required="field.content[0].required"
-                      :isTextarea="field.tag === 'Description'"
-                      :helperText="field.tag === 'ImageUrls' ? 'Ссылки на фотографии через запятую' : undefined"
-                      :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
-                      class="w-full"
-                    />
-                  </div>
-                  <!-- Select field -->
-                  <div v-else-if="field.content[0].field_type === 'select' || field.tag === 'Make'" class="relative">
-                    <SelectField
-                      :id="field.tag"
-                      v-model="trimmedFieldValues[field.tag]"
-                      :required="field.content[0].required"
-                      :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
-                      :placeholder="'Выберите значение'"
-                      :options="getSelectOptionsForField(field)"
-                    />
-                  </div>
-
-                  <!-- Checkbox field -->
-                  <div v-else-if="field.content[0].field_type === 'checkbox' && field.tag !== 'Make'" class="space-y-2">
-                    <!-- Special handling for fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
-                    <div v-if="field.tag.includes('Days')" class="flex flex-wrap gap-4">
-                      <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                        <Checkbox
-                          :id="`${field.tag}-${option.value}`"
-                          :name="`${field.tag}-${option.value}`"
-                          :value="option.value"
-                          v-model="trimmedFieldValues[field.tag]"
-                          :label="option.value"
-                        />
-                      </div>
-                    </div>
-                    <!-- Regular checkbox field -->
-                    <div v-else class="space-y-2">
-                      <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
-                        <Checkbox
-                          :id="`${field.tag}-${option.value}`"
-                          :name="`${field.tag}-${option.value}`"
-                          :value="option.value"
-                          v-model="trimmedFieldValues[field.tag]"
-                          :label="option.value"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Children fields (for complex fields like CompatibleCars) -->
-                  <div
-                    v-if="field.children && field.children.length > 0"
-                    class="mt-4 pl-4 border-l-2 border-gray-200 dark:border-gray-600"
-                  >
-                    <div v-for="child in field.children.filter((c) => c.tag !== 'Id')" :key="child.tag" class="mb-4">
-                      <div class="flex items-center gap-2 mb-1">
-                        <label :for="child.tag" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {{ child.label }}
-                        </label>
-
-                        <!-- Tooltip for child description -->
-                        <div v-if="child.descriptions" class="relative flex flex-col items-center group">
-                          <svg
-                            class="w-4 h-4 text-gray-400 hover:text-gray-500 cursor-pointer"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                              clip-rule="evenodd"
-                            ></path>
-                          </svg>
-                          <div class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex">
-                            <span
-                              class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md w-fit max-w-[752px] text-center"
-                            >
-                              {{ child.descriptions }}
-                            </span>
-                            <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-600"></div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- Child input field -->
+                  <!-- Field input based on type -->
+                  <div v-if="field.content && field.content.length > 0">
+                    <!-- Input field -->
+                    <div v-if="field.content[0].field_type === 'input'">
+                      <!-- Date field -->
                       <DatePicker
-                        v-if="child.content[0].field_type === 'input' && isDateField(child)"
-                        :id="child.tag"
-                        v-model="trimmedFieldValues[child.tag]"
-                        :required="child.content[0].required"
-                        :error="avitoCategoryFieldsStore.getFieldError(child.tag)"
+                        v-if="isDateField(field)"
+                        :id="field.tag"
+                        v-model="trimmedFieldValues[field.tag]"
+                        :required="field.content[0].required"
+                        :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
                         placeholder="Выберите дату"
                       />
-                      <InputField
-                        v-else-if="child.content[0].field_type === 'input'"
-                        :id="child.tag"
-                        v-model="trimmedFieldValues[child.tag]"
-                        :type="getInputType(child.content[0].data_type)"
-                        :required="child.content[0].required"
-                        :isTextarea="child.tag === 'Description'"
-                        :error="avitoCategoryFieldsStore.getFieldError(child.tag)"
-                        class="w-full"
-                      />
-
-                      <!-- Child checkbox field -->
-                      <div
-                        v-else-if="child.content[0].field_type === 'checkbox' && child.tag !== 'Make'"
-                        class="space-y-2"
-                      >
-                        <!-- Special handling for child fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
-                        <div v-if="child.tag.includes('Days')" class="flex flex-wrap gap-4">
-                          <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
-                            <Checkbox
-                              :id="`${child.tag}-${option.value}`"
-                              :name="`${child.tag}-${option.value}`"
-                              :value="option.value"
-                              v-model="trimmedFieldValues[child.tag]"
-                              :label="option.value"
+                      <!-- Regular input field -->
+                      <div v-else class="flex flex-col">
+                        <div class="flex flex-col">
+                          <div class="flex-1 w-full">
+                            <InputField
+                              v-if="field.tag !== 'Description'"
+                              :id="field.tag"
+                              v-model="trimmedFieldValues[field.tag]"
+                              :type="getInputType(field.content[0].data_type)"
+                              :required="field.content[0].required"
+                              :isTextarea="field.tag === 'Description'"
+                              :helperText="field.tag === 'ImageUrls' ? 'Ссылки на фотографии через запятую' : undefined"
+                              :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
+                              class="w-full"
                             />
-                          </div>
-                        </div>
-                        <!-- Regular child checkbox field -->
-                        <div v-else class="space-y-2">
-                          <div v-for="option in child.content[0].values" :key="option.value" class="flex items-center">
-                            <Checkbox
-                              :id="`${child.tag}-${option.value}`"
-                              :name="`${child.tag}-${option.value}`"
-                              :value="option.value"
-                              v-model="trimmedFieldValues[child.tag]"
-                              :label="option.value"
+                            <textarea
+                              v-else
+                              :id="field.tag"
+                              v-model="trimmedFieldValues[field.tag]"
+                              :required="field.content[0].required"
+                              :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
+                              class="w-full p-2.5 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-40 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                              rows="4"
                             />
+                            <!-- Add button for Title and Description fields -->
+                            <div
+                              v-if="field.tag === 'Title' || field.tag === 'Description'"
+                              class="mt-2 flex justify-end"
+                            >
+                              <Button
+                                type="button"
+                                color="default"
+                                variant="dark"
+                                :disabled="aiProcessingLoading[field.tag]"
+                                @click="generateFromTop10(field.tag)"
+                              >
+                                <span v-if="aiProcessingLoading[field.tag]" class="flex items-center">
+                                  <svg
+                                    class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <circle
+                                      class="opacity-25"
+                                      cx="12"
+                                      cy="12"
+                                      r="10"
+                                      stroke="currentColor"
+                                      stroke-width="4"
+                                    ></circle>
+                                    <path
+                                      class="opacity-75"
+                                      fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
+                                  </svg>
+                                  Обработка...
+                                </span>
+                                <span v-else>Сгенерировать на основе лучших топ 10</span>
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
+                    </div>
+                    <!-- Select field -->
+                    <div v-else-if="field.content[0].field_type === 'select' || field.tag === 'Make'" class="relative">
+                      <SelectField
+                        :id="field.tag"
+                        v-model="trimmedFieldValues[field.tag]"
+                        :required="field.content[0].required"
+                        :error="avitoCategoryFieldsStore.getFieldError(field.tag)"
+                        :placeholder="'Выберите значение'"
+                        :options="getSelectOptionsForField(field)"
+                      />
+                    </div>
 
-                      <!-- Child select field -->
-                      <div
-                        v-else-if="child.content[0].field_type === 'select' || child.tag === 'Make'"
-                        class="relative"
-                      >
-                        <SelectField
+                    <!-- Checkbox field -->
+                    <div
+                      v-else-if="field.content[0].field_type === 'checkbox' && field.tag !== 'Make'"
+                      class="space-y-2"
+                    >
+                      <!-- Special handling for fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
+                      <div v-if="field.tag.includes('Days')" class="flex flex-wrap gap-4">
+                        <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
+                          <Checkbox
+                            :id="`${field.tag}-${option.value}`"
+                            :name="`${field.tag}-${option.value}`"
+                            :value="option.value"
+                            v-model="trimmedFieldValues[field.tag]"
+                            :label="option.value"
+                          />
+                        </div>
+                      </div>
+                      <!-- Regular checkbox field -->
+                      <div v-else class="space-y-2">
+                        <div v-for="option in field.content[0].values" :key="option.value" class="flex items-center">
+                          <Checkbox
+                            :id="`${field.tag}-${option.value}`"
+                            :name="`${field.tag}-${option.value}`"
+                            :value="option.value"
+                            v-model="trimmedFieldValues[field.tag]"
+                            :label="option.value"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Children fields (for complex fields like CompatibleCars) -->
+                    <div
+                      v-if="field.children && field.children.length > 0"
+                      class="mt-4 pl-4 border-l-2 border-gray-200 dark:border-gray-600 w-full"
+                    >
+                      <div v-for="child in field.children.filter((c) => c.tag !== 'Id')" :key="child.tag" class="mb-4">
+                        <div class="flex items-center gap-2 mb-1">
+                          <label :for="child.tag" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {{ child.label }}
+                          </label>
+
+                          <!-- Tooltip for child description -->
+                          <div v-if="child.descriptions" class="relative flex flex-col items-center group">
+                            <svg
+                              class="w-4 h-4 text-gray-400 hover:text-gray-500 cursor-pointer"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                                clip-rule="evenodd"
+                              ></path>
+                            </svg>
+                            <div
+                              class="absolute bottom-0 left-0 flex flex-col items-center hidden mb-6 group-hover:flex"
+                            >
+                              <span
+                                class="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-gray-600 shadow-lg rounded-md w-fit max-w-[752px] text-center"
+                              >
+                                {{ child.descriptions }}
+                              </span>
+                              <div class="w-3 h-3 -mt-2 rotate-45 bg-gray-600"></div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Child input field -->
+                        <DatePicker
+                          v-if="child.content[0].field_type === 'input' && isDateField(child)"
                           :id="child.tag"
                           v-model="trimmedFieldValues[child.tag]"
                           :required="child.content[0].required"
                           :error="avitoCategoryFieldsStore.getFieldError(child.tag)"
-                          :placeholder="'Выберите значение'"
-                          :options="getSelectOptionsForField(child)"
+                          placeholder="Выберите дату"
                         />
+                        <InputField
+                          v-else-if="child.content[0].field_type === 'input'"
+                          :id="child.tag"
+                          v-model="trimmedFieldValues[child.tag]"
+                          :type="getInputType(child.content[0].data_type)"
+                          :required="child.content[0].required"
+                          :isTextarea="child.tag === 'Description'"
+                          :error="avitoCategoryFieldsStore.getFieldError(child.tag)"
+                          class="w-full"
+                        />
+
+                        <!-- Child checkbox field -->
+                        <div
+                          v-else-if="child.content[0].field_type === 'checkbox' && child.tag !== 'Make'"
+                          class="space-y-2"
+                        >
+                          <!-- Special handling for child fields containing "Days" in the tag (e.g., WorkDays, SmthDays) -->
+                          <div v-if="child.tag.includes('Days')" class="flex flex-wrap gap-4">
+                            <div
+                              v-for="option in child.content[0].values"
+                              :key="option.value"
+                              class="flex items-center"
+                            >
+                              <Checkbox
+                                :id="`${child.tag}-${option.value}`"
+                                :name="`${child.tag}-${option.value}`"
+                                :value="option.value"
+                                v-model="trimmedFieldValues[child.tag]"
+                                :label="option.value"
+                              />
+                            </div>
+                          </div>
+                          <!-- Regular child checkbox field -->
+                          <div v-else class="space-y-2">
+                            <div
+                              v-for="option in child.content[0].values"
+                              :key="option.value"
+                              class="flex items-center"
+                            >
+                              <Checkbox
+                                :id="`${child.tag}-${option.value}`"
+                                :name="`${child.tag}-${option.value}`"
+                                :value="option.value"
+                                v-model="trimmedFieldValues[child.tag]"
+                                :label="option.value"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Child select field -->
+                        <div
+                          v-else-if="child.content[0].field_type === 'select' || child.tag === 'Make'"
+                          class="relative"
+                        >
+                          <SelectField
+                            :id="child.tag"
+                            v-model="trimmedFieldValues[child.tag]"
+                            :required="child.content[0].required"
+                            :error="avitoCategoryFieldsStore.getFieldError(child.tag)"
+                            :placeholder="'Выберите значение'"
+                            :options="getSelectOptionsForField(child)"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
+                </div>
+                <!-- Show beautified title when available for Title field - positioned on the right -->
+                <div class="max-w-1/2 w-full">
+                  <BeautifiedTitleDisplay
+                    v-if="field.tag === 'Title'"
+                    :fieldTag="field.tag"
+                    :beautifiedTitle="beautifiedTitle"
+                    @apply-beautified-title="handleApplyBeautifiedTitle"
+                  />
                 </div>
               </div>
             </form>
@@ -318,24 +400,34 @@
 </template>
 
 <script setup lang="ts">
-import { useCookies, useAvitoCategoriesStore, useAvitoCategoryFieldsStore } from '@/entities';
+import { useCookies, useAvitoCategoriesStore, useAvitoCategoryFieldsStore, useAuthStore } from '@/entities';
 import { onMounted, ref, nextTick, watch } from 'vue';
 import { PageContainer } from '@/features/page-container';
-import { SelectedCategoryPath, Stepper, useStepperStore } from '@/features';
+import {
+  SelectedCategoryPath,
+  Stepper,
+  useStepperStore,
+  BeautifiedTitleDisplay,
+  WebSocketConnection,
+} from '@/features';
 import { DatePicker } from '@/shared/components/date-picker';
 import { InputField, SelectField } from '@/shared/components';
 import { Button, Checkbox } from '@/shared/components';
 import { isDateField, getSelectOptions, isMakeFieldWithNewStructure } from '@/shared/lib/field-helpers';
 import { useToast } from '@/shared/composables/useToast';
-
+import { processAiTitle } from '@/shared/api/avito';
 const { value: avito_token } = useCookies('avito_token');
 const { success: toastSuccess, error: toastError } = useToast();
+const authStore = useAuthStore();
 
 const avitoCategoriesStore = useAvitoCategoriesStore();
 const avitoCategoryFieldsStore = useAvitoCategoryFieldsStore();
 const stepperStore = useStepperStore();
 const itemFormSectionRef = ref(null);
 const formFieldsSectionRef = ref(null);
+const aiProcessingField = ref<string | null>(null); // Track which field is being processed
+const beautifiedTitle = ref<string | null>(null); // Store the beautified title received via websocket
+const aiProcessingLoading = ref<{ [key: string]: boolean }>({}); // Track loading state for each field
 
 // Reactive object to store trimmed values for fields that need trimming
 const trimmedFieldValues = ref({});
@@ -539,6 +631,83 @@ const scrollToInvalidField = (fieldElement: HTMLElement) => {
     // Add visual indication to the field
     fieldElement.focus();
   }
+};
+
+// Function to handle WebSocket messages
+const handleWebSocketMessage = (data: any) => {
+  // Check if this is an AI title processing result
+  if (data.task_id && data.result_data && data.result_data.beautified_title) {
+    // Store the beautified title separately for display
+    beautifiedTitle.value = data.result_data.beautified_title;
+
+    // Only show success message, don't update the field automatically
+    const fieldToUpdate = aiProcessingField.value || 'Title';
+    toastSuccess(`${fieldToUpdate === 'Title' ? 'Заголовок' : 'Описание'} успешно сгенерировано с помощью ИИ!`);
+
+    // Reset loading state for the processed field
+    if (fieldToUpdate) {
+      aiProcessingLoading.value[fieldToUpdate] = false;
+    }
+  }
+
+  // Handle potential error responses or completion status
+  if (
+    data.task_id &&
+    data.status &&
+    (data.status === 'completed' || data.status === 'error' || data.status === 'success')
+  ) {
+    const fieldToUpdate = aiProcessingField.value || 'Title';
+    if (fieldToUpdate && aiProcessingLoading.value[fieldToUpdate]) {
+      aiProcessingLoading.value[fieldToUpdate] = false;
+    }
+  }
+};
+
+// Function to generate content based on top 10 best items
+const generateFromTop10 = async (fieldTag: string) => {
+  try {
+    // Check if the user has filled the Title or Description input
+    const titleValue = trimmedFieldValues.value['Title'] || '';
+    const descriptionValue = trimmedFieldValues.value['Description'] || '';
+
+    // Use the filled field value for the API request
+    const inputValue = fieldTag === 'Title' ? titleValue : descriptionValue;
+
+    // Set the field being processed
+    aiProcessingField.value = fieldTag;
+
+    // Set loading state for the specific field
+    aiProcessingLoading.value[fieldTag] = true;
+
+    // Show loading message
+    toastSuccess(`Генерация ${fieldTag === 'Title' ? 'заголовка' : 'описания'} на основе топ 10 объявлений...`);
+
+    // Call the AI processing API - response will come via WebSocket
+    try {
+      await processAiTitle({
+        title: inputValue,
+        category:
+          avitoCategoriesStore.selectedCategories.find(
+            (item) => item.slug === avitoCategoriesStore.selectedFinalCategory,
+          )?.name ?? '',
+      });
+      // Don't update the field here since the response will come via WebSocket
+      // The handleWebSocketMessage function will update the field when the response arrives
+    } catch (error) {
+      console.error(`Error initiating AI processing for ${fieldTag}:`, error);
+      toastError(`Ошибка при инициации генерации ${fieldTag === 'Title' ? 'заголовка' : 'описания'}.`);
+      aiProcessingField.value = null; // Reset the field being processed
+      aiProcessingLoading.value[fieldTag] = false; // Reset loading state
+    }
+  } catch (error) {
+    console.error(`Error generating ${fieldTag} from top 10:`, error);
+    toastError(`Ошибка при генерации ${fieldTag === 'Title' ? 'заголовка' : 'описания'} на основе топ 10 объявлений.`);
+  }
+};
+
+// Function to handle applying the beautified title from the component
+const handleApplyBeautifiedTitle = (title: string) => {
+  trimmedFieldValues.value.Title = title;
 };
 
 onMounted(async () => {

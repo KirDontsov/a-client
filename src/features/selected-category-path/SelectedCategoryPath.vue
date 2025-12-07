@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="avitoCategoriesStore.selectedCategories.length > 0"
-    class="p-2 bg-gray-50 dark:bg-gray-700 rounded-lg flex flex-col gap-4"
+    class="px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg flex flex-col gap-4"
   >
     <div class="flex items-center justify-between flex-wrap">
       <div class="flex items-center flex-wrap">
@@ -19,7 +19,7 @@
           </span>
         </span>
       </div>
-      <Button variant="dark" color="default" @click="handleClearCategories" class="mt-2 text-sm w-fit">
+      <Button variant="dark" color="default" @click="handleClearCategories" class="text-sm w-fit">
         Сбросить выбор
       </Button>
     </div>

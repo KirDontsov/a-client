@@ -1,0 +1,1 @@
+export { default as BeautifiedTitleDisplay } from './BeautifiedTitleDisplay.vue';

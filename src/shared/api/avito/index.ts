@@ -12,3 +12,5 @@ export * from './accounts';
 export * from './feeds';
 // Ads functions
 export * from './ads';
+// Title and description
+export * from './ai-processing';

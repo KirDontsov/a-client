@@ -9,3 +9,5 @@ export * from './sidebar';
 export * from './header';
 export * from './selected-category-path';
 export * from './stepper';
+export * from './beautified-title-display';
+export * from './websocket';
