@@ -326,13 +326,14 @@
                     </div>
                   </div>
                 </div>
-                <!-- Show beautified title when available for Title field - positioned on the right -->
+                <!-- Show beautified content when available for Title or Description fields - positioned on the right -->
                 <div class="max-w-1/2 w-full">
                   <BeautifiedTitleDisplay
-                    v-if="field.tag === 'Title'"
+                    v-if="field.tag === 'Title' || field.tag === 'Description'"
                     :fieldTag="field.tag"
                     :beautifiedTitle="beautifiedTitle"
-                    @apply-beautified-title="handleApplyBeautifiedTitle"
+                    :beautifiedDescription="beautifiedDescription"
+                    @apply-beautified-content="handleApplyBeautifiedContent"
                   />
                 </div>
               </div>
@@ -415,7 +416,7 @@ import { InputField, SelectField } from '@/shared/components';
 import { Button, Checkbox } from '@/shared/components';
 import { isDateField, getSelectOptions, isMakeFieldWithNewStructure } from '@/shared/lib/field-helpers';
 import { useToast } from '@/shared/composables/useToast';
-import { processAiTitle } from '@/shared/api/avito';
+import { processAiTitle, processAiDescription } from '@/shared/api/avito';
 const { value: avito_token } = useCookies('avito_token');
 const { success: toastSuccess, error: toastError } = useToast();
 const authStore = useAuthStore();
@@ -427,6 +428,7 @@ const itemFormSectionRef = ref(null);
 const formFieldsSectionRef = ref(null);
 const aiProcessingField = ref<string | null>(null); // Track which field is being processed
 const beautifiedTitle = ref<string | null>(null); // Store the beautified title received via websocket
+const beautifiedDescription = ref<string | null>(null); // Store the beautified description received via websocket
 const aiProcessingLoading = ref<{ [key: string]: boolean }>({}); // Track loading state for each field
 
 // Reactive object to store trimmed values for fields that need trimming
@@ -635,16 +637,30 @@ const scrollToInvalidField = (fieldElement: HTMLElement) => {
 
 // Function to handle WebSocket messages
 const handleWebSocketMessage = (data: any) => {
-  // Check if this is an AI title processing result
-  if (data.task_id && data.result_data && data.result_data.beautified_title) {
-    // Store the beautified title separately for display
-    beautifiedTitle.value = data.result_data.beautified_title;
+  // Check if this is an AI title/description processing result
+  if (data.task_id && data.result_data) {
+    // Handle beautified title
+    if (data.result_data.beautified_title) {
+      // Store the beautified title separately for display
+      beautifiedTitle.value = data.result_data.beautified_title;
 
-    // Only show success message, don't update the field automatically
-    const fieldToUpdate = aiProcessingField.value || 'Title';
-    toastSuccess(`${fieldToUpdate === 'Title' ? 'Заголовок' : 'Описание'} успешно сгенерировано с помощью ИИ!`);
+      // Only show success message, don't update the field automatically
+      const fieldToUpdate = aiProcessingField.value || 'Title';
+      toastSuccess(`${fieldToUpdate === 'Title' ? 'Заголовок' : 'Описание'} успешно сгенерировано с помощью ИИ!`);
+    }
+    
+    // Handle beautified description
+    if (data.result_data.beautified_description) {
+      // Store the beautified description separately for display
+      beautifiedDescription.value = data.result_data.beautified_description;
+
+      // Only show success message, don't update the field automatically
+      const fieldToUpdate = aiProcessingField.value || 'Description';
+      toastSuccess(`${fieldToUpdate === 'Title' ? 'Заголовок' : 'Описание'} успешно сгенерировано с помощью ИИ!`);
+    }
 
     // Reset loading state for the processed field
+    const fieldToUpdate = aiProcessingField.value;
     if (fieldToUpdate) {
       aiProcessingLoading.value[fieldToUpdate] = false;
     }
@@ -656,7 +672,7 @@ const handleWebSocketMessage = (data: any) => {
     data.status &&
     (data.status === 'completed' || data.status === 'error' || data.status === 'success')
   ) {
-    const fieldToUpdate = aiProcessingField.value || 'Title';
+    const fieldToUpdate = aiProcessingField.value;
     if (fieldToUpdate && aiProcessingLoading.value[fieldToUpdate]) {
       aiProcessingLoading.value[fieldToUpdate] = false;
     }
@@ -684,13 +700,23 @@ const generateFromTop10 = async (fieldTag: string) => {
 
     // Call the AI processing API - response will come via WebSocket
     try {
-      await processAiTitle({
-        title: inputValue,
-        category:
-          avitoCategoriesStore.selectedCategories.find(
-            (item) => item.slug === avitoCategoriesStore.selectedFinalCategory,
-          )?.name ?? '',
-      });
+      if (fieldTag === 'Title') {
+        await processAiTitle({
+          title: inputValue,
+          category:
+            avitoCategoriesStore.selectedCategories.find(
+              (item) => item.slug === avitoCategoriesStore.selectedFinalCategory,
+            )?.name ?? '',
+        });
+      } else if (fieldTag === 'Description') {
+        await processAiDescription({
+          description: inputValue,
+          category:
+            avitoCategoriesStore.selectedCategories.find(
+              (item) => item.slug === avitoCategoriesStore.selectedFinalCategory,
+            )?.name ?? '',
+        });
+      }
       // Don't update the field here since the response will come via WebSocket
       // The handleWebSocketMessage function will update the field when the response arrives
     } catch (error) {
@@ -704,11 +730,15 @@ const generateFromTop10 = async (fieldTag: string) => {
     toastError(`Ошибка при генерации ${fieldTag === 'Title' ? 'заголовка' : 'описания'} на основе топ 10 объявлений.`);
   }
 };
-
-// Function to handle applying the beautified title from the component
-const handleApplyBeautifiedTitle = (title: string) => {
-  trimmedFieldValues.value.Title = title;
+// Function to handle applying the beautified content from the component
+const handleApplyBeautifiedContent = (content: string, fieldTag: string) => {
+  if (fieldTag === 'Title') {
+    trimmedFieldValues.value.Title = content;
+  } else if (fieldTag === 'Description') {
+    trimmedFieldValues.value.Description = content;
+  }
 };
+
 
 onMounted(async () => {
   if (avito_token.value) {
